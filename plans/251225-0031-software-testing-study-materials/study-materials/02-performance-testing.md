@@ -565,15 +565,144 @@ Example:
 
 ---
 
-## 8. Key Takeaways for Exam
+## 8. Artillery & Core Web Vitals (2025 Update)
+
+### 8.1 Artillery
+
+**What is Artillery?**
+- Modern, Node.js-based load testing toolkit
+- YAML-based configuration (like k6)
+- Built-in Playwright support for browser testing
+- Cloud-native with AWS/Azure integration
+
+**Installation:**
+```bash
+npm install -g artillery
+```
+
+**Basic Usage:**
+```yaml
+# load-test.yml
+config:
+  target: "https://api.example.com"
+  phases:
+    - duration: 60
+      arrivalRate: 10      # 10 new users/second
+    - duration: 120
+      arrivalRate: 50      # Ramp to 50
+  defaults:
+    headers:
+      Authorization: "Bearer {{token}}"
+
+scenarios:
+  - name: "Browse and Purchase"
+    flow:
+      - get:
+          url: "/products"
+      - think: 2
+      - post:
+          url: "/cart"
+          json:
+            productId: "123"
+      - post:
+          url: "/checkout"
+```
+
+**Run Test:**
+```bash
+artillery run load-test.yml
+artillery run --output report.json load-test.yml
+artillery report report.json
+```
+
+**Artillery vs k6:**
+
+| Aspect | Artillery | k6 |
+|--------|-----------|-----|
+| Language | YAML + JS | JavaScript |
+| Browser | Playwright built-in | xk6-browser extension |
+| Cloud | Artillery Cloud | Grafana Cloud |
+| Learning | Easier (YAML) | More flexible |
+
+### 8.2 Core Web Vitals Testing
+
+**What are Core Web Vitals?**
+- Google's metrics for user experience
+- Affects SEO rankings
+- Measured in Chrome, Lighthouse, PageSpeed
+
+**Metrics:**
+
+| Metric | Measures | Good | Needs Work | Poor |
+|--------|----------|------|------------|------|
+| **LCP** (Largest Contentful Paint) | Loading | <2.5s | 2.5-4s | >4s |
+| **FID** (First Input Delay) | Interactivity | <100ms | 100-300ms | >300ms |
+| **CLS** (Cumulative Layout Shift) | Stability | <0.1 | 0.1-0.25 | >0.25 |
+| **INP** (Interaction to Next Paint) | Responsiveness | <200ms | 200-500ms | >500ms |
+
+**Testing with Playwright:**
+```javascript
+const { chromium } = require('playwright');
+
+async function measureCoreWebVitals(url) {
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+
+  // Enable performance metrics
+  await page.goto(url, { waitUntil: 'networkidle' });
+
+  // Get Web Vitals
+  const vitals = await page.evaluate(() => {
+    return new Promise((resolve) => {
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        resolve({
+          LCP: entries.find(e => e.entryType === 'largest-contentful-paint')?.startTime,
+          CLS: entries.filter(e => e.entryType === 'layout-shift')
+                     .reduce((sum, e) => sum + e.value, 0),
+        });
+      }).observe({ type: 'largest-contentful-paint', buffered: true });
+    });
+  });
+
+  console.log('Core Web Vitals:', vitals);
+  await browser.close();
+}
+```
+
+**Lighthouse CI:**
+```bash
+npm install -g @lhci/cli
+
+# Run Lighthouse
+lhci autorun --collect.url=https://example.com
+
+# Config: lighthouserc.js
+module.exports = {
+  ci: {
+    assert: {
+      assertions: {
+        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
+        'first-contentful-paint': ['warn', { maxNumericValue: 1800 }],
+      },
+    },
+  },
+};
+```
+
+---
+
+## 9. Key Takeaways for Exam
 
 1. **Test Types**: Know the difference between load, stress, spike, soak
 2. **Metrics**: Focus on percentiles (P95, P99), not averages
-3. **Tools**: JMeter for versatility, k6 for modern APIs, Locust for Python
+3. **Tools**: JMeter for versatility, k6 for modern APIs, Locust for Python, Artillery for YAML
 4. **Response Time**: Tools measure differently - never compare across tools
 5. **Troubleshooting**: Check DB connections, memory, network first
 6. **Nielsen's Limits**: 0.1s (instant), 1s (noticeable), 10s (abandon)
-7. **Toolshop**: Know the specific results from HW07 experiments
+7. **Core Web Vitals**: LCP <2.5s, FID <100ms, CLS <0.1, INP <200ms
+8. **Artillery**: YAML-based, Playwright support, cloud-native
 
 ---
 

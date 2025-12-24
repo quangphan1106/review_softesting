@@ -648,7 +648,143 @@ Cache-Control: no-cache
 
 ---
 
-## 8. Key Takeaways for Exam
+## 8. GraphQL Testing (2025 Update)
+
+### 8.1 GraphQL vs REST
+
+| Aspect | REST | GraphQL |
+|--------|------|---------|
+| Endpoint | Multiple (/users, /products) | Single (/graphql) |
+| Data fetching | Fixed response | Client specifies fields |
+| Versioning | URL (/v1, /v2) | Schema evolution |
+| Over-fetching | Common | Eliminated |
+
+### 8.2 GraphQL Query Testing
+
+**Basic Query Test:**
+```javascript
+// Postman test for GraphQL
+const query = `
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      id
+      name
+      email
+      posts {
+        title
+      }
+    }
+  }
+`;
+
+pm.sendRequest({
+  url: pm.environment.get('graphql_url'),
+  method: 'POST',
+  header: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + pm.environment.get('token')
+  },
+  body: {
+    mode: 'raw',
+    raw: JSON.stringify({
+      query: query,
+      variables: { id: "123" }
+    })
+  }
+}, (err, res) => {
+  pm.test('User query returns data', () => {
+    const json = res.json();
+    pm.expect(json.data.user).to.not.be.null;
+    pm.expect(json.data.user.name).to.be.a('string');
+    pm.expect(json.errors).to.be.undefined;
+  });
+});
+```
+
+### 8.3 GraphQL Mutation Testing
+
+```javascript
+const mutation = `
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      id
+      name
+      email
+    }
+  }
+`;
+
+const variables = {
+  input: {
+    name: "John Doe",
+    email: "john@example.com",
+    password: "Pass1234!"
+  }
+};
+
+// Test mutation
+pm.test('Mutation creates user', () => {
+  const json = pm.response.json();
+  pm.expect(json.data.createUser.id).to.exist;
+  pm.expect(json.data.createUser.name).to.eql("John Doe");
+});
+```
+
+### 8.4 GraphQL Security Testing
+
+**Common Vulnerabilities:**
+
+| Vulnerability | Test Approach |
+|--------------|---------------|
+| **Introspection** | Query `__schema` - should be disabled in prod |
+| **Depth attack** | Send deeply nested queries |
+| **Batching attack** | Send multiple queries in one request |
+| **Injection** | Test special chars in variables |
+
+**Introspection Test:**
+```graphql
+# Should fail in production
+query IntrospectionQuery {
+  __schema {
+    types {
+      name
+    }
+  }
+}
+```
+
+**Depth Attack Test:**
+```graphql
+# Malicious deep query - should be rejected
+query DeepAttack {
+  user(id: "1") {
+    posts {
+      author {
+        posts {
+          author {
+            posts {
+              # ... recursively
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### 8.5 GraphQL Testing Tools
+
+| Tool | Purpose |
+|------|---------|
+| **Postman** | Manual testing with GraphQL support |
+| **Insomnia** | Alternative to Postman |
+| **Apollo Studio** | Schema management + testing |
+| **graphql-test** | Pytest plugin for GraphQL |
+
+---
+
+## 9. Key Takeaways for Exam
 
 1. **HTTP Methods**: Know GET/POST/PUT/PATCH/DELETE purposes
 2. **Status Codes**: 2xx success, 4xx client error, 5xx server error
@@ -657,7 +793,7 @@ Cache-Control: no-cache
 5. **Contract Testing**: OpenAPI/Swagger validation
 6. **Mocking**: WireMock > Postman Mock for complex scenarios
 7. **Security**: BOLA, BFLA are top API vulnerabilities
-8. **HW08 Results**: 77.22% pass rate, 18 bugs found
+8. **GraphQL**: Single endpoint, client specifies fields, test introspection + depth attacks
 
 ---
 

@@ -479,7 +479,394 @@ def test_harmful_refusal(llm, harmful_prompts):
 
 ---
 
-## 7. Application-Level Exam Questions
+## 7. LLM Evaluation Frameworks (2025)
+
+### 7.1 OpenAI Evals
+
+**What is OpenAI Evals?**
+- Framework for evaluating LLMs and LLM systems
+- API released April 2025 for programmatic evaluation
+- Supports basic (ground-truth) and model-graded evals
+
+**Core Concepts:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    OPENAI EVALS STRUCTURE                    │
+├─────────────────────────────────────────────────────────────┤
+│  Eval              → Defines task + testing criteria         │
+│  Run               → Executes eval against model            │
+│  data_source_config→ Schema for test data                   │
+│  testing_criteria  → Graders (how to score outputs)         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Types of Evals:**
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| **Basic (Ground-truth)** | Compare output to known answer | Multiple choice, factual QA |
+| **Model-graded** | LLM judges output quality | Open-ended, subjective tasks |
+| **Code-graded** | Custom logic evaluates | Structured outputs, JSON |
+
+**Installation & Setup:**
+```bash
+pip install --upgrade openai>=1.20.0
+export OPENAI_API_KEY="your-key"
+```
+
+**Basic Eval Example:**
+```python
+from openai import OpenAI
+client = OpenAI()
+
+# Create an eval
+eval_config = client.evals.create(
+    name="ticket-classification-eval",
+    data_source_config={
+        "type": "custom",
+        "item_schema": {
+            "type": "object",
+            "properties": {
+                "input": {"type": "string"},
+                "expected": {"type": "string"}
+            }
+        }
+    },
+    testing_criteria=[
+        {
+            "type": "string_match",
+            "name": "exact_match",
+            "input": "{{sample.output}}",
+            "reference": "{{sample.expected}}"
+        }
+    ]
+)
+
+# Run the eval
+run = client.evals.runs.create(
+    eval_id=eval_config.id,
+    model="gpt-4o",
+    data_source={
+        "type": "file",
+        "file_id": "file-abc123"  # JSONL file with test cases
+    }
+)
+```
+
+**Model-Graded Eval Example:**
+```python
+# LLM-as-Judge for helpfulness
+eval_config = client.evals.create(
+    name="helpfulness-eval",
+    testing_criteria=[
+        {
+            "type": "llm_grader",
+            "name": "helpfulness",
+            "model": "gpt-4o",
+            "prompt": """
+            Rate the helpfulness of this response on a scale of 1-5.
+
+            Question: {{sample.input}}
+            Response: {{sample.output}}
+
+            Score (1-5):
+            """
+        }
+    ]
+)
+```
+
+### 7.2 DeepEval Framework
+
+**What is DeepEval?**
+- Open-source LLM evaluation framework (pytest for LLMs)
+- 800k+ daily evaluations, 14+ metrics
+- Supports RAG, agents, chatbots
+
+**Installation:**
+```bash
+pip install deepeval
+```
+
+**Key Metrics:**
+
+| Metric | Purpose | Formula |
+|--------|---------|---------|
+| **Hallucination** | Factual accuracy vs context | Claims supported / Total claims |
+| **Faithfulness** | Grounded in retrieved context | Same as hallucination |
+| **Answer Relevancy** | Response addresses question | Relevance score 0-1 |
+| **Contextual Precision** | Relevant chunks ranked high | Precision@K |
+| **Contextual Recall** | All relevant info retrieved | Retrieved relevant / Total relevant |
+| **Bias** | Gender, racial, political bias | Bias detection score |
+| **Toxicity** | Harmful content detection | Toxicity score |
+
+**Basic Usage:**
+```python
+from deepeval import evaluate
+from deepeval.metrics import HallucinationMetric, AnswerRelevancyMetric
+from deepeval.test_case import LLMTestCase
+
+# Define test case
+test_case = LLMTestCase(
+    input="What is the capital of France?",
+    actual_output="The capital of France is Paris.",
+    context=["France is a country in Europe. Paris is its capital."]
+)
+
+# Define metrics
+hallucination = HallucinationMetric(threshold=0.7)
+relevancy = AnswerRelevancyMetric(threshold=0.7)
+
+# Run evaluation
+evaluate([test_case], [hallucination, relevancy])
+```
+
+**RAG Evaluation Example:**
+```python
+from deepeval.metrics import (
+    FaithfulnessMetric,
+    ContextualPrecisionMetric,
+    ContextualRecallMetric
+)
+from deepeval.test_case import LLMTestCase
+
+# RAG test case
+test_case = LLMTestCase(
+    input="What are the symptoms of diabetes?",
+    actual_output="Common symptoms include increased thirst, frequent urination, and fatigue.",
+    expected_output="Symptoms include thirst, urination, fatigue, blurred vision.",
+    retrieval_context=[
+        "Diabetes symptoms: increased thirst, frequent urination, unexplained weight loss, fatigue, blurred vision."
+    ]
+)
+
+# RAG metrics
+faithfulness = FaithfulnessMetric(threshold=0.8)
+precision = ContextualPrecisionMetric(threshold=0.7)
+recall = ContextualRecallMetric(threshold=0.7)
+
+# Evaluate
+results = evaluate(
+    test_cases=[test_case],
+    metrics=[faithfulness, precision, recall]
+)
+
+print(f"Faithfulness: {faithfulness.score}")
+print(f"Precision: {precision.score}")
+print(f"Recall: {recall.score}")
+```
+
+**CI/CD Integration (pytest):**
+```python
+# test_llm.py
+import pytest
+from deepeval import assert_test
+from deepeval.metrics import AnswerRelevancyMetric
+from deepeval.test_case import LLMTestCase
+
+@pytest.mark.parametrize("input,expected", [
+    ("What is 2+2?", "4"),
+    ("Capital of Japan?", "Tokyo"),
+])
+def test_qa_accuracy(input, expected):
+    # Get LLM response
+    output = my_llm.generate(input)
+
+    test_case = LLMTestCase(
+        input=input,
+        actual_output=output,
+        expected_output=expected
+    )
+
+    assert_test(test_case, [AnswerRelevancyMetric(threshold=0.8)])
+```
+
+### 7.3 Ragas (RAG Assessment)
+
+**What is Ragas?**
+- Evaluation framework specifically for RAG pipelines
+- Reference-free evaluation (no ground-truth needed)
+- Works with production traces
+
+**Core RAG Metrics:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    RAGAS METRICS                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  RETRIEVAL QUALITY              GENERATION QUALITY          │
+│  ┌─────────────────┐            ┌─────────────────┐         │
+│  │Context Precision│            │  Faithfulness   │         │
+│  │Context Recall   │            │Answer Relevancy │         │
+│  └─────────────────┘            └─────────────────┘         │
+│                                                              │
+│  Faithfulness = Claims supported by context / Total claims  │
+│  Answer Relevancy = How well answer addresses question      │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Installation:**
+```bash
+pip install ragas
+```
+
+**Basic Usage:**
+```python
+from ragas import evaluate
+from ragas.metrics import (
+    faithfulness,
+    answer_relevancy,
+    context_precision,
+    context_recall
+)
+from datasets import Dataset
+
+# Prepare evaluation data
+eval_data = {
+    "question": ["What is machine learning?"],
+    "answer": ["ML is a subset of AI that enables systems to learn from data."],
+    "contexts": [["Machine learning is a branch of artificial intelligence..."]],
+    "ground_truth": ["Machine learning is AI that learns from data."]
+}
+
+dataset = Dataset.from_dict(eval_data)
+
+# Run evaluation
+results = evaluate(
+    dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall]
+)
+
+print(results)
+# {'faithfulness': 0.95, 'answer_relevancy': 0.88, ...}
+```
+
+**Metric Interpretation:**
+
+| Metric | Score | Interpretation |
+|--------|-------|----------------|
+| Faithfulness | 1.0 | 100% grounded, no hallucination |
+| Faithfulness | 0.85 | 15% claims not supported |
+| Context Precision | 0.9 | 90% of top chunks relevant |
+| Context Recall | 0.8 | 80% of needed info retrieved |
+
+### 7.4 Prompt Testing & Promptfoo
+
+**Why Prompt Testing?**
+- Prompts are code → need version control + testing
+- Small changes can significantly impact output
+- Non-deterministic → need statistical validation
+
+**Promptfoo Overview:**
+- CLI tool for testing prompts, agents, RAGs
+- Red teaming, security testing
+- Compare models (GPT, Claude, Gemini, Llama)
+
+**Installation:**
+```bash
+npm install -g promptfoo
+# or
+pip install promptfoo
+```
+
+**Configuration (promptfooconfig.yaml):**
+```yaml
+prompts:
+  - "You are a helpful assistant. Answer: {{question}}"
+  - "Answer concisely: {{question}}"
+
+providers:
+  - openai:gpt-4o
+  - anthropic:claude-3-sonnet
+
+tests:
+  - vars:
+      question: "What is the capital of France?"
+    assert:
+      - type: contains
+        value: "Paris"
+      - type: llm-rubric
+        value: "Response is helpful and accurate"
+
+  - vars:
+      question: "Explain quantum computing"
+    assert:
+      - type: llm-rubric
+        value: "Explanation is clear and accurate"
+      - type: cost
+        threshold: 0.01
+```
+
+**Running Tests:**
+```bash
+promptfoo eval
+promptfoo view  # Open web UI for results
+```
+
+**Assertion Types:**
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `contains` | Output contains string | `value: "Paris"` |
+| `equals` | Exact match | `value: "42"` |
+| `regex` | Pattern match | `value: "\\d{3}-\\d{4}"` |
+| `llm-rubric` | LLM judges quality | `value: "Response is helpful"` |
+| `cost` | API cost threshold | `threshold: 0.05` |
+| `latency` | Response time | `threshold: 2000` |
+| `javascript` | Custom JS logic | `value: "output.length < 500"` |
+
+**Red Teaming Example:**
+```yaml
+# Security testing
+redteam:
+  plugins:
+    - harmful:hate
+    - harmful:violent-crime
+    - pii:direct
+    - prompt-injection
+
+  strategies:
+    - jailbreak
+    - prompt-injection
+```
+
+### 7.5 LLM Evaluation Comparison
+
+| Framework | Best For | Metrics | CI/CD |
+|-----------|----------|---------|-------|
+| **OpenAI Evals** | OpenAI models | Basic, model-graded | API |
+| **DeepEval** | General LLMs | 14+ metrics | pytest |
+| **Ragas** | RAG pipelines | Retrieval + generation | Python |
+| **Promptfoo** | Prompt testing | Custom assertions | CLI |
+
+**Choosing the Right Tool:**
+```
+Use OpenAI Evals when:
+└── Testing OpenAI models primarily
+└── Need model-graded evaluation
+└── Want API-first approach
+
+Use DeepEval when:
+└── Need comprehensive metrics suite
+└── Want pytest integration
+└── Testing RAG, agents, chatbots
+
+Use Ragas when:
+└── Focused on RAG pipeline quality
+└── Need reference-free evaluation
+└── Want production trace analysis
+
+Use Promptfoo when:
+└── Comparing multiple models/prompts
+└── Need red teaming/security testing
+└── Want declarative YAML config
+```
+
+---
+
+## 8. Application-Level Exam Questions (Updated)
 
 ### Question 1: Bias Testing Strategy
 **Scenario:** Hiring AI model shows 80% accuracy for male candidates but 65% for female candidates.
@@ -706,7 +1093,7 @@ robustness = adversarial_accuracy / original_accuracy
 
 ---
 
-## 9. Key Takeaways for Exam
+## 10. Key Takeaways for Exam
 
 1. **Test Oracle**: Use statistical, metamorphic, differential approaches
 2. **Fairness**: AIF360 for metrics and mitigation; disparate impact 0.8-1.25
@@ -714,7 +1101,10 @@ robustness = adversarial_accuracy / original_accuracy
 4. **Data Validation**: Great Expectations or TFX before training
 5. **LLM Evaluation**: Hybrid (automated + human + LLM-as-judge)
 6. **Bias Types**: Selection, reporting, historical, measurement
-7. **Framework Choice**: pytest for dev, TFX for production
+7. **OpenAI Evals**: Basic (ground-truth) + Model-graded; API-first
+8. **DeepEval**: pytest for LLMs; 14+ metrics; Hallucination = Claims supported / Total
+9. **Ragas**: RAG evaluation; Faithfulness + Context Precision/Recall
+10. **Promptfoo**: Prompt testing CLI; red teaming; compare models
 
 ---
 
