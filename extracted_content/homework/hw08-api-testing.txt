@@ -1,0 +1,249 @@
+
+--- Page 1 ---
+ 
+UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  --------------------------------       22125005  -  MAI  XUAN  BACH      
+CS423  -  Software  Testing  HOMEWORK  
+API  TESTING      
+          HCMC  –  Dec,  2025    
+
+--- Page 2 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  
+ 
+Table  of  contents  Table  of  contents ................................................................................................................. 2 1.  Introduction .......................................................................................................................... 3 2.  Testing  Scope ...................................................................................................................... 3 2.1  APIs  Under  Test ........................................................................................................... 3 3.  Testing  Approach ................................................................................................................. 4 3.1  Test  Design  Techniques ............................................................................................... 4 3.2  Testing  Tools ................................................................................................................ 5 4.  Test  Environment ................................................................................................................. 5 5.  API  1:  User  Authentication ................................................................................................... 6 5.1  API  Overview ............................................................................................................... 6 5.2  Test  Cases  Summary ................................................................................................... 6 5.3  Key  Test  Cases  Executed ............................................................................................ 6 6.  API  2:  Product  Search  &  Filter ............................................................................................. 8 6.1  API  Overview ............................................................................................................... 8 6.2  Test  Cases  Summary ................................................................................................... 9 6.3  Key  Test  Cases  Executed ............................................................................................ 9 7.  API  3:  Payment  Processing ............................................................................................... 11 7.1  API  Overview ............................................................................................................. 11 7.2  Test  Cases  Summary ................................................................................................. 12 7.3  Key  Test  Cases  Executed .......................................................................................... 12 8.  Bug  Summary .................................................................................................................... 14 8.1  Overall  Bug  Statistics ................................................................................................. 14 8.2  Bugs  by  API ............................................................................................................... 15 8.3  Bugs  by  Category ...................................................................................................... 15 9.  Test  Results  Summary ....................................................................................................... 15 9.1  Overall  Test  Execution ............................................................................................... 15 9.2  Test  Results  by  API .................................................................................................... 16 9.3  Test  Coverage  by  Type .............................................................................................. 16 10.  Bugs  On  Matis ................................................................................................................. 17 11.  Self-Assessment .............................................................................................................. 17 
+
+--- Page 3 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+ 
+  
+ 
+ 
+1.  Introduction  This  report  presents  the  results  of  comprehensive  API  testing  conducted  on  the  ToolShop  
+Practice
+ 
+Software
+ 
+Testing
+ 
+application
+ 
+(Sprint
+ 
+5
+ 
+with
+ 
+bugs).
+ 
+The
+ 
+testing
+ 
+focused
+ 
+on
+ 
+three
+ 
+high-priority
+ 
+APIs
+ 
+with
+ 
+domain
+ 
+testing
+ 
+and
+ 
+state
+ 
+transition
+ 
+testing
+ 
+techniques
+ 
+applied.
+  Testing  Summary:   -  Total  Test  Cases  Designed :  176  -  Total  Test  Cases  Executed :  79  -  Pass  Rate :  77.22%  -  Bugs  Found :  18  -  APIs  Tested :  User  Authentication,  Product  Search  &  Filter,  Payment  Processing    
+2.  Testing  Scope  
+2.1  APIs  Under  Test  API  Endpoints  Test  Cases  Designed  
+Test  Cases  Executed  
+API  1  -  User  Authentication  
+/users/login,  /users/register  
+22  22  
+
+--- Page 4 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ API  Endpoints  Test  Cases  Designed  
+Test  Cases  Executed  
+API  2  -  Product  Search  &  Filter  
+/products,  /products/search  
+32  32  
+API  3  -  Payment  Processing  
+/payment/check  25  25  
+TOTAL  6  endpoints  79  79    
+3.  Testing  Approach  
+3.1  Test  Design  Techniques  Domain  Testing   -  Valid  Domain:  Testing  with  valid  inputs  (e.g.,  valid  email  format,  valid  card  
+numbers)
+ -  Invalid  Domain:  Testing  with  invalid  inputs  (e.g.,  invalid  email  format,  
+non-numeric
+ 
+card
+ 
+numbers)
+ -  Boundary  Values:  Testing  at  edges  (e.g.,  price  min=max,  empty  strings,  null  
+values)
+  State  Transition  Testing   -  Authentication  Flow:  Unauthenticated  to  Authenticated  state  -  Registration  Flow:  New  User  to  Registered  to  Authenticated  state  -  Payment  States:  Invalid  to  Valid  payment  credentials   Equivalence  Partitioning   -  Credit  card  types:  Visa,  Mastercard,  Amex  -  Payment  methods:  Credit  Card,  Bank  Transfer,  Cash  on  Delivery  -  Filter  combinations:  Single  filter  vs  multiple  filters   Security  Testing  
+
+--- Page 5 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  -  SQL  Injection  attempts  -  Cross-Site  Scripting  (XSS)  attempts  -  Authentication  bypass  attempts  
+3.2  Testing  Tools  -  Python  with  requests  library  -  Postman  collection  -  CSV  format  for  results  storage    
+4.  Test  Environment  Application  Under  Test   -  Application:  ToolShop  Practice  Software  Testing  -  Version:  Sprint  5  (with  bugs)  -  Base  URL:  https://api-with-bugs.practicesoftwaretesting.com -  API  Documentation:  https://api-with-bugs.practicesoftwaretesting.com/api/documentation  Test  Accounts   -  Admin:  admin@practicesoftwaretesting.com /  welcome01  -  Customer:  customer@practicesoftwaretesting.com /  welcome01   Test  Data   -  Test  card  numbers:  Visa  (4111111111111111),  Mastercard  (5555555555554444)  -  Dynamic  emails  using  timestamps  for  registration  tests  -  Invalid  data:  SQL  injection  strings,  XSS  payloads,  malformed  inputs    
+
+--- Page 6 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+5.  API  1:  User  Authentication  
+5.1  API  Overview  -  Purpose :  Handle  user  registration  and  login  -  Endpoints :  -  POST  /users/register -  Create  new  user  account  -  POST  /users/login -  Authenticate  user  and  return  token  -  Authentication :  Returns  Bearer  token  for  subsequent  API  calls  
+5.2  Test  Cases  Summary  Category  Test  Cases  Passed  Failed  
+Login  -  Positive  3  3  0  
+Login  -  Negative  6  1  5  
+Login  -  Security  2  1  1  
+Registration  -  Positive  
+1  0  1  
+Registration  -  Negative  
+5  5  0  
+Registration  -  Security  
+2  2  0  
+TOTAL  22  14  8   Pass  Rate :  63.64%   
+5.3  Key  Test  Cases  Executed        
+
+--- Page 7 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ TC-LOGIN-001:  Valid  Login   -  Description:  Login  with  correct  credentials  -  Input:  {"email":  "customer@practicesoftwaretesting.com",  "password":  "welcome01"}  -  Expected:  HTTP  200,  token  returned  -  Actual:  HTTP  200,  token  returned  -  Result:  PASS  
+  TC-LOGIN-002:  Invalid  Password   -  Description:  Login  with  wrong  password  -  Input:  {"email":  "customer@practicesoftwaretesting.com",  "password":  "wrongpass"}  
+
+--- Page 8 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ -  Expected:  HTTP  401  Unauthorized  -  Actual:  HTTP  401  Unauthorized  -  Result:  PASS  
+    
+6.  API  2:  Product  Search  &  Filter  
+6.1  API  Overview  -  Purpose :  List,  filter,  and  search  products  -  Endpoints :  
+
+--- Page 9 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ -  GET  /products -  List  products  with  filters  -  GET  /products/search -  Search  products  by  query  -  Filters :  by_brand,  by_category,  is_rental,  between  (price  range),  sort  
+6.2  Test  Cases  Summary  Category  Test  Cases  Passed  Failed  
+Product  Listing  18  18  0  
+Filtering  7  7  0  
+Sorting  4  4  0  
+Search  6  6  0  
+TOTAL  32  32  0   Pass  Rate :  100%   
+6.3  Key  Test  Cases  Executed  TC-PROD-001:  Get  All  Products   -  Expected:  HTTP  200,  paginated  list  of  products  -  Actual:  HTTP  200,  products  returned  -  Result:  PASS  
+
+--- Page 10 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+  TC-PROD-006:  Filter  by  Brand   -  Input:  /products?by_brand=1  -  Expected:  HTTP  200,  products  from  brand  1  only  -  Actual:  HTTP  200,  correct  filtering  -  Result:  PASS   
+
+--- Page 11 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+   
+7.  API  3:  Payment  Processing  
+7.1  API  Overview  -  Purpose :  Validate  payment  credentials  -  Endpoint :  POST  /payment/check -  Parameters :  method,  account_name,  account_number  -  Response :  {"success":  true/false} 
+
+--- Page 12 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 7.2  Test  Cases  Summary  Category  Test  Cases  Passed  Failed  
+Valid  Payments  6  6  0  
+Missing  Fields  6  0  6  
+Invalid  Values  6  2  4  
+Security  Tests  4  4  0  
+Edge  Cases  2  2  0  
+TOTAL  25  15  10   Pass  Rate :  60.00%   
+7.3  Key  Test  Cases  Executed  TC-PAY-001:  Valid  Visa  Card   -  Input:  {"method":  "Credit  Card",  "account_name":  "John  Doe",  
+"account_number":
+ 
+"4111111111111111"}
+ -  Expected:  HTTP  200,  success:  true  -  Actual:  HTTP  200,  payment  validated  -  Result:  PASS  
+
+--- Page 13 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+  TC-PAY-038:  Valid  Mastercard   -  Input:  {"method":  "Credit  Card",  "account_name":  "John  Doe",  
+"account_number":
+ 
+"5555555555554444"}
+ -  Expected:  HTTP  200  -  Actual:  HTTP  200  -  Result:  PASS  
+
+--- Page 14 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+    
+8.  Bug  Summary  
+8.1  Overall  Bug  Statistics  Severity  Count  Percentage  
+CRITICAL  1  5.56%  
+MAJOR  17  94.44%  
+
+--- Page 15 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ Severity  Count  Percentage  
+MINOR  0  0%  
+TOTAL  18  100%  
+8.2  Bugs  by  API  API  Bugs  Found  %  of  Total  
+API  1  -  User  Authentication  
+8  44.44%  
+API  2  -  Product  Search  &  Filter  
+0  0%  
+API  3  -  Payment  Processing  
+10  55.56%  
+8.3  Bugs  by  Category  Category  Count  
+Missing  Field  Validation  9  
+Wrong  HTTP  Status  Codes  6  
+SQL  Injection  Vulnerability  1  
+Invalid  Format  Acceptance  2    
+9.  Test  Results  Summary  
+9.1  Overall  Test  Execution  Metric  Value  
+Total  Test  Cases  Designed  176  
+
+--- Page 16 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ Metric  Value  
+Total  Test  Cases  Executed  79  
+Execution  Coverage  44.89%  
+Test  Cases  Passed  61  
+Test  Cases  Failed  18  
+Pass  Rate  77.22%  
+Bugs  Found  18  
+Critical  Bugs  1  
+9.2  Test  Results  by  API  API  Designed  Executed  Passed  Failed  Pass  %  Bugs  
+API  1  55  22  14  8  63.64%  8  
+API  2  63  32  32  0  100.00%  0  
+API  3  58  25  15  10  60.00%  10  
+TOTAL  176  79  61  18  77.22%  18  
+9.3  Test  Coverage  by  Type  Test  Type  Count  %  of  Total  
+Positive  Tests  35  44.30%  
+Negative  Tests  30  37.97%  
+Security  Tests  10  12.66%  
+Boundary  Tests  4  5.06%  
+
+--- Page 17 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+10.  Bugs  On  Matis  
+ 
+11.  Self-Assessment   Criteria  Outcomes  (Brief  description  about  what  you  get/trouble  from  each  requirement)  
+Grade  Self-Assessed  Grade  
+1  API  1  40  40   1.1  Report  10  10   1.2  Test  Cases  (30)  10  10   1.3  Screenshots  on  Testing  Tools  10  10   1.4  Bugs  10  10  
+2  API  2  30  30   2.1  Report  10  10   2.2  Test  Cases  (30)  5  5  
+
+--- Page 18 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  2.3  Screenshots  on  Testing  Tools  10  10   2.4  Bugs  5  5  
+3  API  3  30  30   3.1  Report  10  10   3.2  Test  Cases  (30)  5  5   3.3  Screenshots  on  Testing  Tools  10  10   3.4  Bugs  5  5   Total  100  100   

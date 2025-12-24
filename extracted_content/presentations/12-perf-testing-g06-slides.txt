@@ -1,0 +1,309 @@
+
+--- Slide 1 ---
+
+Performance Testing
+The Why, the What and the How
+CS423 - 22APCS - Group 06:
+Le Thanh Lam -
+22125046
+Nguyen Hoang Phuc -
+22125076
+Nguyen Chinh Thong -
+22125102
+Nguyen Vo Hoang Thong -
+22125103
+
+--- Slide 2 ---
+
+The What
+02
+What is
+Performance Testing
+anyway?
+
+--- Slide 3 ---
+
+How to enforce "performance”?
+*
+Image:
+https://medium.com/@artjoms/software-development-life-cycle-sdlc-6155dbfe3cbc
+style.visibility
+style.visibility
+
+--- Slide 4 ---
+
+How to ensure "performance”?
+*
+Image:
+https://www.geeksforgeeks.org/software-testing/performance-testing-software-testing/
+style.visibility
+style.visibility
+
+--- Slide 5 ---
+
+Lesson review alert!!!
+
+--- Slide 6 ---
+
+What is performance testing?
+style.visibility
+style.visibility
+style.visibility
+
+--- Slide 7 ---
+
+A type of
+non-functional
+testing measuring how a system performs under workload
+Focus on
+responsiveness, stability, scalability, and resource usage
+Goal: ensure the system meets
+performance expectations
+before release
+,
+not finding bugs
+What is performance testing?
+
+--- Slide 8 ---
+
+Key Concepts and Metrics
+{00F7E7D3-B7B1-4650-9F74-2723FDCB75E4}
+Term
+Definition
+Response Time
+Time between request submission and response completion
+Throughput
+Number of transactions or requests handled per second.
+Latency
+Delay before a response begin
+s
+Bandwidth
+The volume of data transferred per second
+Concurrency
+Number of simultaneous users or sessions
+Error Rate
+The percentage of requests resulting in errors
+Resource Utilization
+CPU, Memory, network, or I/O usage during test execution
+Transactions Passed/Failed
+Transactions Passed/Failed – the percentage of passed/failed transactions
+
+--- Slide 9 ---
+
+Types of Performance Testing - WYSIWYG
+{00F7E7D3-B7B1-4650-9F74-2723FDCB75E4}
+Test Type
+What It Evaluates
+Example Scenario
+Load Testing
+System behavior under expected user load
+Simulate 100 concurrent users performing normal actions
+Stress Testing
+System behavior beyond limits until failure
+Ramp up to 10,000 users to find the breaking point
+Spike Testing
+Reaction to sudden, extreme increases in load
+Simulate flash-sale traffic suddenly jumping from 50 → 5,000 users
+Endurance (Soak) Testing
+Stability over long time under steady load
+Run a 24-hour continuous API workload to detect memory leaks
+Volume Testing
+Performance with large data sets (DB size, file size)
+Test queries on a 100M-row database or process 10GB input files
+Scalability Testing
+How performance changes when resources scale
+Increase traffic from 500 → 5,000 users while adding nodes to the cluster to check linear scaling
+
+--- Slide 10 ---
+
+Types of Performance Testing
+*
+Image:
+https://queue-it.com/blog/types-of-performance-testing/
+
+--- Slide 11 ---
+
+Performance Testing Process
+01
+Identify test environment
+02
+Determine
+performance criteria
+03
+Plan & design
+04
+Configure
+test environment
+05
+Implement test design
+06
+Run tests
+07
+Analyze and
+retest
+*
+Adapted from Software Testing - CSC13003 - MOOC slides
+
+--- Slide 12 ---
+
+The Why
+01
+Performance
+has always been
+a big problem
+…
+
+--- Slide 13 ---
+
+Performance Testing Tools
+
+--- Slide 14 ---
+
+Performance Testing Tools
+
+--- Slide 15 ---
+
+The How - Tools
+03
+How to
+perform
+performative
+performance testing?
+
+--- Slide 16 ---
+
+100% Java open-source application for load and performance testing.
+It simulates multiple users (threads) sending requests to a server and collects response metrics (latency, throughput, errors).
+Tool: Apache JMeter
+
+--- Slide 17 ---
+
+Tool:
+Apache JMeter
+
+--- Slide 18 ---
+
+Tool:
+Apache JMeter
+
+--- Slide 19 ---
+
+Lightweight Python-based load tester
+Provides both a web UI for interactive runs and a headless mode for automated CI/CD pipelines.
+Tool:
+Locust
+
+--- Slide 20 ---
+
+Tool:
+Locust
+
+--- Slide 21 ---
+
+Tool:
+Locust
+
+--- Slide 22 ---
+
+The How - Demo
+03
+How to
+perform
+performative
+performance testing?
+
+--- Slide 23 ---
+
+
+--- Slide 24 ---
+
+Demo - JMeter
+A start-up tool shop
+There are 10 concurrent users per day on average
+Black Friday came
+~ 200 concurrent users check products
+Expect the web page can respond in time and show correct content
+
+--- Slide 25 ---
+
+
+--- Slide 26 ---
+
+Demo - Locust
+How to set up Locust locally
+How to build a simple Locust load testing script
+How to run Locust and see reported stats
+Quick showcase of a more complicated set up
+How to run Locust in headless mode
+
+--- Slide 27 ---
+
+Demo - Locust - Simple example
+Special variable
+Event functions - How to access protected endpoints
+How to make tasks
+How to run Locust with web UI
+
+--- Slide 28 ---
+
+Demo - Locust - complicated example
+Multi-files set up
+How to run in headless mode
+
+--- Slide 29 ---
+
+Thanks!
+Do you have any questions?
+Group 6
+22125046 - Le Thanh Lam
+22125076 - Nguyen Hoang Phuc
+22125102 - Nguyen Chinh Thong
+22125103 - Nguyen Vo Hoang Thong
+
+--- Slide 30 ---
+
+
+--- Slide 31 ---
+
+
+--- Slide 32 ---
+
+Refreshed
+so hard and got so far …
+style.visibility
+style.visibility
+
+--- Slide 33 ---
+
+But in the end, the portal doesn’t respond…
+Linkedin Pák
+
+--- Slide 34 ---
+
+Nowadays…
+style.visibility
+style.visibility
+style.visibility
+style.visibility
+
+--- Slide 35 ---
+
+WHY is
+"performance" important
+?
+User experience
+: Slow response times increase drop-offs, reduce engagement, and erode trust;
+most users
+"
+abandon
+"
+an app if it takes more than a few seconds to load
+(Jakob Nielsen’s three response time limits
+*
+).
+Scalability & cost
+: Efficient systems handle more users with fewer servers, lowering cloud bills and preventing outages during traffic spikes.
+Business impact & reliability
+: Performance issues often manifest as downtime, bottlenecks, or cascading failures that directly affect revenue, SLAs (Service-Level Agreements), and reputation.
+*
+https://www.nngroup.com/articles/response-times-3-important-limits/

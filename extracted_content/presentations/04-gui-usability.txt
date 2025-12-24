@@ -1,0 +1,561 @@
+
+--- Page 1 ---
+Group 8H
+22125025 - Huynh Huu Hau
+22125037 - Duong Ngoc Quang Khiem
+22125054 - Cao Vo Nhat Minh
+22125093 - Tran Nhat Thanh
+GUI & Usability Testing
+--- Page 2 ---
+Table of contents
+GUI BROWSER & 
+LINK
+01 02
+UX
+03 04
+“AI-FIRST” 
+APPROACH
+--- Page 3 ---
+Software under test (SUT)
+Sprint 5
+Sprint 5 with bugs
+
+--- Page 4 ---
+GUI Testing01
+--- Page 5 ---
+What is GUI testing?
+GUI testing is the process of examining everything 
+a user sees and interacts with on a screen. 
+We check elements like buttons, menus, input 
+ﬁelds, images, icons, visual design,... to ensure 
+they work as intended.
+GUI and UI ?
+
+--- Page 6 ---
+UI vs. GUI
+What's the 
+relationship?
+UI (User Interface)
+● All interaction methods.
+● Includes voice, gesture, 
+command-line, touch, 
+physical buttons.
+GUI (Graphical User Interface)
+● A type of UI that uses graphics: 
+buttons, icons, colors, windows, 
+menus.
+● What we see in web apps, mobile 
+apps, desktop apps
+
+--- Page 7 ---
+Why is GUI Testing Important?
+
+--- Page 8 ---
+Why is GUI Testing Important?
+User-Centric Focus: 
+The UI is the main point of interaction, so 
+its reliability is crucial for a positive user 
+experience.
+Find & Fix Defects: 
+The primary goal is to ﬁnd visual 
+defects, making the app appealing 
+and user-friendly.
+Example: A payment button is poorly placed or 
+hard to ﬁnd.
+The page looks broken and 
+unprofessional.
+Users abandon their shopping 
+cart, leading to lost sales.
+Example: On a speciﬁc phone, the product's 
+description text overlaps the product's image.
+
+--- Page 9 ---
+Why is GUI Testing Important?
+Ensure Visual Consistency: 
+We must verify the software looks the 
+same across different devices and 
+platforms.
+Protect Brand Reputation: 
+A polished, bug-free UI enhances brand 
+reputation and helps detect bugs early, 
+which reduces ﬁxing costs.
+Example: A page looks ﬁne on Chrome but 
+misaligned on Firefox or Safari.
+Users lose trust:
+ “If they can’t ﬁx the UI, can they 
+protect my money?”
+Hundreds of cross-browser 
+complaints.
+Example: A banking app shows clipped text 
+on the homepage.
+
+--- Page 10 ---
+How We Test: The GUI Checklist
+A GUI Checklist is a predeﬁned list of criteria used to validate the interface.
+It helps us systematically check elements. We've organized our checklist into 4 main 
+categories following the template provided:
+1. Colors (Checking for consistency and proper design)
+2. Content (Checking fonts, alignment, spacing, and spelling)
+3. Images (Checking for correct display, alignment, and visual consistency)
+4. Form (Checking labels, input ﬁelds, and states)
+
+--- Page 11 ---
+GUI Checklist - Colors
+
+--- Page 12 ---
+GUI Checklist - Content
+
+--- Page 13 ---
+GUI Checklist - Images & Form
+
+--- Page 14 ---
+SELENIUM
+Selenium is an automation framework that controls a web browser 
+just like a real user.
+It allows testers to simulate actions such as clicking, typing, scrolling, 
+and checking UI properties.
+For this seminar,
+We are focusing on using Selenium to demo some tests about the visual 
+aspects of the GUI (layout, visuals, color, and position).
+
+--- Page 15 ---
+SELENIUM
+✔ Free & Open Source
+No license, no subscription, no restrictions — anyone can use it.
+✔ Automates Repetitive GUI Checks
+Instead of manually checking every product card, button, or label, 
+Selenium can repeat the same UI checks hundreds of times without 
+mistakes.
+ Good?
+--- Page 16 ---
+SELENIUM
+✔ Reads UI Properties Directly
+Selenium can extract CSS values such as color, font-size, spacing, 
+margin, position, and visibility, letting us verify UI consistency 
+automatically.
+✔ Basic but Very Practical
+Selenium isn’t “AI smart,” but it’s extremely reliable for consistent, 
+rule-based UI testing.
+Good?
+--- Page 17 ---
+SELENIUM
+High Maintenance: Test scripts are "brittle". If a developer changes 
+the UI, the script will often break and must be manually updated by 
+the tester.
+No Built-in Image/Visual Testing: By default, Selenium cannot see 
+and feel. It cannot tell whether the text color is readable on the 
+background. It can only read the CSS code.
+Bad?
+Selenium can be extended with visual testing tools and plugins, 
+making it ﬂexible and highly effective for GUI testing.
+
+--- Page 18 ---
+DEMO
+
+--- Page 19 ---
+DEMO 1 - Spelling Check
+Goal: To automatically ﬁnd both visible and hidden text content for spelling errors that 
+damage brand reputation and user trust.
+Checklist:
+● 1.2.15 (visible): Are all UI component texts (buttons, menus, labels) spelled correctly?
+● 1.2.14 (hidden): Are all tooltip/help texts spelled correctly?
+
+--- Page 20 ---
+DEMO 1 - Spelling Check
+Selenium + Python library p y spellcheck er .
+Why use Automation?
+● Hidden Text: Manual testers often forget to hover over every icon to check tooltips.
+● Human Eye: Our brains auto-correct typos (e.g., reading "Contakt" as "Contact").
+● Solution: Selenium reads the raw code and catches errors.
+
+--- Page 21 ---
+
+--- Page 22 ---
+DEMO 2 - Color Consistency
+Goal: To automatically audit the color consistency of speciﬁc UI components (CO2 Badges & 
+Pagination) across multiple pages.
+Checklist:
+● 1.1.3: Are section colors clearly differentiated and consistent with the design?
+● 1.1.9: Are the background colors of  UI components groups (buttons) consistent with 
+each other?
+
+--- Page 23 ---
+DEMO 2 - Color Consistency
+It speciﬁcally targets:
+● CO2 Badges: Verifying that each rating (A, B, C, D, E) has its own unique, 
+consistent color on every product card.
+● Pagination: Verifying that the "Active" page number always uses the standard 
+blue background.
+Imagine this page has 
+more than 200 
+products?
+--- Page 24 ---
+
+--- Page 25 ---
+DEMO 3 - Layout & Image Check
+Goal: To use Selenium to scan a list of components and ﬁnd complex layout, consistency, 
+and image bugs in Mobile Emulation mode then compare with Desktop mode.
+Checklist:
+● 1.2.11: Is the product listing section displayed consistently?
+● 1.3.1: Are all essential images (product’s image) displayed correctly?
+● 1.2.6: Is all text aligned correctly (left, right, center) depending on the design?
+This script is conﬁgured to run in Mobile Emulation mode to simulate an iPhone.
+
+--- Page 26 ---
+DEMO 3 - Layout & Image Check
+For each product card, I check the layout size, the product image visibility, the presence of 
+title/price/CO₂ badge, whether tooltips exist, and whether the fonts and alignments remain 
+consistent across all items.
+
+--- Page 27 ---
+
+--- Page 28 ---
+DEMO 3 - Mobile vs. Desktop
+Mobile result
+Desktop result
+--- Page 29 ---
+Browser Compatibility & 
+Link Testing02
+--- Page 30 ---
+Browser Compatibility 
+ Ensuring a consistent user experience for everyone, everywhere.
+--- Page 31 ---
+What is Browser Compatibility Testing?
+WHAT?
+Testing a web app across all 
+browsers (Chrome, Firefox, Safari), 
+operating systems (Windows, 
+macOS, iOS), and devices 
+(desktops, tablets, phones).
+WHY?
+Because browsers interpret code 
+(HTML, CSS, JS) differently.
+GOAL
+To ensure a consistent, functional, 
+and usable experience for ALL 
+users.
+--- Page 32 ---
+Our Two-Part Testing Strategy
+ Local Playwright 
+● Test 3 Core Engines + 3 
+Page Layouts.
+● Fast, free, and efﬁcient. 
+Catches 90% of bugs.
+ BrowserStack 
+● Test on Real Operating 
+Systems + Real Hardware.
+● Catches the last 10% of 
+tricky, device-speciﬁc bugs.
+
+--- Page 33 ---
+Approach 1: Local Playwright 
+(Automation)
+What is it? An automation library 
+where we write code to run tests 
+automatically. It's fast and repeatable.
+Demo Scope: We automated 3 core 
+tasks:
+1. User Login
+2. Searching for an Item
+3. Adding an Item to the Cart
+
+--- Page 34 ---
+Why These 6 Setups?
+The 3 Engines:
+● Chromium (for Chrome, 
+Opera, Edge)
+● Firefox (Gecko)
+● WebKit (for all Safari 
+browsers)
+
+--- Page 35 ---
+Why These 6 Setups?
+The 3 Form Factors:
+● Desktop (Wide layout, full menus)
+● Tablet (Medium layout)
+● Mobile (Narrow "hamburger" layout)
+
+--- Page 36 ---
+Approach 2: BrowserStack 
+(Manual)
+What is it?
+A cloud platform providing 
+access to 3000+ real 
+browsers and devices for 
+testing. No setup or 
+installation required, you test 
+live in their cloud.
+Free Plan Limit
+The free plan gives access 
+to live testing, but with a 
+major limitation: a 
+1-minute session timer 
+per device. 
+Demo Scope
+We ran 5 manual tests:
+• Mac (Chrome, Firefox, 
+Safari)
+• Windows (Chrome, 
+Firefox, Edge) 
+• iPhone & iPad (Safari)
+• Android (Chrome)
+--- Page 37 ---
+BrowserStack Demo Videos
+Macbook
+--- Page 38 ---
+BrowserStack Demo Videos
+Windows
+--- Page 39 ---
+BrowserStack Demo Videos
+Ipad (Tablet)
+
+--- Page 40 ---
+BrowserStack Demo Videos
+Iphone
+
+--- Page 41 ---
+BrowserStack Demo Videos
+Android
+
+--- Page 42 ---
+BrowserStack: Why Test Real OS & Hardware?
+Main Goal: To catch bugs that emulators miss. We test on Real 
+Operating Systems and Real Hardware.
+--- Page 43 ---
+Link Testing
+Ensuring every click leads to the right destination.
+--- Page 44 ---
+What is Link Testing (Link Checking)?
+What is it?
+● The process of systematically scanning a website to ﬁnd and verify all hyperlinks.
+● This includes: Internal links (to your own pages), External links (to other sites), and 
+Anchor links (on-page jumps).
+Why do we do it? To ﬁnd broken links, which most often lead to a 404 "Not Found" error.
+
+--- Page 45 ---
+Why Care About Broken Links?
+Reason 1: Bad User Experience (UX)
+● It frustrates users and stops them 
+from ﬁnding the information they 
+need.
+● Makes your site seem unprofessional 
+and unreliable.
+Reason 2: Bad SEO (Search Engine 
+Optimization)
+● Search engines (like Google) see 
+broken links as a sign of a low-quality 
+or poorly maintained site.
+● This can lower your search ranking, 
+making your site harder to ﬁnd.
+
+--- Page 46 ---
+Approach 1: Simple Scan ("Check My Links")
+What is it?
+● A free Chrome Extension that scans the single page you are currently on.
+How it works:
+● It instantly crawls the page and highlights all links:
+● Green: Valid links
+● Red: Broken links
+Use Case: Great for a quick check on one page after you've made content edits.
+Limitation: Only tests one page at a time, not the whole site.
+
+--- Page 47 ---
+Check My Links Demo Video
+--- Page 48 ---
+Check My Links Report
+--- Page 49 ---
+Approach 2: Advanced Audit ("Sitebulb")
+What is it?
+● A professional, powerful website crawler and SEO audit tool.
+● It crawls your entire website, just like Google's bot would.
+● (We used the 14-day full-featured trial).
+What it provides:
+● A complete dashboard and report of all broken links (internal and external) 
+across the whole site.
+● Provides much deeper analysis for a full, professional audit.
+
+--- Page 50 ---
+Sitebulb Demo Video
+
+--- Page 51 ---
+Usability & UX 
+Testing03
+--- Page 52 ---
+Usability and User Experience (UX)
+The process of examining how effectively, efﬁciently, and satisfactorily a user can use a 
+product to achieve speciﬁc goals, while also assessing the overall feeling and attitude 
+of the user toward the system.
+We check elements like ease of learning, intuitiveness, task completion time, error 
+rates, and user satisfaction to ensure the product provides a positive and meaningful 
+interaction.
+UX?
+--- Page 53 ---
+UX vs. Usability
+Usability is a type of UX that speciﬁcally focuses on how easy it is to use an 
+interface, measuring attributes like efﬁciency, effectiveness, and user satisfaction 
+to achieve a speciﬁc goal.
+UX (User Experience) is the broad concept encompassing all aspects of the 
+end-user's interaction with the company, its services, and its products, focusing 
+on the overall feeling, attitude, and emotions.
+--- Page 54 ---
+Why is UX Testing Important?
+Optimize User Flow: The primary goal is to ﬁnd pain points and friction in the user 
+journey, making the application efﬁcient and satisfying to use.
+Reduce Support Costs: By ensuring the product is intuitive and easy to learn, we 
+minimize user confusion, which in turn signiﬁcantly reduces the need for customer 
+support and training.
+Increase Adoption & Retention: We must verify that the user can easily achieve their 
+goals, preventing frustration and increasing the likelihood of users returning and 
+recommending the product.
+Protect Investment & Revenue: A highly usable and enjoyable product directly 
+contributes to higher conversion rates, ensuring the software's success and 
+maximizing ROI.
+
+--- Page 55 ---
+How We Test: The UX Checklist
+A UX Checklist is a predeﬁned list of criteria used to validate the interface.
+It helps testers systematically check elements like:
+● Navigation
+● Error Support & Feedback
+● Clarity & Grouping
+● Interaction Mechanics
+The goal is to ensure that users can complete their tasks efﬁciently, without frustration, 
+and have a positive experience throughout the entire process of using the software.
+
+--- Page 56 ---
+UX Checklist - User Experience
+Usability informs the scenarios and tasks we design for 
+our user surveys on platforms like Lookback.io.
+
+--- Page 57 ---
+UX Checklist - Navigation
+
+--- Page 58 ---
+UX Checklist - Usability
+
+--- Page 59 ---
+LOOKBACK.IO
+Lookback.io is a powerful tool because it lets us capture and 
+record real user interactions as they navigate a website or app, 
+including their screen, facial expressions, and spoken thoughts.
+For this seminar
+We are focusing on using Lookback.io to test Usability, User 
+Experience (UX), clarity of content, and the emotional response 
+to the interface design.
+
+--- Page 60 ---
+DEMO 
+Goal: To comprehensively assess the User Experience (UX) of the application 
+across different user roles (Guest, Normal, and Admin) and to identify speciﬁc 
+areas for improvement in design and functionality.
+Method
+Guest and Normal User Assessment (Lookback.io Survey)
+Admin User Assessment (One-on-One Qualitative Interview)
+
+--- Page 61 ---
+DEMO 
+
+--- Page 62 ---
+DEMO 
+
+--- Page 63 ---
+DEMO 
+
+--- Page 64 ---
+Lookback Demo Video
+--- Page 65 ---
+Lookback Weaknesses
+1. Session Limits
+Free trial is restricted to only 5 sessions.
+2. Limited Research Customization
+Survey/question ﬂows are less ﬂexible compared to tools like Maze or 
+UserTesting.
+3. Limited Integrations
+Few deep integrations with analytics or product management platforms.
+Lacks advanced APIs for automation and workﬂow integration.
+--- Page 66 ---
+“AI-First” Approach04
+--- Page 67 ---
+What is it?
+Manual → Automation → Artiﬁcial Intelligence
+AI performs recognition, validation, and decision-making – not predeﬁned rules.
+UI is treated like a human would: visually, semantically, behaviorally.
+
+--- Page 68 ---
+Traditional UI testing method
+How tests identify elements: Uses ﬁxed locators (XPath, CSS, IDs).
+Stability: Very fragile — small UI changes break tests.
+Validation method: Rule-based assertions (e.g., element exists).
+Bug detection: Only detects failures explicitly coded.
+Tester skill requirement: Must know scripting, locators, automation 
+frameworks.
+
+--- Page 69 ---
+AI-First UI Testing testing method
+ How tests identify elements: Uses visual, semantic, and contextual 
+understanding (like a human).
+Stability: Highly stable — AI adapts to layout, text, or structural changes.
+Validation method: Smart/visual assertions (layout, spacing, color, UX 
+quality).
+Bug detection: Detects visual bugs, UI drift, layout shifts, missing content.
+Tester skill requirement: Can be done by QA + AI guidance; tech barrier is 
+lower.
+
+--- Page 70 ---
+AI-First Approach: Mimic human action
+Different from other types of testing—such as API or CI/CD tests— UI testing scenarios 
+are far more ﬂexible and must reﬂect how real humans perceive and interact with the 
+application. 
+→ Not only to verify functionality, but to evaluate the overall user experience, visuals, 
+and context. Modern AI models excel at this because they learn visual patterns and 
+contextual relationships in a way that closely mirrors human perception, making the 
+AI-ﬁrst approach a natural ﬁt for UI/UX testing.
+--- Page 71 ---
+AI-First Approach: Utilize machine ability
+Speed Advantage: Executes UI tests far faster than humans.
+Expert Knowledge: Learns UI patterns, code logic, and human language.
+Consistent Results: No fatigue, no variation, always reliable.
+Multi-User Coverage: Adapts to different devices and user behaviors.
+
+--- Page 72 ---
+APPLITOOLS
+Applitools is an AI-powered visual testing platform designed to 
+automatically detect UI bugs by comparing how an application 
+should look versus how it actually looks.
+For this seminar
+We are focusing on using Applitools for automated UI testing 
+with Selenium scripts. The platform’s Visual AI analyzes each 
+screen and detects regions with abnormal appearance compared 
+to the established baseline. It highlights these areas and 
+identiﬁes potential UI errors caused by code changes, enabling us 
+to quickly spot visual regressions and maintain a consistent user 
+interface.
+
+--- Page 73 ---
+APPLITOOLS main function:
+
+--- Page 74 ---
+APPLITOOLS
+This application captures a screenshot during a test case and 
+compares it with a baseline image
+→ Signiﬁcantly reducing the effort required to write scripts for 
+validating every UI element in the browser.
+Applitools Eyes supports many languages and frameworks, 
+including Python, Java, JavaScript, C#, Ruby, Selenium, 
+Playwright, Cypress, Appium, and more, and integrates with 
+major CI tools, making it ﬂexible for web, mobile, and desktop 
+visual testing across different platforms.
+
+--- Page 75 ---
+Applitools Demo: Scenario
+For this seminar
+We conducted visual testing on the ToolShop text search feature by comparing 
+images from two versions, SPRINT5 and SPRINT5_WITH-BUGS. This approach 
+clearly demonstrates the capability of Applitools’ visual AI model to identify 
+differences between interface states.
+
+--- Page 76 ---
+Applitools Demo: Video
+
+--- Page 77 ---
+Thanks!

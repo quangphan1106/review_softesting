@@ -1,0 +1,878 @@
+
+--- Slide 1 ---
+
+Database Testing Tools
+Group 20
+
+--- Slide 2 ---
+
+Advantages
+Early Error Detection
+Enhanced Coverage
+Data Protection
+Quality & Security
+Data Durability
+I
+Introduction
+Disadvantages
+Prevents Issues
+Manual Complexity
+Automation Cost
+Skill Needs
+Maintenance Overhead
+Scoping Challenges
+
+--- Slide 3 ---
+
+I
+Introduction
+II
+Testing Process
+III
+Testing Types
+IV
+Tools & Demo
+Contents
+
+--- Slide 4 ---
+
+II
+Testing Process
+style.visibility
+style.visibility
+
+--- Slide 5 ---
+
+II
+Testing Process
+Environment Setup
+Used
+for
+debugging and initial testing
+Local Database
+Shared DB with large data for load simulation
+Populated Development DB
+Staging for final pre-production tests
+Deployment DB
+
+--- Slide 6 ---
+
+II
+Testing Process
+
+--- Slide 7 ---
+
+II
+Testing Process
+How to test the Database?
+Manual Approach
+Automation Approach
+
+--- Slide 8 ---
+
+II
+Testing Process
+Manual Approach
+Launch the SQL server and access the query analyzer.
+01
+Measure the retrieved data against the anticipated results (Expected Results).
+03
+Compose commands (SQL queries) to retrieve data.
+02
+Perform data updates or deletions to evaluate the software application's performance and response.
+0
+4
+General Procedure
+
+--- Slide 9 ---
+
+II
+Testing Process
+How to test the Database?
+Manual Approach
+Automation Approach
+
+--- Slide 10 ---
+
+II
+Testing Process
+Automation Approach
+Fundamental Procedures
+Determine Scope
+: Define key DB areas for automation.
+1
+Develop Test Scripts
+: Build scripts to interact, execute, and validate tests.
+2
+Prioritize Test Cases
+: Identify critical cases for first automation.
+3
+Execute Tests
+: Run scripts for data retrieval and validation.
+4
+Document Outcomes
+: Record results and detected errors.
+5
+Monitor Results
+: Track patterns like performance issues.
+6
+Validate (Cross-Reference)
+: Cross-check DB results with UI reports.
+7
+
+--- Slide 11 ---
+
+II
+Testing Process
+{91EBBBCC-DAD2-459C-BE2E-F6DE35CF9A28}
+Criteria
+Manual Testing
+Automated Testing
+Nature
+Testers manually write and run SQL queries, visually inspecting the results.
+Uses scripts and specialized tools to execute test cases and compare results.
+When to Use
+Best for exploratory testing and complex, hard-to-automate scenarios.
+Best for regression testing, performance testing, and tests involving large datasets.
+Pros
+Flexible, no expensive tools required, can find unexpected bugs.
+Fast, repeatable, reliable, saves time in the long run, easily simulates large loads.
+Cons
+Time-consuming, prone to human error, tedious, difficult with large data volumes.
+High initial setup cost, requires programming skills, scripts need maintenance if the DB changes.
+
+--- Slide 12 ---
+
+ID
+Name
+{3B190434-E01F-4542-8A43-604513A7F6B1}
+22125031
+Le Quoc Huy
+22125032
+Tran Quang Huy
+22125047
+Vo Lan
+22125064
+Le Huu Nghia
+Group 20
+
+--- Slide 13 ---
+
+II
+Testing Process
+How to write test cases?
+Understand requirements
+& business rules
+Write test cases
+covering different paths & input variations
+Gather DB details:
+tables, joins, triggers, procedures, parameters
+Basic Principles
+
+--- Slide 14 ---
+
+II
+Testing Process
+Parameters / Data:
+Input data
+Tracking Information:
+Test Case ID
+Test Description:
+Objective / Purpose; Steps / Procedures; SQL script (if needed)
+Standard Test Case Components
+Results:
+Expected result; Observed result (during execution)
+Management Information:
+Environment
+(e.g., Local Dev DB);
+Status
+(
+Pass
+/Fail/etc.); Notes /
+Comments
+
+--- Slide 15 ---
+
+II
+Testing Process
+Data Integrity and Constraint Validation
+End-to-End Functional Flow Validation
+Test Case Objectives
+System Health and Error Checking
+Structural and Metadata Validation
+
+--- Slide 16 ---
+
+II
+Testing Process
+I
+Introduction
+III
+Testing Types
+IV
+Tools & Demo
+Contents
+
+--- Slide 17 ---
+
+III
+Testing Types
+Functional Testing
+Structural Testing
+Non-functional Testing
+Categories
+
+--- Slide 18 ---
+
+Structural Testing
+Categories
+White-box testing
+Schema
+Constraints
+Internal structure
+Tables, columns, relationships
+Correct, consistent and reliable
+
+--- Slide 19 ---
+
+Structural Testing
+Correct tables, columns, data types, constraints, defaults.
+Table and Column Validation
+Index usefulness & performance impact
+Composite indexes, covering indexes, redundant indexes
+Index Testing
+Data consistency before/after migration
+Relationships preserved, no corruption
+Data Migration Testing
+Connectivity, configuration, performance, backups, failover
+Database Server Validation
+
+--- Slide 20 ---
+
+Table and Column Validation
+Check correct column data types
+Verify that all required tables have been created
+Test
+PRIMARY KEY
+,
+FOREIGN KEY
+, and
+NOT NULL
+enforcement
+Test naming consistency
+Validate column lengths match requirements
+Check for duplicate columns across tables
+Validate default column values
+Validate unique constraints
+
+--- Slide 21 ---
+
+Structural Testing
+Correct tables, columns, data types, constraints, defaults.
+Table and Column Validation
+Index usefulness & performance impact
+Composite indexes, covering indexes, redundant indexes
+Index Testing
+Data consistency before/after migration
+Relationships preserved, no corruption
+Data Migration Testing
+Connectivity, configuration, performance, backups, failover
+Database Server Validation
+
+--- Slide 22 ---
+
+Speed up retrieval speed (SELECT)
+Specialized data structure
+B-Tree
+Slow down INSERT, UPDATE, DELETE
+What is an Index?
+Index Testing
+
+--- Slide 23 ---
+
+II
+Testing Process
+III
+Testing Types
+IV
+Tools & Demo
+I
+Introduction
+Contents
+
+--- Slide 24 ---
+
+Index Testing
+Ensure indexes exist on
+frequently filtered (WHERE)
+columns
+Compare query performance
+with vs. without indexes
+Check index impact on
+INSERT/UPDATE/DELETE
+Ensure
+optimal column order
+in composite indexes
+Test queries using
+covering indexes
+Check index usage in
+JOIN operations
+Verify
+composite indexes
+match multi-column queries
+Remove
+redundant or unused
+indexes
+
+--- Slide 25 ---
+
+Structural Testing
+Correct tables, columns, data types, constraints, defaults.
+Table and Column Validation
+Index usefulness & performance impact
+Composite indexes, covering indexes, redundant indexes
+Index Testing
+Data consistency before/after migration
+Relationships preserved, no corruption
+Data Migration Testing
+Connectivity, configuration, performance, backups, failover
+Database Server Validation
+
+--- Slide 26 ---
+
+Data Migration Testing
+What is Data Migration?
+Database_1
+Database_2
+
+--- Slide 27 ---
+
+Data Migration Testing
+Ensure
+data types and values
+remain consistent
+Verify migration of
+structured & unstructured
+data
+Ensure
+unique constraints
+and integrity rules remain valid
+Test migration with
+large datasets
+for performance & accuracy
+Check
+relationships and foreign keys
+after migration
+
+--- Slide 28 ---
+
+Structural Testing
+Correct tables, columns, data types, constraints, defaults.
+Table and Column Validation
+Index usefulness & performance impact
+Composite indexes, covering indexes, redundant indexes
+Index Testing
+Data consistency before/after migration
+Relationships preserved, no corruption
+Data Migration Testing
+Connectivity, configuration, performance, backups, failover
+Database Server Validation
+
+--- Slide 29 ---
+
+Database Server Validation
+Verify
+authentication & authorization
+settings
+Test
+server connectivity
+from the application
+Evaluate server
+performance
+using different queries
+Test
+failover & redundancy
+mechanisms
+Confirm
+backup & recovery
+work correctly
+Review
+server logs
+for errors and bottlenecks
+Check behavior under
+high load & concurrency
+Ensure
+compatibility
+with OS and other software
+
+--- Slide 30 ---
+
+III
+Testing Types
+Functional Testing
+Structural Testing
+Non-functional Testing
+Categories
+
+--- Slide 31 ---
+
+Functional Testing
+Transaction Testing
+Data Manipulation Testing
+Stored Procedures & Functions Testing
+Data Retrieval Testing
+
+--- Slide 32 ---
+
+Data Manipulation Testing
+Data Retrieval Testing
+Test
+SELECT *
+to retrieve all rows
+Test
+WHERE
+to filter specific rows
+Test
+JOIN
+to combine related tables
+Test
+GROUP BY + HAVING
+for aggregation
+Test
+LIMIT/TOP
+to return limited rows
+Test
+INSERT
+to add new records
+Test
+UPDATE
+to modify existing data
+Test
+DELETE
+to remove specific records
+Test
+combined CRUD
+operations in one transaction
+Test
+CRUD inside stored procedures /functions
+
+--- Slide 33 ---
+
+Functional Testing
+Transaction Testing
+Data Manipulation Testing
+Stored Procedures & Functions Testing
+Data Retrieval Testing
+
+--- Slide 34 ---
+
+I
+Introduction
+Data
+facts and information
+Unstructured Data
+No fixed format, loosely organized
+Structured Data
+Organized, predefined format
+records, tables, columns, indexes
+user input, files, or configuration settings
+Examples: names, addresses, financial transactions
+Used in
+RDBMS
+(MySQL, PostgreSQL, Oracle)
+Examples: documents, images, audio, videos
+Common in apps with
+text or user-generated content
+
+--- Slide 35 ---
+
+Transaction Testing
+What is a Transaction?
+All operations commit
+if successful
+Sequence of operations treated as one unit
+Any failure trigger rollback
+of all changes
+Ensure
+ACID
+properties
+
+--- Slide 36 ---
+
+Transaction Testing
+Test mixed
+UPDATE + INSERT
+with full commit/rollback
+Test rollback on
+mid-transaction errors
+Test transactions with
+SELECT/UPDATE/DELETE
+Test
+constraint violations
+trigger rollback
+Test multiple
+INSERTs
+committed as one
+
+--- Slide 37 ---
+
+Functional Testing
+Transaction Testing
+Data Manipulation Testing
+Stored Procedures & Functions Testing
+Data Retrieval Testing
+
+--- Slide 38 ---
+
+Stored Procedures & Functions Testing
+A stored procedure is
+prewritten SQL code
+saved for reuse
+Useful for
+repeated queries or logic
+Can
+accept parameters
+to change behavior
+Executes a set of operations when called
+(Optional) Can include complex logic, conditions, loops, etc.
+Similar to a stored procedure but
+must return a value
+Used for
+calculations or transformations
+Primarily focuses on
+computing and returning data
+Cannot perform major data modifications (e.g., no table updates)
+What is a Stored Procedure?
+What is a Function?
+
+--- Slide 39 ---
+
+Stored Procedures & Functions Testing
+Ensure
+error handling
+works properly
+Test with
+various inputs
+for correct results
+Verify
+permissions
+for executing procedures
+Validate
+function outputs
+for all input cases
+Test
+nested/recursive
+procedures
+Test procedures involving
+multiple tables/complex logic
+Check that
+triggers
+fire as expected
+Ensure procedures maintain
+ACID
+
+--- Slide 40 ---
+
+III
+Testing Types
+Functional Testing
+Structural Testing
+Non-functional Testing
+Categories
+
+--- Slide 41 ---
+
+Non-functional Testing
+01
+Measures response time, throughput, and resource use under varying loads
+Performance Testing
+Tests performance and responsiveness under expected real-world user loads
+Load Testing
+Evaluates behavior under extreme or prolonged high loads to find limits
+Stress Testing
+Identifies vulnerabilities and verifies protections against unauthorized access and breaches
+Security Testing
+02
+03
+04
+
+--- Slide 42 ---
+
+Non-functional Testing
+Execute a complex query and measure the response time, comparing it with a response time standard
+Ensure the response time remains within acceptable limits for all defined user loads.
+Gradually increase the number of concurrent users accessing the database and observe how the database handles the increased load and whether performance degrades.
+Attempt to access the database with incorrect credentials.
+Verify that unauthorized access attempts are denied and appropriate error messages are displayed.
+Validate that sensitive data, such as passwords or personal information, is properly encrypted in the database.
+Test data retrieval and verify that decrypted data is displayed correctly.
+Load the database with a large dataset similar to expected production volumes.
+Apply a load that exceeds the expected maximum user load.
+Attempt SQL injection attacks by inputting malicious code into queries to see how this system responds.
+
+--- Slide 43 ---
+
+II
+Testing Process
+I
+Introduction
+III
+Testing Types
+IV
+Tools & Demo
+Contents
+
+--- Slide 44 ---
+
+IV
+Tools & Demo
+What is
+DBUnit
+?
+Provides database assertions to verify expected vs actual data
+Enables test isolation by resetting database state
+Puts databases into a known state between test runs
+Supports dataset management using XML, CSV, Excel formats
+
+--- Slide 45 ---
+
+I
+Introduction
+Tables
+store data
+A database is an
+organized collection of data
+for easy access and manipulation
+Data is structured into
+tables, rows, columns, and indexes
+Database
+Functions & triggers
+handle data processing
+Views
+present data in a readable form
+style.visibility
+ppt_w
+ppt_h
+style.visibility
+ppt_w
+ppt_h
+style.visibility
+ppt_w
+ppt_h
+
+--- Slide 46 ---
+
+IV
+DBUnit
+Key Features
+Dataset Import/Export
+Database Independence
+Database Assertions
+Multiple Format Support
+Database Setup /Teardown
+
+--- Slide 47 ---
+
+IV
+DBUnit
+Architecture
+
+--- Slide 48 ---
+
+IV
+Tools & Demo
+What is Maven?
+Manages project dependencies automatically
+Handles build lifecycle (compile, test, package, deploy)
+Standardizes project structure
+Provides plugin ecosystem for various tasks
+
+--- Slide 49 ---
+
+IV
+Maven
+Maven Project Structure
+
+--- Slide 50 ---
+
+IV
+Maven
+Maven Build Lifecycle
+Validate
+Validate project structure
+Test
+Run unit tests (including
+DBUnit
+tests)
+Verify
+Run integration tests
+Deploy
+Deploy to remote repository
+Compile
+Compile source code
+Package
+Package compiled code (JAR/WAR)
+Install
+Install to local repository
+
+--- Slide 51 ---
+
+IV
+Tools & Demo
+Data Generation Tool
+Manual dataset creation is time-consuming and error-prone
+Need realistic data that mimics production patterns
+Require large volumes of data for performance testing
+Must maintain referential integrity across related tables
+
+--- Slide 52 ---
+
+IV
+Mockaroo
+Why
+Mockaroo
+?
+Web-based interface - No installation required
+Realistic data - Generates plausible names, emails, addresses
+Custom schemas - Define exact table structures
+Export formats - XML, JSON, CSV, SQL (perfect for
+DBUnit
+)
+Free tier - 1000 rows per dataset
+API access - Automate data generation in tests
+
+--- Slide 53 ---
+
+IV
+Demo
+
+--- Slide 54 ---
+
+IV
+Demo
+
+--- Slide 55 ---
+
+IV
+Demo
+
+--- Slide 56 ---
+
+I
+Introduction
+Ensures the
+quality, accuracy, and security
+of data stored in a database
+Verifies both the
+data
+and the
+components
+that interact with it
+Important because applications store large amounts of
+critical data
+(personal info, financial records, transactions)
+What is Database Testing?
+
+--- Slide 57 ---
+
+IV
+Tools & Demo – Best Practices
+DB Testing
+Data Generation
+
+--- Slide 58 ---
+
+IV
+Tools & Demo – Best Practices
+DB Testing
+Dataset Management
+Keep datasets small
+Use realistic data
+Version control
+Separate concerns
+Document structure
+Test Design
+Test isolation
+Clean state
+Meaningful assertions
+Error cases
+Performance
+Maven Configuration
+Separate test database
+Profile-based config
+Parallel execution
+Continuous integration
+Test coverage
+
+--- Slide 59 ---
+
+IV
+Tools & Demo – Best Practices
+DB Testing
+Data Generation
+
+--- Slide 60 ---
+
+IV
+Tools & Demo – Best Practices
+Data Generation
+Maintain Referential Integrity
+Realistic Distributions
+Version Control
+Performance Considerations
+Data Consistency
+
+--- Slide 61 ---
+
+Thank You For Listening!
+
+--- Slide 62 ---
+
+I
+Introduction
+Checks
+schema, tables, triggers
+, and overall
+data integrity & consistency
+Includes tests for
+data validity
+,
+integrity
+,
+performance
+,
+procedures
+, and
+triggers
+Covers multiple layers:
+UI → Business Logic → Data Access → Database
+Uses
+SQL queries
+to test performance, load, and data behavior
+Database Testing key points
+
+--- Slide 63 ---
+
+I
+Introduction
+Why Database Testing?
+Ensure Reliable Software Performance
+Prevents monetary losses, decision errors, inefficiencies, and security breaches from poor data integrity.
+
+--- Slide 64 ---
+
+I
+Introduction
+Why Database Testing?
+Data mapping
+Verifies front-end to DB field accuracy
+Data accuracy
+Confirms correct storage per rules & types
+Data Security
+Tests protections against SQL injection & leaks
+Business rules
+Validates constraints, triggers, & procedures via SQL
+Data migration
+Ensures seamless transfers between systems
+Data transformation
+Checks ETL rules & system integrations

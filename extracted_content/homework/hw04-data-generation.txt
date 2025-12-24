@@ -1,0 +1,277 @@
+
+--- Page 1 ---
+ 
+UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  --------------------------------       22125005  -  MAI  XUAN  BACH      
+CS423  -  Software  Testing  HOMEWORK  
+DATA  GENERATION      
+          HCMC  –  Nov,  2025    
+
+--- Page 2 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  
+ 
+Table  of  contents  Table  of  contents ................................................................................................................. 2 1.  Introduction .................................................................................................................... 3 2.  Data  Categories  and  Randomized  Ranges ............................................................................ 3 2.1.  Product  Categories ........................................................................................................... 3 id  (Primary  Key) ................................................................................................................. 3 name .................................................................................................................................. 3 slug .................................................................................................................................... 3 parent_id  (Foreign  Key) ..................................................................................................... 4 2.2.  Products ............................................................................................................................ 4 id  (Primary  Key) ........................................................................................................... 4 name ............................................................................................................................ 4 price ............................................................................................................................. 4 description .................................................................................................................... 4 stock ............................................................................................................................. 4 category_id  (Foreign  Key) ............................................................................................ 5 brand_id  (Foreign  Key) ................................................................................................ 5 product_image_id  (Foreign  Key) .................................................................................. 5 co2_rating .................................................................................................................... 5 is_rental ....................................................................................................................... 5 is_location_offer ........................................................................................................... 5 2.3.  User  Accounts .................................................................................................................. 5 id  (Primary  Key) ........................................................................................................... 5 first_name .................................................................................................................... 5 last_name .................................................................................................................... 5 email ............................................................................................................................ 6 password ...................................................................................................................... 6 address ........................................................................................................................ 6 city ................................................................................................................................ 6 state ............................................................................................................................. 6 country ......................................................................................................................... 6 
+
+--- Page 3 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ postcode ...................................................................................................................... 6 phone ........................................................................................................................... 6 dob  (Date  of  Birth) ........................................................................................................ 6 role ............................................................................................................................... 7 enabled ........................................................................................................................ 7 2.4.  Transactions ..................................................................................................................... 7 id  (Primary  Key) ........................................................................................................... 7 user_id  (Foreign  Key) .................................................................................................. 7 invoice_date ................................................................................................................. 7 invoice_number ............................................................................................................ 7 billing_address ............................................................................................................. 7 billing_city .................................................................................................................... 7 billing_state .................................................................................................................. 8 billing_country .............................................................................................................. 8 billing_postcode ........................................................................................................... 8 status ........................................................................................................................... 8 total .............................................................................................................................. 8 payment_method ......................................................................................................... 8 payment_account_name .............................................................................................. 8 payment_account_number .......................................................................................... 8 3.  How  the  Tool  Works ................................................................................................................ 9 3.1.  Tool  Overview ................................................................................................................... 9 3.2.  Setup  and  Installation ....................................................................................................... 9 3.3.  Running  the  Tool ............................................................................................................... 9 3.4  Screenshot  -  Tool  Execution: ........................................................................................... 10 4.  How  Tool  Works ..................................................................................................................... 10 5.  Sample  Data ........................................................................................................................... 12 5.1.  Product  Categories ......................................................................................................... 12 5.2.  Products .......................................................................................................................... 13 5.3.  User  Accounts ................................................................................................................ 14 5.4  Transactions .................................................................................................................... 14 6.  Self-Assessment  Report ....................................................................................................... 15  
+
+--- Page 4 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+1.  Introduction  In  this  assignment,  I  have  developed  a  custom-built  Python  tool  to  generate  test  data  for  
+the
+ 
+Toolshop
+ 
+e-commerce
+ 
+application.
+ 
+This
+ 
+report
+ 
+details
+ 
+the
+ 
+configuration
+ 
+and
+ 
+execution
+ 
+steps
+ 
+taken
+ 
+to
+ 
+generate:
+  
+ ●  50  product  categories   ●  1000  products   ●  50  user  accounts   ●  1000  transactions    A  critical  requirement  for  this  task  is  the  quality  and  realism  of  the  data.  The  generation  
+process
+ 
+has
+ 
+been
+ 
+strictly
+ 
+configured
+ 
+to
+ 
+ensure
+ 
+all
+ 
+field
+ 
+values
+ 
+are
+ 
+meaningful
+ 
+and
+ 
+contextually
+ 
+accurate,
+ 
+not
+ 
+just
+ 
+random
+ 
+strings.
+ 
+  Tool  Used :  Custom  Python  script  with  the  Faker  library  for  realistic  data  generation.  
+2.  Data  Categories  and  Randomized  Ranges  This  section  details  the  specific  rules,  data  types,  and  ranges  applied  in  the  data  generator  
+2.1.  Product  Categories  
+id  (Primary  Key)  ●  Type:  Auto-increment  Integer  ●  Range:  1  to  50  
+name  ●  Type:  String  ●  Logic:  Predefined  list  of  realistic  category  names  ●  Examples:  Hand  Tools,  Power  Tools,  Plumbing,  Hammers,  Drills,  Wrenches  
+slug  ●  Type:  String  (URL-friendly)  ●  Logic:  Derived  from  the  name  field.  Converts  to  lowercase  and  replaces  spaces  
+with
+ 
+hyphens
+ ●  Result:  "Hand  Tools"  becomes  "hand-tools"   
+
+--- Page 5 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ parent_id  (Foreign  Key)  ●  Type:  Integer  or  NULL  ●  Logic:  To  simulate  hierarchical  category  structure:  ○   For  categories  with  ID  from  1  to  10:  `parent_id  =  NULL`  (root  categories)  ○  For  categories  with  ID  from  11  to  50:  `parent_id  =  random  integer  between  
+1
+ 
+and
+ 
+10`
+ 
+(subcategories)
+ 
+2.2.  Products  
+id  (Primary  Key)  ●  Type:  Auto-increment  Integer  ●  Range:  1  to  1000  
+name  ●  Type:  String  ●  Logic:  Generated  using  templates  combined  with  word  lists  (adjectives,  tools,  
+brands,
+ 
+sizes)
+ ●  Templates:  ○  "Professional  {adjective}  {tool}"  ○  "{brand}  {tool}"  ○  "Heavy  Duty  {tool}"  ○  "{size}  {tool}  Set"  ●  Examples:  "Industrial  Drill",  "Makita  Hammer",  "24-inch  Tape  Measure"  
+price  ●  Type:  Decimal  ●  Range:  2.00  to  500.00  ●  Decimals:  2  (to  simulate  currency  values)  
+description  ●  Type:  Text  ●  Logic:  Generated  using  Faker  library  with  realistic  sentences  ●  Max  Length:  100  characters  
+stock  ●  Type:  Integer  ●  Range:  0  to  100  ●  Decimals:  0  (integer  values  only)  
+
+--- Page 6 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ category_id  (Foreign  Key)  ●  Type:  Integer  ●  Range:  1  to  50  ●  Logic:  Links  each  product  to  one  of  the  50  categories  
+brand_id  (Foreign  Key)  ●  Type:  Integer  ●  Range:  1  to  10  ●  Logic:  Links  each  product  to  one  of  10  brands  
+product_image_id  (Foreign  Key)  ●  Type:  Integer  ●  Range:  1  to  29  ●  Logic:  Links  each  product  to  one  of  29  images  
+co2_rating  ●  Type:  Enum  ●  Values:  A,  B,  C,  D,  E  
+is_rental  ●  Type:  Boolean  ●  Values:  True,  False  
+is_location_offer  ●  Type:  Boolean  ●  Values:  True,  False  
+2.3.  User  Accounts  Fields  and  their  randomized  ranges  for  user  accounts:  
+id  (Primary  Key)  ●  Type:  Auto-increment  Integer  ●  Range:  1  to  50  
+first_name  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  first  names  
+last_name  ●  Type:  String  
+
+--- Page 7 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ ●  Logic:  Generated  using  Faker  library  for  realistic  last  names  
+email  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  with  valid  email  format  
+password  ●  Type:  String  (SHA-256  Hash)  ●  Logic:  Passwords  are  hashed  using  SHA-256  algorithm  (64  hexadecimal  
+characters)
+ 
+address  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  street  addresses  
+city  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  city  names  
+state  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  state  names  
+country  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  country  names  
+postcode  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  postal  codes  
+phone  ●  Type:  String  ●  Example:  "380  252  3959"  
+dob  (Date  of  Birth)  ●  Type:  Date  ●  Range:  1970-01-01  to  2005-01-01  (users  aged  20-55  years)  ●  Format:  YYYY-MM-DD  
+
+--- Page 8 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ role  ●  Type:  Enum  ●  Values:  user,  admin  ●  Logic:  Weighted  selection  with  ratio  5:1  (users  appear  5  times  more  frequently  
+than
+ 
+admins)
+ 
+enabled  ●  Type:  Boolean  ●  Values:  True,  False  
+2.4.  Transactions  Fields  and  their  randomized  ranges  for  transactions:  
+id  (Primary  Key)  ●  Type:  Auto-increment  Integer  ●  Range:  1  to  1000  
+user_id  (Foreign  Key)  ●  Type:  Integer  ●  Range:  1  to  50  ●  Logic:  Assigns  each  transaction  to  one  of  the  50  users  
+invoice_date  ●  Type:  Datetime  ●  Range:  2022-01-01  00:00:00  to  2025-11-27  23:59:59  ●  Format:  YYYY-MM-DD  HH:MM:SS  
+invoice_number  ●  Type:  String  ●  Logic:  Business  format  combining  year  from  invoice_date  and  zero-padded  ID  
+●
+ 
+Format:  INV-YYYY000001  ●  Examples:  "INV-2023000001",  "INV-2024000542"  
+billing_address  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  street  addresses  
+billing_city  ●  Type:  String  
+
+--- Page 9 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ ●  Logic:  Generated  using  Faker  library  for  realistic  city  names  
+billing_state  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  state  names  
+billing_country  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  country  names  
+billing_postcode  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  postal  codes  
+status  ●  Type:  Enum  ●  Values:  AWAITING_FULFILLMENT,  ON_HOLD,  AWAITING_SHIPMENT,  
+SHIPPED,
+ 
+COMPLETED
+ 
+total  ●  Type:  Decimal  ●  Range:  5.00  to  1000.00  ●  Decimals:  2  (to  represent  currency)  
+payment_method  ●  Type:  Enum  ●  Values:  Bank  Transfer,  Credit  Card,  Cash  on  Delivery,  Buy  Now  Pay  Later,  Gift  
+Card
+ 
+payment_account_name  ●  Type:  String  ●  Logic:  Generated  using  Faker  library  for  realistic  full  names  
+payment_account_number  ●  Type:  String  
+●
+ 
+Pattern:  ########XXX  (8  digits  followed  by  3  uppercase  letters)  ●  Example:  "12345678ABC"  
+
+--- Page 10 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+3.  How  the  Tool  Works  
+3.1.  Tool  Overview  The  data  generator  is  a  Python-based  command-line  tool  that  uses  the  Faker  library  to  
+generate
+ 
+realistic
+ 
+test
+ 
+data.
+ 
+The
+ 
+tool:
+  ●  Initializes  the  Faker  library  with  a  fixed  seed  for  reproducibility  ●  Generates  each  data  category  sequentially  (categories  →  products  →  users  →  
+transactions)
+ ●  Exports  all  data  to  CSV  files  ●  Provides  real-time  progress  feedback  via  console  output  
+3.2.  Setup  and  Installation  -  Step  1:  Create  a  virtual  environment  python3  -m  venv  venv  -  Step  2:  Activate  the  virtual  environment  source  venv/bin/activate   #  macOS/Linux  venv\Scripts\activate      #  Windows  -  Step  3:  Install  dependencies  pip  install  -r  requirements.txt  
+3.3.  Running  the  Tool  Execute  the  data  generator:  python  data_generator.py  
+
+--- Page 11 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+3.4  Screenshot  -  Tool  Execution:  
+ Figure  1:  Console  output  showing  the  data  generation  process  
+4.  How  Tool  Works  1.  Initialization:   from  faker  import  Faker   import  random   fake  =  Faker()  Faker.seed(42)   #  For  reproducible  results  random.seed(42)   
+
+--- Page 12 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ The  tool  uses  fixed  seeds  to  ensure  that  running  the  script  multiple  times  produces  
+identical
+ 
+results,
+ 
+which
+ 
+is
+ 
+important
+ 
+for
+ 
+testing
+ 
+reproducibility.
+  2.  Category  Generation:   The  tool  creates  two  levels  of  categories:   ●  Root  categories  (IDs  1-10):  Top-level  categories  with  parent_id  =  NULL  ●  Subcategories  (IDs  11-50):  Child  categories  that  link  to  root  categories   3.  Product  Generation:  Products  are  generated  using:   ●  Template-based  naming:  Combines  templates  with  word  lists  (brands,  adjectives,  
+tools,
+ 
+sizes)
+ ●  Faker  for  descriptions:  Realistic  product  descriptions  ●  Random  ranges:  Price  (2-500),  stock  (0-100),  ratings  (A-E)   4.  User  Generation:   User  accounts  include:   ●  Realistic  personal  data:  Names,  emails,  addresses  using  Faker  ●  Hashed  passwords:  SHA-256  hashing  for  security  simulation  ●  Weighted  role  assignment:  5:1  ratio  for  users  vs  admins   5.  Transaction  Generation:  Transactions  are  generated  with:   ●  Date  range:  Last  3  years  (2022-2025)  ●  Invoice  numbering:  Format  includes  year  and  zero-padded  ID  ●  Billing  information:  Complete  address  details  using  Faker  ●  Payment  details:  Random  method  and  account  number   6.  CSV  Export:  All  data  is  exported  to  CSV  files  with:  ●  Proper  headers  ●  UTF-8  encoding  ●  Comma-separated  values  
+
+--- Page 13 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+5.  Sample  Data  
+5.1.  Product  Categories   
+ Figure  3:  Sample  product  categories  showing  hierarchical  structure  
+
+--- Page 14 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+5.2.  Products  
+ Figure  4:  Sample  products  with  realistic  names,  prices,  and  attributes  
+
+--- Page 15 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+5.3.  User  Accounts  
+ Figure  5:  Sample  user  accounts  with  realistic  personal  information  
+5.4  Transactions  
+ Figure  6:  Sample  transactions  with  invoice  numbers,  dates,  and  payment  details  
+
+--- Page 16 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+6.  Self-Assessment  Report  
+ Criteria  Outcomes  (Brief  description  about  what  you  get/trouble  from  each  requirement)  
+Grade  Self-Assessment  Grade  
+1  Category  Data  (50)  20  20  
+2  Product  Data  (1000)  30  30  
+3  User  Account  Data  (50)  20  20  
+4  Transaction  Data  (1000)  30  30   Total  100  100   

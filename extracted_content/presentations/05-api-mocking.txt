@@ -1,0 +1,381 @@
+
+--- Page 1 ---
+A P I  m o c k i n g  &
+t e s t i n g  t o o l s
+Group 1:
+22125017 - Nguyễn Tiến Dũng
+22125019 - Nguyễn Đ ứ c Duy
+22125097 - Võ Nh ư  Thi ệ n
+--- Page 2 ---
+1 . A P I  t e s t i n g
+--- Page 3 ---
+API Testing is a software testing technique that focuses on verifying the functionality,
+reliability, performance, and security of application programming interfaces (APIs) by sending
+requests and checking responses.
+Ensures that APIs produce accurate
+outputs and behave as intended
+across various scenarios.
+Often examines HTTP actions such as
+GET, POST, PUT, and DELETE,
+emphasizing how data is retrieved,
+created, updated, and removed.
+What is API Testing?
+--- Page 4 ---
+Some types of API Testing
+Functional Testing
+Validates that the API’s actions
+align with its defined
+requirements and documented
+specifications.
+Load Testing
+Emulates heavy usage to assess
+how well the API performs and
+scales when placed under intense
+load.
+Security Testing
+Confirms that the API’s
+authentication and authorization
+work correctly and identifies any
+weaknesses that could expose
+sensitive data.
+Contract Testing
+Ensures that the API adheres to
+its expected data structure, like
+JSON schema, preventing
+breaking changes.
+Integration Testing
+Ensures that multiple systems
+communicating through APIs work
+together properly as a unified
+whole.
+1 2 3
+4 5
+--- Page 5 ---
+Functional Testing - Example
+Request: POST /login
+{
+  "email": "user@example.com",
+  "password": "Correct123"
+}
+Expected Functional Behavior:
+Status code: 200 OK
+Response contains: accessToken, refreshToken
+User role and profile returned correctly
+Invalid credentials → 401 Unauthorized
+Payload
+Scenario: Login API
+--- Page 6 ---
+Load Testing – Example
+Scenario: Get Products API under 1000 users
+Expected Load Behavior:
+95% responses < 300ms
+Error rate < 1%
+API does not crash under heavy traffic
+Request: GET/products
+Test Setup:
+Simulate 1000 concurrent users
+Each user sends 5 requests/sec
+--- Page 7 ---
+Security Testing – Example
+Scenario: Accessing a protected endpoint without a token
+Request: GET /orders
+Security Checks:
+Request without token → 401 Unauthorized
+Invalid token → 403 Forbidden
+Token tampering → rejected
+Sensitive fields (password, credit card) NOT returned
+API uses HTTPS, not HTTP
+--- Page 8 ---
+Contract Testing – Example
+Scenario: Create User API must follow JSON schema
+Expected Response Schema: {
+  "id": "string",
+  "name": "string",
+  "email": "string",
+  "createdAt": "string"
+}
+Contract Testing Example:
+id must always be a string, not number
+email must be present
+No extra unexpected fields
+Response matches OpenAPI/Swagger spec
+--- Page 9 ---
+Integration Testing – Example
+Scenario: Order → Payment → Inventory
+Expected Integrated Behavior:
+Order created only if payment succeeds
+Payment rollback if inventory fails
+All systems update consistently
+Data flows correctly across services
+Workflow:
+POST /orders → creates order
+POST /payment → processes payment
+PATCH /inventory → reduces stock
+--- Page 10 ---
+Why Postman?
+User-Friendly Interface:  A clear, easy-to-use
+GUI makes it simple to send requests and
+review responses.
+Scripting Support: Allows using JavaScript for
+pre-request logic and writing test assertions.
+Environments & Variables: Enables quick
+management of environments and variables,
+eliminating the need for code modifications.
+CI/CD Integration: Allows test collections to
+run seamlessly at any stage of the build, test,
+or deployment pipeline.
+--- Page 11 ---
+How to use Postman?
+Sending API Requests1 
+Test Scripts2 
+Collections3 
+Environment Variables4 
+--- Page 12 ---
+API requests
+GET – Retrieve data from the server
+POST – Send new data to the server
+PUT/PATCH – Update existing data on the server
+DELETE – Remove data from the server
+--- Page 13 ---
+API requests - GET
+--- Page 14 ---
+API requests - POST
+--- Page 15 ---
+Test scripts
+Pre-request Script
+Runs before the request is sent.
+ Used to:
+Generate dynamic data (timestamp, UUID, signatures)
+Set or update environment variables
+Prepare headers/body before sending the request
+Post-request Script
+Runs after the response is received.
+ Used to:
+Validate response status, body, and headers
+Extract values from the response
+Save data (e.g., token) for later requests
+--- Page 16 ---
+Test scripts
+--- Page 17 ---
+Collections
+What is a Collection?
+A Collection is a group of saved API requests organized in
+one place.
+Why Use a Collection?
+Organize API endpoints by feature or module
+Reuse authentication, variables, and headers
+Add Pre-request Scripts and Tests
+Share APIs easily with team members
+Enable automation and documentation
+--- Page 18 ---
+Collections
+Key Features
+Supports folders and subfolders
+Stores multiple request types
+(GET/POST/PUT/DELETE)
+Allows collection-level variables
+Can be exported/imported
+Works with Collection Runner for test automation
+Benefits
+Clear API structure
+Faster testing and development
+Consistent request setup
+Easy collaboration
+Ready for automated workflows
+--- Page 19 ---
+Environment Variables
+Environment Variables are key–value pairs used to store dynamic or reusable data in
+Postman.
+Avoid hardcoding values (URLs, tokens…)
+Switch between environments easily (Dev / Test / Prod)
+Reuse variables across multiple requests
+Keep sensitive data separate from requests
+Make collections portable and maintainable
+--- Page 20 ---
+Environment Variables
+--- Page 21 ---
+Environment Variables
+--- Page 22 ---
+Environment Variables
+--- Page 23 ---
+API Testing Automation
+What is Automate API Testing:
+Execute API tests at certain times or frequencies
+Execute API tests in CI/CD pipelines
+Why Automate API Testing:
+Faster regression cycles
+Consistent & repeatable tests 
+Early bug detection in development
+
+--- Page 24 ---
+
+--- Page 25 ---
+
+--- Page 26 ---
+2 . A P I  m o c k i n g  
+--- Page 27 ---
+What is API mocking?
+API Mocking is simulating
+the behavior of a real API
+service.
+It uses fake responses
+(data, status codes, errors)
+instead of connecting to
+the actual backend.
+--- Page 28 ---
+Why We Need API Mocking
+1.Enables Parallel Development
+Frontend team can build the UI/UX
+without waiting for the backend
+API to be complete.
+Reduces idle time and accelerates
+project delivery.
+3.Supports Stable Testing
+Provides consistent, controlled
+responses for reliable, repeatable
+tests.
+Testers aren't affected by real API
+downtime or sudden changes
+2.Allows Edge Case Testing:
+Easily simulate rare error
+conditions or unusual/unexpected
+data responses.
+Ensures the application handles
+extreme scenarios gracefully.
+4.Improves Early Bug Detection
+Catch integration issues sooner in
+the development cycle by
+simulating responses.
+Reduces the risk of discovering
+critical problems late.
+--- Page 29 ---
+
+--- Page 30 ---
+⚙  Types of API Mocking
+1.Static Mocks: Always return the same fixed response for a specific
+request.Best for early-stage UI development when API details are
+minimal.
+2.Dynamic Mocks:Responses change based on inputs (e.g., parameters
+or headers).Useful for simulating different workflows without changing
+code.
+3. Contract-based Mocks:Generate responses based on API
+specifications (e.g., OpenAPI).Helps catch schema mismatches and
+ensures alignment between teams.
+4.Behavior-driven Mocks:
+Simulate specific conditions like timeouts, throttling, or failures.
+Used to validate client-side error handling logic (retry, fallbacks).
+--- Page 31 ---
+Popular Tools for Mocking APIs
+Postman : a popular API development environment
+that supports creating mock servers
+WireMock : a flexible, open-source API mocking tool
+that runs as a standalone server or embedded in tests.
+Mockoon : a desktop application that allows you to
+create mock APIs quickly.
+JSON Server : an open-source tool that allows you to
+create a full fake REST API with a simple JSON file.
+
+--- Page 32 ---
+Postman mock server
+Simulated APIs that mimic real server responses.
+Easily customizable to deliver any response you need, all
+without coding.
+Conveniently hosted on the Postman platform.
+
+--- Page 33 ---
+How we use mocks
+
+--- Page 34 ---
+
+--- Page 35 ---
+3 . A I - A p p r o a c h  f o r
+A P I  T e s t i n g
+--- Page 36 ---
+ Why AI for API Testing?
+Reduces manual effort in test case design
+Accelerates testing timelines
+Improves test coverage and accuracy
+Helps detect issues earlier in development
+Enhances security and anomaly detection For short:
+ AI drastically reduces:
+Time
+Cost
+Human error
+--- Page 37 ---
+AI can assist in four major areas: 
+1.AI-Generated Test Cases
+AI can automatically generate:
+Positive & negative test cases
+Boundary cases
+...
+3.AI-Enhanced Automation Scripts
+AI can write or fix your automation
+test scripts
+Suggest schema validation
+2.AI-Generated API Mocking
+AI examines API structures and
+generates:
+Mock servers
+Fake responses
+Fault injection scenarios (500s,
+timeouts, bad data)
+4.AI-Driven API Anomaly Detection
+Machine learning models monitor APIs
+can detect anomalies such as:
+Unusual traffic
+Response delays
+Error spikes
+Suspicious payloads or unauthorized
+access
+--- Page 38 ---
+It can help:
+Write tests
+Visualize responses
+Write FQL in Postman Flows
+Write documentation
+Postbot - Postman AI
+assistant
+ 
+--- Page 39 ---
+Postbot test generate demo 
+ 
+--- Page 40 ---
+Postbot Visualize responses
+You can using prompt like:
+Visualize response as bar graph with prices
+are shown on the y-axis. 
+Alternatively, you can choose from several
+types of visualizations, and the AI will generate
+the response based on your schema
+--- Page 41 ---
+Visualization result
+--- Page 42 ---
+Postbot Write
+documentation  
+Simply click a button 
+Alternatively, using natural language prompt 
+for more detail docs
+--- Page 43 ---
+Limitations of AI
+AI still needs human supervision
+Remember our previous demo? 
+Actually, there is nothing wrong with API
+The AI is one that make mistake 
+AI may misinterpret poorly written docs
+Why the AI failed on our demo?
+My poorly prompt 
+No API docs was given 
+There are many other limitations
+Limited understanding of business rules
+Not reliable for security validation
+Difficulty handling edge cases
+etc,
+No awareness of system environment
+Why the AI failed on our demo?
+Can the collection variable be set? 
+What if the variable is bounded?
+--- Page 44 ---
+Conclusion 
+AI can be helpful, but it should never be trusted blindly.
+--- Page 45 ---
+Thanks

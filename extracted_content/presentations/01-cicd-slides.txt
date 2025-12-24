@@ -1,0 +1,425 @@
+
+--- Page 1 ---
+Group 05 - Topic I
+Continuous Integration  
+Continuous Deployment
+--- Page 2 ---
+Members
+22125041
+Mai Đăng Khoa Lê Mai Khôi
+Nguyễn Duy Phúc Nguyễn Trọng Quý
+22125042
+22125075 22125084
+--- Page 3 ---
+Table of contents
+Introduction
+The need for CI/CD What is CI and what 
+benefits it brings?
+What is CD and what 
+benefits it brings?
+Making CI/CD Intelligent
+01
+03
+02
+04
+Continuous Integration
+Continuous Deployment The AI-First Approach
+--- Page 4 ---
+01
+Introduction
+
+--- Page 5 ---
+The Friday Afternoon Nightmare
+
+--- Page 6 ---
+The Friday Afternoon Nightmare
+- The application breaks as soon as it runs on the shared server 
+because Quy’s laptop had different dependencies installed, and he 
+forgot to commit a configuration change.
+- The problem is: nobody noticed. The team assumes everything on 
+main is fine, because there is no automated system rebuilding or 
+retesting the project after each push. And at that time, several 
+more developers push their own changes on top of Quy’s commit.
+However, with no CI/CD:
+--- Page 7 ---
+The Friday Afternoon Nightmare
+
+--- Page 8 ---
+The Friday Afternoon Nightmare
+- Because the testing isn’t triggered right when the code was 
+pushed, and many developers push code at the same time, it was 
+hard to track the commit that caused failure and delay the whole 
+process. 
+- Additionally, without CD, there is no pipeline controlling releases, a 
+broken build can be shipped to production by accident, damaging 
+the company’s reputation and profits. 
+With no CI/CD:
+--- Page 9 ---
+Software Under Test
+A simple to-do app developed by our group specifically for this presentation/demo 
+with the assistance of generative AI ✨
+2 repositories:
+● Backend (https://github.com/mdkhoat2/simple-todo-app)
+○ Java + Spring Boot
+○ PostgreSQL
+○ Deployed through Railway
+● Frontend (https://github.com/duyphuc0701/simple-todo-app-frontend)
+○ React
+○ Deployed through Cloudflare Pages
+--- Page 10 ---
+02
+All you need to know about CI
+Continuous 
+Integration
+
+--- Page 11 ---
+What is Continuous Integration?
+Continuous Integration (CI) is a development practice where:
+● Developers merge changes frequently, often several times per day.
+● Every merge triggers automatic builds and tests to validate the code.
+● The goal is to keep the main branch always stable, functional, and 
+deployable.
+● CI provides fast feedback, helping teams detect integration issues 
+early.
+
+--- Page 12 ---
+Why do we need CI?
+Runs fine locally but not 
+on other environments
+Unclear 
+Responsibility
+Integration 
+Conflict
+“It works on 
+my machine”
+Bugs detected late, 
+increase cost and effort
+Hard to know which 
+commit has bugs
+Slow manual 
+testing
+Multiple developers 
+merging at the same time
+Before CI
+--- Page 13 ---
+The 3 pillars of CI
+Automated 
+Testing
+Effective source 
+code management 
+using Git
+Builds run 
+automatically on 
+every commit
+Verifying code 
+automatically
+Source Code 
+Management
+Automated 
+Build
+--- Page 14 ---
+Complete CI Flow
+
+--- Page 15 ---
+Popular CI Tools
+Cloud-based tools
+
+--- Page 16 ---
+Popular CI Tools
+Self-hosted/Enterprise
+
+--- Page 17 ---
+In-depth tutorial about using GitHub Actions
+GitHub Actions
+
+--- Page 18 ---
+Github Actions
+● Native CI/CD built into GitHub
+● YAML-based workflow files
+● Triggered by events: Push, Pull 
+Request, Cron
+● Provides Linux, Windows, macOS 
+runners
+● Zero setup, free for public repos
+● Strong ecosystem and many 
+templates
+
+--- Page 19 ---
+● GitHub Actions automatically 
+scans all YAML files in 
+.github/workflows/ folder
+● Each YAML file describes a 
+WORKFLOW.
+● Each WORKFLOW can be 
+broken down into JOBS.
+● Each JOB is only triggered if 
+certain conditions are met.
+Github Actions Components
+
+--- Page 20 ---
+Structure of a yaml 
+
+--- Page 21 ---
+The Trigger (on) 
+
+--- Page 22 ---
+The Runner (runs-on)
+
+--- Page 23 ---
+Actions vs. Commands (uses vs run)
+
+--- Page 24 ---
+Conditional Execution (if)
+
+--- Page 25 ---
+
+--- Page 26 ---
+● GitHub Actions workflows do not have to run only on push / pull_request.
+● We can also run workflows at a specific time using schedule.
+● The schedule uses a cron expression to define:
+○ time of day
+○ days of week
+○ days of month, etc.
+Find out more about cron expression at: 
+https://www.baeldung.com/cron-expressions
+Scheduled Workflows in GitHub Actions
+
+--- Page 27 ---
+
+--- Page 28 ---
+Integrate many types of software testing into CI workflow
+Testing 
+Integration
+
+--- Page 29 ---
+- Lint: a tool that checks your code for errors, bad patterns, and style issues.
+- ESLint: Lint tool for Javascript/Typescript
+How to use it:
+- Install ESLint by running: npm install eslint --save-dev
+- Create config file: npx eslint --init
+- Run ESLint in workflow: npx eslint . (or add a script in package.json as below)
+Linting
+
+--- Page 30 ---
+
+--- Page 31 ---
+Functional Testing 
+& Code Coverage
+● Functional testing can be integrated 
+and executed at different levels: unit, 
+integration, …
+● Testing libraries usually allows 
+measuring code coverage
+● Here we show a sample test case 
+using Java and JUnit
+
+--- Page 32 ---
+Functional Testing 
+& Code Coverage
+● To integrate functional testing to 
+GitHub Action workflow:
+○ Define a job with steps: 
+Checkout, Setup Java, Build, 
+Run tests, Upload report
+○ Specify actions, conditions, 
+commands, … for each step
+● To view the code coverage report, 
+download the artifact file from 
+GitHub Actions
+--- Page 33 ---
+UI Testing
+This is a test case for UI testing using Playwright. You can also use other libraries such as 
+Selenium, Cypress, …
+--- Page 34 ---
+UI Testing
+● To integrate UI testing to GitHub 
+Action workflow:
+○ Define a job with steps: 
+Checkout, Setup Node, Install 
+dependencies, Install 
+Playwright, Run tests, Upload 
+report
+○ Specify actions, conditions, 
+commands, … for each step
+● To view the Playwright report, 
+download the artifact file from 
+GitHub Actions
+--- Page 35 ---
+CI Demo Video
+
+--- Page 36 ---
+What CI Automates
+CI automates many tasks and different types of testing:
+● Build and compile
+● Functional Testing at different levels: unit, integration, …
+● Linting, formatting
+● Security & Dependency scanning
+● Code coverage
+● UI Testing
+● Reporting + notifications
+● Artifact packaging (JAR, Docker image, ZIP, etc.)
+● Documentation generation
+
+--- Page 37 ---
+Devs know within 
+minutes if code breaks
+Tests + lint + scans run 
+on every commit
+Enhanced 
+Collaboration
+Benefits of CI
+Faster Feedback Higher Quality
+Clear history of who 
+changed what
+Devs can merge code 
+change frequently
+Frequent integration 
+prevents large conflicts
+Always deployable, 
+ready for CD
+Better 
+Traceability
+Reduced Risk
+Stable main 
+branch
+--- Page 38 ---
+03
+All you need to know about CD
+Continuous Delivery 
+& Deployment
+
+--- Page 39 ---
+What is Continuous Delivery?
+● Definition: a software engineering practice in which code changes are 
+prepared to be released to production
+● Manual Control: there is a GUI control that requires human to 
+manually approve and trigger the deployment to production
+● Purpose: Acts as a final "failsafe" to prevent the team from deploying 
+faulty code or incorrect versions to actual users
+
+--- Page 40 ---
+What is Continuous Deployment?
+● Definition: a software engineering practice that ensures code changes 
+are continuously released into the production environment
+● Key Difference: It removes the final manual failsafe and the human 
+element found in Continuous Delivery
+● Prerequisites: Requires a mature, trusted CI pipeline to ensure code is 
+good enough for direct customer release
+● Benefit: Save time for companies that have established a high level of 
+trust in their automated testing
+
+--- Page 41 ---
+Environments
+
+--- Page 42 ---
+Deployment Platforms
+Container Registries 
+(GitHub Container 
+Registry, Docker Hub, …)
+Public Cloud Providers 
+Services (AWS, Azure, 
+GCP, …)
+On Premise Servers
+
+--- Page 43 ---
+Deploy Docker image
+● To build and push Docker image to 
+GitHub Container Registry:
+○ Define a job with steps: Login to 
+GitHub, Extract metadata, Build 
+and push image
+○ Specify actions, conditions, 
+commands, … for each step
+● Go to the Registry section in GitHub 
+to view the Docker images
+--- Page 44 ---
+Deploy Frontend to Cloudflare
+
+--- Page 45 ---
+CD Demo Video
+
+--- Page 46 ---
+Continuous Monitoring
+Measuring 
+quantitative data 
+(CPU usage, Memory, 
+Latency) in real-time.
+Essential for 
+troubleshooting 
+"root cause" when 
+bugs occur.
+AlertingMetrics Logs
+Automatically notifying 
+(Slack, Email, or 
+PagerDuty) when metrics 
+exceed thresholds.
+
+--- Page 47 ---
+Release often with fewer 
+changes per update
+Not wasting time on 
+manual deployments
+Boosted 
+Confidence
+Benefits of CD
+Frequent & 
+Small Releases
+Increased 
+Productivity
+Validate ideas 
+instantly with real user
+Staging environments 
+acts as a practice run
+Easier to fix or rollback 
+than "Big Bang" releases
+Routine event, not a 
+"Friday nightmare"
+Faster Value 
+& Feedback
+Lower Release 
+Risk
+Stress-Free 
+Deployments
+--- Page 48 ---
+04
+From “Automated” to “Intelligent”
+The AI-First 
+Approach
+
+--- Page 49 ---
+Copilot
+Copilot analyzes code intent, 
+predicts logical errors, and suggests 
+readability improvements
+
+--- Page 50 ---
+SonarQube
+Explaining vulnerabilities in plain language 
+and suggesting code fixes instantly.
+
+--- Page 51 ---
+
+--- Page 52 ---
+05
+Summarize key points of the presentation
+Conclusion
+
+--- Page 53 ---
+Key Takeaways
+CI/CD
+It’s a Culture, 
+Not Just Tools
+Work
+Automate to 
+Accelerate
+01
+Pipeline
+Start Small, 
+Improve Daily
+02 03
+--- Page 54 ---
+—Someone (in our group)
+“The goal of CI/CD is not just to 
+release software faster, but to sleep 
+better at night.”
+--- Page 55 ---

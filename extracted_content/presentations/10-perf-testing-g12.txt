@@ -1,0 +1,518 @@
+
+--- Slide 1 ---
+
+Performance Testing:
+K6 vs. JMeter
+Group 12
+Do Huynh Diem Uyen - 22125117
+Pham Ngoc Phuong Uyen - 22125118
+Trinh Nguyen Thao Vi
+- 22125120
+H
+uynh Phan Nhat Vy
+- 22125124
+
+--- Slide 2 ---
+
+Spike
+testing
+Evaluates how the system reacts to
+sudden
+surges in user traffic over a short period.
+Example: An e-commerce site experiencing a traffic spike during a flash sale must remain functional.
+Ensures your application can recover quickly and continue to operate during abrupt demand increases.
+What is it?
+Why it matters?
+
+--- Slide 3 ---
+
+Scalability
+testing
+Evaluates whether the system can handle increased traffic by
+adding resources
+(scaling up or out).
+Example: A streaming platform must be scalable to handle millions of users when a popular show is released.
+Identifies the system’s capacity to expand through vertical scaling (more power) or horizontal scaling (more servers).
+What is it?
+Why it matters?
+
+--- Slide 4 ---
+
+Endurance
+testing
+Checks the system’s performance over an
+extended period
+under a consistent load (also called Soak testing).
+Example: A CRM tool running continuously for days may experience a slowdown over time, impacting reliability.
+Identifies issues like memory leaks or performance degradation with prolonged usage. Ensures long-term stability.
+What is it?
+Why it matters?
+
+--- Slide 5 ---
+
+Volume
+testing
+Examines system behavior when handling a
+large volume of data
+(e.g., in the database).
+Example: A financial application managing millions of daily transactions must perform without slowdowns.
+Essential for big data applications and systems managing intensive data operations.
+What is it?
+Why it matters?
+
+--- Slide 6 ---
+
+Comparison
+of Key Performance Test Types
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Criteria
+Load Test
+Stress Test
+Spike Test
+Purpose
+Verify performance under expected load
+Determine system limits and failure behavior
+Check reaction to sudden, extreme load
+Load Pattern
+Gradual increase to expected traffic
+Gradual increase beyond maximum capacity
+Sudden and sharp increase in load
+Focus
+Stability under normal conditions
+System breaking point and failure
+Resilience and recovery from spikes
+Example
+Typical peak shopping time
+Black Friday or concert ticket release
+Flash sale announcement
+
+--- Slide 7 ---
+
+Set performance goals (e.g., "Homepage < 2s").
+Create scenarios and define metrics.
+The Performance Testing
+Process
+Define the test setup.
+Prepare the test servers and tools.
+Develop
+scripts
+and prepare test data
+Find bottlenecks, fix, and test again.
+1. Identify Environment
+2. Define Criteria
+4. Configure Environment
+5.
+Implement
+test design
+3. Plan & Design
+7. Analyze & Retest
+6
+. R
+un tests
+Execute and monitor
+
+--- Slide 8 ---
+
+Tool Overview:
+k6
+A Modern, High-Performance Tool
+Designed for high performance (written in Go).
+Excellent for API testing and microservices.
+Integrates easily into CI/CD pipelines.
+Use k6 when:
+You are comfortable with code, need high performance, or focus on API automation.
+
+--- Slide 9 ---
+
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Advantages
+Developer-friendly (tests are code).
+Lightweight, fast, and low resource use.
+Ideal for automation and CI/CD pipelines.
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Disadvantages
+No GUI (requires scripting knowledge).
+Limited protocol support (mainly web/API).
+Advanced features may require k6 Cloud.
+Modern, open-source tool (built in Go) for testing APIs and microservices. CLI-driven, using JavaScript for test scripts.
+
+--- Slide 10 ---
+
+K6
+Configuration & Setup
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Installation
+Test Configuration
+Output Config
+Lightweight single binary (install via Installer, Brew, Choco) or run via Docker.
+No external dependencies (like Java).
+Code-based: All configurations (VUs, Duration, Thresholds) are defined in the options object within the JavaScript file.
+Flexible: Can override configs via CLI flags (e.g.,
+--vus 100 --duration 10s
+).
+Easily streams metrics to external backends (Prometheus, InfluxDB, JSON) via simple command-line arguments (
+--out
+).
+
+--- Slide 11 ---
+
+Scenario A: High Load Strategy (Stress Test)
+1.
+Ramp-up (10s)
+: Rapidly increase from 0 to 100 VUs to simulate a sudden influx of users.
+2. Sustain (4m 50s): Maintain steady load at 100 VUs to monitor resource usage (CPU/RAM) and latency over time.
+3. Ramp-down (10s): Decrease to 0 VUs to finish the test gracefully.
+k6 Configuration:
+Phases (Total Duration: 5m 10s):
+
+--- Slide 12 ---
+
+Today's
+Objectives
+Understand
+what performance testing is and why it's essential.
+Explain
+the different types of performance tests (Load vs. Stress).
+Introduce & Compare
+two key tools: k6 and Apache JMeter.
+Demonstrate
+how to run a basic test with a practical demo.
+Emphasize
+its impact on user experience and system stability.
+
+--- Slide 13 ---
+
+Scenario B: Spike & Recovery Strategy
+Normal Load (10s): Run at 2 VUs (Baseline).
+Spike (10s): Rapid jump to 20 VUs (10x load).
+Hold Spike (1m): Stress system at peak capacity.
+Recovery (10s): Drop load back to baseline (2 VUs).
+Recovery Period (30s): Monitor if latency returns to normal levels.
+k6 Configuration:
+Phases (Total Duration: ~2 mins):
+
+--- Slide 14 ---
+
+Tool Overview:
+Apache JMeter
+A Popular, Powerful GUI Tool
+Written in Java, open-source, and has a large community.
+Supports many protocols (Web, API, Database, FTP, etc.).
+Powerful for testing complex, end-to-end user workflows.
+Use
+Jmeter
+when:
+You prefer a visual builder, need to test complex workflows, or test non-web protocols.
+
+--- Slide 15 ---
+
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Advantages
+Rich GUI interface (easy for beginners).
+Supports many protocols (HTTP, JDBC, FTP, etc.).
+Extensive plugin ecosystem.
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Disadvantages
+High resource consumption (Java-based).
+Reporting is basic without plugins.
+Less "developer-friendly" for CI/CD.
+Open-source, 100% Java application for load testing. Originally for web, now supports many protocols. Uses a GUI to build test plans.
+
+--- Slide 16 ---
+
+Classify the
+advantages
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Feature
+k6 (by Grafana Labs)
+Apache JMeter
+Scripting
+JavaScript (Code-centric)
+GUI (Visual test plan)
+Primary Use
+APIs, Microservices, Web
+Web, Complex Workflows, Various Protocols
+Performance
+Very High (Written in Go)
+Good (Written in Java)
+Ease of Use
+Easy for devs, harder for non-coders
+Easy for non-coders (GUI), can get complex
+Ecosystem
+Modern, CI/CD friendly
+Mature, large community, many plugins
+
+--- Slide 17 ---
+
+JMeter
+Configuration & Setup
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Prerequisites
+Resource Tuning
+Execution Mode
+Requires Java (JDK 8+) installed.
+No installation wizard; simply unzip the archive to run.
+Critical: Must manually increase JVM Heap Size (in
+jmeter.bat
+or
+.sh
+) to handle high loads (e.g.,
+-Xmx4g
+).
+Disable "View Results Tree" listeners during actual tests to save memory.
+GUI Mode:
+Use only for test design and debugging.
+CLI (Non-GUI) Mode:
+Mandatory for actual load testing to ensure performance (
+jmeter -n -t test.jmx
+).
+
+--- Slide 18 ---
+
+JMeter: Global Configuration
+HTTP Request Defaults:
+Defines the Server Name (
+api-with-bugs...
+) and Protocol (
+https
+) centrally to avoid repetition.
+HTTP Header Manager:
+Sets
+Content-Type: application/json
+for all requests to ensure correct API communication.
+CSV Data Set Config:
+Loads external data (
+users.csv
+) to variables (
+email
+,
+password
+) for realistic user simulation.
+
+--- Slide 19 ---
+
+JMeter:
+Load Test Configuration
+Threads (Users):
+20 (Simulates normal expected traffic).
+Ramp-up Period:
+30s (Users join gradually, ~0.6 users/sec).
+Duration:
+300s (5 minutes stability check).
+
+--- Slide 20 ---
+
+JMeter:
+Stress Test Configuration
+Threads (Users):
+100 (5x normal load).
+Ramp-up Period:
+10s (Aggressive loading, 10 users/sec).
+Duration:
+300s
+
+--- Slide 21 ---
+
+JMeter:
+Spike Test Configuration
+Using "Stepping Thread Group" (Standard Set Plugin) for better control.
+Start with baseline:
+2 users.
+Spike:
+Add 18 users instantly (0s ramp-up).
+Hold:
+Sustain 20 users for 60s.
+Drop:
+Stop users immediately.
+
+--- Slide 22 ---
+
+Demo
+
+--- Slide 23 ---
+
+What is
+Performance Testing?
+A non-functional method to measure a system's speed, responsiveness, and stability under a specific workload.
+This covers both unit/API testing and full system testing.
+Evaluate application output, processing speed, and response times.
+Measure resource usage (CPU, memory, bandwidth).
+Determine the maximum concurrent users and find bottlenecks.
+What is it?
+Primary Goals
+
+--- Slide 24 ---
+
+Getting Started with JMeter
+Prerequisites:
+Java is required: Verify via command
+java
+-version
+If you see "command not found" or "not recognized", please install the
+Java JDK
+first.
+OS: Cross-platform (Windows, macOS, Linux).
+Installation:
+https://jmeter.apache.org/download_jmeter.cgi
+Under
+Binaries
+, download the
+.zip
+file (e.g.,
+apache-jmeter-5.6.3.zip
+).
+Extract the
+.zip
+file to a location like
+C:\Tools\jmeter
+.
+Go to the extracted folder, open the
+bin
+folder.
+Double-click on
+jmeter.bat
+(
+The JMeter GUI will open.)
+For Windows Users
+
+--- Slide 25 ---
+
+Getting Started with JMeter
+Prerequisites:
+Java is required: Verify via command
+java
+-version
+If you see "command not found" or "not recognized", please install the
+Java JDK
+first.
+OS: Cross-platform (Windows, macOS, Linux).
+Installation:
+Option A: Via Homebrew (Recommended/Fastest)
+Open Terminal and run:
+brew install jmeter
+Launch by typing:
+jmeter
+Option B: Manual Download
+https://jmeter.apache.org/download_jmeter.cgi
+Download the
+Binaries
+file ending in
+.tgz
+.
+Double-click the
+.tgz
+file to unzip it.
+Open Terminal and navigate to the
+bin
+folder inside the extracted JMeter folder:
+cd /path/to/apache-jmeter/bin
+Run the startup script:
+sh jmeter.sh
+For macOS Users
+
+--- Slide 26 ---
+
+Do you have any
+question?
+
+--- Slide 27 ---
+
+Who
+Benefits
+from Performance Testing?
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Technical Teams
+Developers
+: Find performance issues early in the SDLC.
+QA Teams:
+Validate application speed, stability, and scalability.
+DevOps:
+Automate testing in CI/CD pipelines to prevent regressions.
+{34130326-C682-4D9A-B6A2-7CE5849FB3E5}
+Business & Management
+Project Managers:
+Assess risks related to system changes and impact.
+CTOs & Owners:
+Plan long-term growth and protect revenue streams.
+Finance/Healthcare:
+Ensure compliance with industry regulations.
+
+--- Slide 28 ---
+
+Why is Performance Testing Critical?
+Fast loads prevent abandonment. Shopify data shows bounce rates triple after 3 seconds.
+01
+Enhances User Experience
+Ensures the application can grow with your user base and handle unexpected surges in traffic.
+03
+Supports Scalability
+02
+Prevents Downtime
+Fixing defects post-release costs 4-5x more than finding them during development (IBM).
+04
+Reduces Costs
+Avoids catastrophic crashes during peak periods (e.g., Black Friday sales), protecting revenue.
+
+--- Slide 29 ---
+
+CPU utilization
+– percentage of CPU capacity utilized
+Memory utilization
+– utilization of the primary memory
+Response times
+– time between sending request and receiving response
+Average load time
+– time to complete the loading process
+Throughput
+– the number of transactions can be handled in a second
+Average latency/Wait time
+– the time spent by a request in a queue before getting processed
+Bandwidth
+– the volume of data transferred per second
+Requests per second
+– the number of requests handled per second
+Error rate
+– the percentage of requests resulting in errors
+Transactions Passed/Failed
+– the percentage of passed/failed transactions
+Performance Testing Metrics
+
+--- Slide 30 ---
+
+Test Types
+Stress testing
+Spike testing
+Finds the system's breaking point by overloading it.
+Tests sudden, intense surges in user traffic.
+Load
+testing
+Scalability testing
+Tests expected user load under normal conditions.
+Checks if the system can handle growth by adding resources.
+Volume testing
+Endurance Testing
+Tests handling of large amounts of data.
+Tests performance over a long period (finds leaks).
+
+--- Slide 31 ---
+
+Load testing
+Simulates the
+expected
+number of users or transactions to assess the system’s behavior under normal conditions.
+Example: An e-commerce platform must ensure smooth checkout even when hundreds of users shop during a Black Friday sale.
+Ensures critical functionalities (database queries, server responses) meet performance benchmarks during peak usage.
+What is it?
+Why it matters?
+
+--- Slide 32 ---
+
+Stress
+testing
+Pushes the system
+beyond
+its normal operational limits to see how it behaves under extreme conditions.
+Example: A ticket booking website for a significant concert must be stress-tested to see how it reacts to a surge in demand.
+Helps uncover weaknesses, such as system crashes or slow response times, before they occur in real-world scenarios.
+What is it?
+Why it matters?

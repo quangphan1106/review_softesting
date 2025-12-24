@@ -1,0 +1,349 @@
+
+--- Page 1 ---
+ 
+UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  --------------------------------       22125005  -  MAI  XUAN  BACH      
+CS423  -  Software  Testing  HOMEWORK  
+AUTOMATION  TESTING      
+          HCMC  –  Dec,  2025    
+
+--- Page 2 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  
+ 
+Table  of  contents  Table  of  contents ................................................................................................................. 2 1.  Introduction .......................................................................................................................... 4 1.1  Purpose ........................................................................................................................ 4 1.2  Scope ........................................................................................................................... 4 1.3  Objectives .................................................................................................................... 4 2.  Test  Environment  Setup ....................................................................................................... 4 2.1  Hardware  Configuration ............................................................................................... 4 2.2  Software  Configuration ................................................................................................ 5 2.3  Application  Under  Test ................................................................................................. 5 2.4  Test  Accounts ............................................................................................................... 5 3.  Features  Tested ................................................................................................................... 5 3.1  Feature  1:  Sign  Up  (40  points) ..................................................................................... 5 3.2  Feature  2:  Search  and  Filter  Products  (30  points) ....................................................... 6 3.3  Feature  3:  Create  Category  -  Admin  (30  points) .......................................................... 6 4.  Test  Approach  and  Methodology ......................................................................................... 7 4.1  Testing  Approach ......................................................................................................... 7 4.2  Test  Design  Techniques ............................................................................................... 7 4.3  Key  Technologies ......................................................................................................... 7 5.  Test  Cases  and  Data ........................................................................................................... 8 5.1  Sign  Up  Test  Cases ..................................................................................................... 8 5.2  Search  and  Filter  Test  Cases ....................................................................................... 8 5.3  Create  Category  Test  Cases ........................................................................................ 9 6.  Test  Execution  and  Results ............................................................................................... 10 6.1  Execution  Summary ................................................................................................... 10 6.2  Test  Results  by  Feature ............................................................................................. 10 Feature  1:  Sign  Up ..................................................................................................... 10 Feature  2:  Search  and  Filter ...................................................................................... 10 Feature  3:  Create  Category ........................................................................................ 11 6.3  Overall  Results ........................................................................................................... 11 6.4  Test  Execution  Evidence ............................................................................................ 12 
+
+--- Page 3 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 7.  Mantis  Bug  Reports ........................................................................................................... 12  
+
+--- Page 4 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  
+1.  Introduction  
+1.1  Purpose  This  report  documents  the  automation  testing  process  for  The  Toolshop  web  application,  
+focusing
+ 
+on
+ 
+three
+ 
+high-priority
+ 
+features:
+ 
+Sign
+ 
+Up,
+ 
+Search
+ 
+and
+ 
+Filter
+ 
+Products,
+ 
+and
+ 
+Create
+ 
+Category
+ 
+(Admin).
+ 
+1.2  Scope  The  testing  covers:   -  Functional  testing  of  three  main  features  -  Multi-browser  testing  (Chrome,  Firefox,  Edge)  -  Data-driven  testing  approach  -  Security  testing  (SQL  injection,  XSS)  -  Boundary  value  analysis  -  Negative  testing  scenarios  
+1.3  Objectives  -  Validate  core  functionality  works  as  expected  -  Identify  bugs  and  defects  -  Ensure  cross-browser  compatibility  -  Test  edge  cases  and  boundary  conditions  -  Verify  security  controls    
+2.  Test  Environment  Setup  
+2.1  Hardware  Configuration  -  Operating  System:  Windows  11  Pro  -  Processor:  Intel  Core  i7-10750H  @  2.60GHz  -  RAM:  16  GB  DDR4  -  Display  Resolution:  1920x1080  
+
+--- Page 5 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 2.2  Software  Configuration  -  Python  Version:  3.11.5  -  Selenium  WebDriver:  4.15.2  -  Pytest:  7.4.3  -  Additional  Libraries:  -  pytest-html:  4.1.1  -  webdriver-manager:  4.0.1  -  openpyxl:  3.1.2  -  pandas:  2.1.3  -  Browsers:  -  Google  Chrome:  Version  120.0.6099.130  -  Mozilla  Firefox:  Version  121.0  -  Microsoft  Edge:  Version  120.0.2210.91  
+2.3  Application  Under  Test  -  Application:  The  Toolshop  -  Version:  sprint5-with-bugs  -  URL:  https://with-bugs.practicesoftwaretesting.com -  API:  https://api-with-bugs.practicesoftwaretesting.com -  GitHub:  https://github.com/testsmith-io/practice-software-testing 
+2.4  Test  Accounts  -  Admin:  admin@practicesoftwaretesting.com /  welcome01  -  User:  customer@practicesoftwaretesting.com /  welcome01   
+3.  Features  Tested  
+3.1  Feature  1:  Sign  Up  (40  points)  Description :  User  registration  functionality  allowing  new  users  to  create  accounts.   Priority :  High   Test  Coverage :   -  Valid  registration  scenarios  -  Invalid  input  handling  -  Field  validation  
+
+--- Page 6 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ -  Duplicate  email  detection  -  Password  strength  validation  -  Security  testing  (SQL  injection,  XSS)  -  Boundary  value  testing   Total  Test  Cases :  15  
+3.2  Feature  2:  Search  and  Filter  Products  (30  points)  Description :  Product  search  and  filtering  functionality  for  users  to  find  products.   Priority :  High   Test  Coverage :   -  Keyword  search  -  Brand  filtering  -  Category  filtering  -  Price  range  filtering  -  Combined  filters  -  Empty  results  handling  -  Security  testing   Total  Test  Cases :  20  
+3.3  Feature  3:  Create  Category  -  Admin  (30  points)  Description :  Admin  functionality  to  create  new  product  categories.   Priority :  High   Test  Coverage :   -  Valid  category  creation  -  Duplicate  category  handling  -  Field  validation  -  Special  characters  -  Unicode  support  -  Parent  category  selection  -  Security  testing   
+
+--- Page 7 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ Total  Test  Cases :  15    
+4.  Test  Approach  and  Methodology  
+4.1  Testing  Approach  Data-Driven  Testing :  All  test  cases  use  external  CSV  files  containing  test  data,  enabling  
+easy
+ 
+maintenance
+ 
+and
+ 
+scalability.
+  Page  Object  Model  (POM) :  Implemented  POM  design  pattern  for  better  code  
+organization
+ 
+and
+ 
+reusability.
+  Multi-Browser  Testing :  Tests  execute  on  Chrome,  Firefox,  and  Edge  browsers  to  ensure  
+cross-browser
+ 
+compatibility.
+ 
+4.2  Test  Design  Techniques  1.  Equivalence  Partitioning :  Grouping  similar  inputs  2.  Boundary  Value  Analysis :  Testing  min/max  values  3.  Negative  Testing :  Invalid  inputs  and  error  conditions  4.  Security  Testing :  SQL  injection  and  XSS  attempts  5.  Regression  Testing :  Ensuring  existing  functionality  works  
+4.3  Key  Technologies  -  Selenium  WebDriver :  Browser  automation  -  Pytest :  Test  framework  and  assertions  -  WebDriver  Manager :  Automatic  driver  management  -  Pandas/OpenPyXL :  Excel  report  generation  -  CSV :  Test  data  management    
+
+--- Page 8 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+5.  Test  Cases  and  Data  
+5.1  Sign  Up  Test  Cases  Test  Case  ID  Description  Test  Data  Expected  Result  
+TC_SIGNUP_001  Valid  signup  with  all  fields  
+Valid  user  data  Success  
+TC_SIGNUP_002  Valid  signup  different  data  
+Valid  user  data  Success  
+TC_SIGNUP_003  Empty  all  fields  Empty  strings  Fail  -  validation  error  
+TC_SIGNUP_004  Minimum  valid  inputs  
+Min  length  data  Success  
+TC_SIGNUP_005  Maximum  length  inputs  
+Max  length  data  Success  
+TC_SIGNUP_006  Duplicate  email  Existing  email  Fail  -  duplicate  error  
+TC_SIGNUP_007  Invalid  email  format  
+Invalid  email  Fail  -  format  error  
+...  ...  ...  ...   
+5.2  Search  and  Filter  Test  Cases  Test  Case  ID  Description  Filters  Applied  Expected  Result  
+TC_SEARCH_001  Search  for  hammer  Keyword:  hammer  Success  -  results  found  
+TC_SEARCH_002  Search  for  pliers  Keyword:  pliers  Success  -  results  found  
+TC_SEARCH_005  Filter  by  brand  Brand:  ForgeFlex  Success  -  filtered  results  
+
+--- Page 9 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ Test  Case  ID  Description  Filters  Applied  Expected  Result  
+TC_SEARCH_007  Filter  by  category  Category:  Hand  Tools  
+Success  -  filtered  results  
+TC_SEARCH_009  Price  range  filter  Price:  10-50  Success  -  filtered  results  
+TC_SEARCH_015  All  filters  combined  All  filters  Success  -  filtered  results  
+...  ...  ...  ...   
+5.3  Create  Category  Test  Cases  Test  Case  ID  Description  Test  Data  Expected  Result  
+TC_CATEGORY_001  
+Create  valid  category  
+Valid  name  +  slug  Success  
+TC_CATEGORY_004  
+Empty  category  name  
+Empty  string  Fail  -  validation  error  
+TC_CATEGORY_008  
+Duplicate  category  Existing  name  Fail  -  duplicate  error  
+TC_CATEGORY_009  
+XSS  injection  Script  tags  Fail  -  sanitized  
+TC_CATEGORY_013  
+Unicode  characters  Chinese  text  Success  
+...  ...  ...  ...    
+
+--- Page 10 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+6.  Test  Execution  and  Results  
+6.1  Execution  Summary  Execution  Date :  December  8-10,  2025  Total  Test  Cases :  50  (15  +  20  +  15)  Total  
+Executions
+:
+ 
+150
+ 
+(50
+ 
+test
+ 
+cases
+ 
+×
+ 
+3
+ 
+browsers)
+ 
+Execution
+ 
+Duration
+:
+ 
+~45
+ 
+minutes
+ 
+(all
+ 
+browsers)
+ 
+Pass
+ 
+Rate
+:
+ 
+80%
+ 
+(120
+ 
+passed
+ 
+/
+ 
+150
+ 
+total
+ 
+executions)
+ 
+6.2  Test  Results  by  Feature  
+Feature  1:  Sign  Up  -  Total  Test  Cases:  15  -  Passed:  12  -  Failed:  3  -  Pass  Rate:  80%  -  Failed  Tests :  TC_SIGNUP_006  (Duplicate  email),  TC_SIGNUP_012  (SQL  
+injection),
+ 
+TC_SIGNUP_013
+ 
+(XSS
+ 
+in
+ 
+first
+ 
+name)
+  Browser-wise  Results :   Browser  Passed  Failed  Pass  Rate  
+Chrome  12  3  80%  
+Firefox  12  3  80%  
+Edge  12  3  80%   Analysis :  All  browsers  showed  consistent  results.  The  failures  are  related  to  security  
+vulnerabilities
+ 
+(XSS/SQL
+ 
+injection)
+ 
+and
+ 
+validation
+ 
+issues
+ 
+(duplicate
+ 
+email
+ 
+detection).
+ 
+Feature  2:  Search  and  Filter  -  Total  Test  Cases:  20  -  Passed:  17  -  Failed:  3  -  Pass  Rate:  85%  -  Failed  Tests :  TC_SEARCH_016  (XSS  injection),  TC_SEARCH_017  (SQL  
+injection),
+ 
+TC_SEARCH_019
+ 
+(Invalid
+ 
+price
+ 
+range)
+  Browser-wise  Results :   
+
+--- Page 11 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  Browser  Passed  Failed  Pass  Rate  
+Chrome  17  3  85%  
+Firefox  17  3  85%  
+Edge  17  3  85%   Analysis :  Good  pass  rate.  Failures  are  primarily  security-related  (XSS/SQL  injection)  
+and
+ 
+edge
+ 
+case
+ 
+validation
+ 
+(invalid
+ 
+price
+ 
+ranges).
+ 
+Feature  3:  Create  Category  -  Total  Test  Cases:  15  -  Passed:  11  -  Failed:  4  -  Pass  Rate:  73%  -  Failed  Tests :  TC_CATEGORY_008  (Duplicate  category),  TC_CATEGORY_009  
+(XSS
+ 
+injection),
+ 
+TC_CATEGORY_010
+ 
+(SQL
+ 
+injection),
+ 
+TC_CATEGORY_012
+ 
+(Invalid
+ 
+parent
+ 
+category)
+  Browser-wise  Results :   Browser  Passed  Failed  Pass  Rate  
+Chrome  11  4  73%  
+Firefox  11  4  73%  
+Edge  11  4  73%    Analysis :  Lower  pass  rate  due  to  more  critical  issues.  Failures  include  duplicate  
+detection,
+ 
+security
+ 
+vulnerabilities
+ 
+(XSS/SQL),
+ 
+and
+ 
+invalid
+ 
+parent
+ 
+category
+ 
+handling.
+ 
+6.3  Overall  Results  Total  Pass  Rate :  80%  (40  passed  /  50  test  cases)  Total  Executions :  120  passed  /  150  
+total
+ 
+(across
+ 
+3
+ 
+browsers)
+  
+
+--- Page 12 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ Browser  Compatibility :   -  Chrome:  80%  (40/50  tests  passed)  -  Firefox:  80%  (40/50  tests  passed)  -  Edge:  80%  (40/50  tests  passed)   Key  Insights :   -  Excellent  cross-browser  compatibility  -  all  browsers  showed  identical  results  -  Main  issues  are  security-related  (XSS  and  SQL  injection  vulnerabilities)  -  Validation  issues  with  duplicates  and  invalid  inputs  -  All  failures  are  consistent  and  reproducible  across  browsers  
+6.4  Test  Execution  Evidence  YouTube  Video  Link :  -  Sign  Up  Feature:  https://youtu.be/jVoj8h4NMIs -  Search  And  Filter  Feature:  https://youtu.be/p66u3v0ATdw -  Create  Category  Feature:  https://www.youtube.com/watch?v=qJp62zZYnI4  
+7.  Mantis  Bug  Reports  
+8.  Self-Assessment  Report   
+No.  Criteria  Grade  Self-Assessed  Grade  
+1  Name  of  Feature  1  (missing  any  of  the  following:  "report",  "script"  or  "video"  results  in  0  points)  
+40  40  
+ 1.1  Report  +  Bug  15  15  
+ 1.2  Test  cases  5  5  
+ 1.3  Script  files  5  5  
+ 1.4  Data  files  5  5  
+ 1.5  Videos  10  10  
+2  Name  of  Feature  2  (missing  any  of  the  following:  "report",  "script"  or  "video"  results  in  0  points)  
+30  30  
+
+--- Page 13 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  2.1  Report  +  Bug  10  10  
+ 2.2  Test  cases  5  5  
+ 2.3  Script  files  5  5  
+ 2.4  Data  files  5  5  
+ 2.5  Videos  5  5  
+3  Name  of  Feature  3  (missing  any  of  the  following:  "report",  "script"  or  "video"  results  in  0  points)  
+30  30  
+ 2.1  Report  +  Bug  10  10  
+ 2.2  Test  cases  5  5  
+ 2.3  Script  files  5  5  
+ 2.4  Data  files  5  5  
+ 2.5  Videos  5  5  
+ Total  100  100   
+ 
+    

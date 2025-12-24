@@ -1,0 +1,406 @@
+
+--- Slide 1 ---
+
+AI Software
+Testing Tools
+22125020 - Nguyen Bach Truong Giang
+22125071 - Dang Minh Nhut
+22125008 - Luu Quoc Bao
+22125035 - Nguyen Vinh Khang
+
+--- Slide 2 ---
+
+Test case design
+User stories and requirements specification
+Test case/data generation
+User stories
+Requirements specification
+ChatGPT
+Browserstack
+GEMINI
+AI Test Case Generator
+…
+Review
+style.visibility
+style.visibility
+style.visibility
+ppt_y
+style.visibility
+style.visibility
+style.visibility
+style.visibility
+
+--- Slide 3 ---
+
+Test case
+No specification
+at all
+Scenarios
+Source
+Later steps
+Exploratory Testing
+Ad-hoc Testing
+style.visibility
+style.visibility
+style.visibility
+style.visibility
+
+--- Slide 4 ---
+
+No specification at all
+Paper
+YouTube
+
+--- Slide 5 ---
+
+up to
+80%
+test case creation time
+(artificial intelligence (AI)–powered extension of VEW built on AWS for automotive testing)[1]
+
+--- Slide 6 ---
+
+2 -
+Experiment
+AI For
+Test Case Design
+
+--- Slide 7 ---
+
+Set up
+LLM:
+Gemini 3 Pro, GPT-5.1
+Turn on “Thinking” Mode
+Turn off “Learn from Past Chat” for Gemini
+3 Levels of Prompt
+User Story + AC
+User Story + AC + Testing Technique
+User Story + AC + Testing Technique + High level TC
+
+--- Slide 8 ---
+
+Prompts - Context (All)
+
+--- Slide 9 ---
+
+Prompt - Specification Source
+
+--- Slide 10 ---
+
+Prompts - User Story + Accept Crit (All)
+
+--- Slide 11 ---
+
+Prompt - Additional Instructions (All)
+
+--- Slide 12 ---
+
+Table of Contents
+AI for Test Case Design
+Experiment
+:
+AI for
+Test Case Design
+AI for
+Unit
+Testing
+Experiment
+:
+AI for
+Unit
+Testing
+
+--- Slide 13 ---
+
+Prompt - Testing Technique (P2, P3)
+
+--- Slide 14 ---
+
+Prompt - High Level TC (P3 only)
+
+--- Slide 15 ---
+
+Test scripts
+
+--- Slide 16 ---
+
+Results - Bugs
+Only
+GPT with Prompt 2 detected “Email with double dots allowed” bug.
+Only 3/6 suites check for DoB leap day handling.
+
+--- Slide 17 ---
+
+Results - Bugs Coverage
+Gemini gives less test cases than GPT while maintain similar bugs coverage.
+
+--- Slide 18 ---
+
+3 - AI For Unit Testing
+
+--- Slide 19 ---
+
+What is Unit Testing?
+Developer-focused practice of testing individual code components in isolation to verify their correctness
+
+--- Slide 20 ---
+
+When to do Unit Testing?
+During development
+Before factoring
+When fixing a bug
+Part of Continuous Integration (CI)
+
+--- Slide 21 ---
+
+How a developer writes unit tests
+Analyze code requirements
+1
+Design tests
+2
+Implement
+3
+Run test (CI/CD)
+4
+
+--- Slide 22 ---
+
+The unit testing paradox
+Why Developers "Hate" Testing
+Repetitive “busywork”
+The "Coverage Illusion"
+100% Coverage ≠ 100% Bug-free.
+
+--- Slide 23 ---
+
+2025
+
+--- Slide 24 ---
+
+What can AI really do for Unit testing?
+Generate test scaffolding
+1
+Coverage-Driven Generation
+2
+Autonomous test suite creation
+3
+Test repair & Enhancement
+4
+
+--- Slide 25 ---
+
+The fundamental limitation
+It
+can run
+BUT
+i
+t
+c
+an't
+j
+udge
+The Test Oracle Problem
+•
+Risk:
+If your code has a bug, the AI might write a test that
+passes
+the bug, treating the error as "correct behavior".
+MISSING CONTEXT
+
+--- Slide 26 ---
+
+The fundamental limitation
+You are the
+ORACLE
+The Test Oracle Problem
+•
+Risk:
+If your code has a bug, the AI might write a test that
+passes
+the bug, treating the error as "correct behavior".
+MISSING CONTEXT
+
+--- Slide 27 ---
+
+4 -
+Experiment
+AI For Unit Testing
+
+--- Slide 28 ---
+
+UnitTestAI
+Qodo
+Generate test cases by observing
+function signature
+,
+code in function
+and
+natural-language comment
+
+--- Slide 29 ---
+
+UnitTestAI
+Automatic language detection
+based on the selected code block.
+Framework suggestions:
+Provides a list of relevant test frameworks for the detected language.
+Highly versatile and user-friendly
+, allowing developers to keep using their preferred tools and testing practices.
+
+--- Slide 30 ---
+
+Qodo
+Automatic test generation
+for new or changed code, improving test coverage.
+Customizable rules
+that enforce organizational testing, quality, and security standards consistently.
+High-precision
+automated code reviews
+1-click issue resolution
+to quickly fix detected problems.
+
+--- Slide 31 ---
+
+Experiment Design
+Tools
+Dataset
+Code Coverage
+Readability & Documentation
+Test Suite Efficiency
+Criteria
+
+--- Slide 32 ---
+
+Experiment
+Result - Code Coverage
+{ADA966AB-0153-49B2-8CC4-404B1B75563B}
+Qodo
+UnitTestAI
+Qodo effectively
+achieved full logical coverage
+by explicitly creating tests for all possible outcomes and failure modes defined by the problem's constraints.
+UnitTest AI provided
+good baseline coverage
+, ensuring the function works for sample cases, basic inputs, and standard boundary conditions.
+
+--- Slide 33 ---
+
+Experiment Result -
+Test Suite Efficiency
+{ADA966AB-0153-49B2-8CC4-404B1B75563B}
+Qodo
+UnitTestAI
+Sacrifices Speed for Strength.
+Introduced heavy-duty helper functions, such as the brute-force optimizer in Problem 2. This approach guarantees the optimal solution is checked, but it can lead to significantly longer execution times as the constraints increase.
+Prioritizes Speed.
+All tests run quickly as they rely purely on the tested algorithm without computationally expensive verification (like brute force). This makes for faster developer feedback cycles.
+
+--- Slide 34 ---
+
+How testers do their job
+Test closure
+Requirements analysis
+1
+Test planning
+2
+Test design
+3
+6
+Environment setup
+4
+Test execution
+5
+
+--- Slide 35 ---
+
+Experiment Result -
+Readability and Documentation
+{ADA966AB-0153-49B2-8CC4-404B1B75563B}
+Qodo
+UnitTestAI
+Superior Clarity.
+Each test function is often accompanied by detailed comments explaining the logical purpose, expected path, and reasoning for the case, significantly aiding human understanding and debugging.
+Functional Clarity.
+Uses clear, descriptive function names, but generally lacks the rich, problem-specific commentary provided by Qodo, relying on the test's input/output to convey its purpose.
+
+--- Slide 36 ---
+
+Demo - UnitTestAI
+style.visibility
+
+--- Slide 37 ---
+
+BUT
+Privacy
+HUMANS
+Generative AI is probabilistic.
+style.visibility
+style.visibility
+style.visibility
+
+--- Slide 38 ---
+
+QnA
+
+--- Slide 39 ---
+
+References
+[1] Tobias Drees, Daniel Krumpholz, and Stanislav Kruglov. Using generative ai to create test cases for software requirements | aws for industries, Jan 2025.
+https://aws.amazon.com/blogs/industries/using-generative-ai-to-create-test-cases-for-software-requirements/
+.
+[2] Tariq M. King, Jason Arbon, Dionny Santiago, David Adamo, Wendy Chin, and
+R
+am Shanmugam. Ai for testing today and tomorrow: Industry perspectives. In 2019 IEEE International Conference On Artificial Intelligence Testing (AITest), pages 81–88, 2019. doi: 10.1109/AITest.2019.000-3.
+‌
+
+--- Slide 40 ---
+
+Acknowledgements
+User icons created by Ch.designer - Flaticon
+Artificial intelligence icons created by FACH - Flaticon
+
+--- Slide 41 ---
+
+How testers do their job
+Test closure
+Requirements analysis
+1
+Test planning
+2
+Test design
+3
+6
+Environment setup
+4
+Test execution
+5
+style.visibility
+style.visibility
+
+--- Slide 42 ---
+
+How testers do their job
+Test design
+3
+Test case
+Test data
+Human error
+Time consuming
+
+--- Slide 43 ---
+
+1 - AI For
+Test Case Design
+
+--- Slide 44 ---
+
+What can AI help?
+Test case generation
+Test data generation
+
+--- Slide 45 ---
+
+INPUT
+Source code/GUI
+User stories,
+requirements specification

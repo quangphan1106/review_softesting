@@ -1,0 +1,281 @@
+
+--- Page 1 ---
+ 
+UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  --------------------------------       22125005  -  MAI  XUAN  BACH     
+CS423  -  Software  Testing  
+HW#04:   GUI  &  USABILITY  TESTING    
+          HCMC  –  Nov,  2025     
+ 
+
+--- Page 2 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+Table  of  contents  Table  of  contents ................................................................................................................. 2 1.  Introduction .................................................................................................................... 3 2.  Task  1:  Checklist  of  one  GUI .................................................................................................. 3 3.  Task  2:  User  survey  and  feedback ......................................................................................... 3 4.  Task  3:  BrowserStack .............................................................................................................. 3 5.  identified  bugs ......................................................................................................................... 3 6.  Self  Assessment ...................................................................................................................... 3  
+
+--- Page 3 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+1.  Introduction   This  report  applies  GUI  testing  techniques  to  analyzes  Payment  features  from  the  Practice  
+Software
+ 
+Testing
+ 
+application
+ 
+(Sprint
+ 
+5
+ 
+-
+ 
+with
+ 
+bugs
+ 
+version:
+ https://with-bugs.practicesoftwaretesting.com).  The  analysis  focuses  on  three  different  tasks:  Checklist  of  payment  GUI,  User  survey  and  feedback  and  BrowserStack  
+2.  Task  1:  Checklist  of  payment  GUI  
+2.1  User  Interface  
+2.1.1  Link  ●  I  systematically  clicked  and  inspected  all  links  and  buttons  on  the  checkout  page.  ●  I  checked  that  each  link  navigated  to  the  expected  page  or  triggered  the  intended  
+action.
+ ●  I  verified  that  external  links  were  active  and  noted  how  they  opened  (same  tab  or  
+new
+ 
+tab).
+ 
+I
+ 
+looked
+ 
+for
+ 
+any
+ 
+pages
+ 
+that
+ 
+were
+ 
+unreachable
+ 
+or
+ 
+led
+ 
+to
+ 
+dead-ends.
+ ●  I  ensured  that  referenced  websites  and  email  addresses  were  properly  hyperlinked.  
+2.1.2  Color  
+●  I  observed  the  overall  background  color  to  see  if  it  is  dark  or  light  and  whether  it  
+affects
+ 
+readability.
+ ●  I  checked  that  different  sections  have  distinct  and  consistent  background  colors.  ●  I  verified  that  normal  text  color  is  uniform  across  the  page.  ●  I  confirmed  that  emphasized  text  (bold,  italic)  and  hyperlinks  stand  out  from  
+normal
+ 
+text.
+ ●  I  tested  hyperlink  color  changes  on  hover  and  after  being  visited.  ●  I  inspected  input  fields  and  buttons  to  ensure  text  and  background  colors  are  
+consistent,
+ 
+and
+ 
+disabled
+ 
+fields
+ 
+are
+ 
+visually
+ 
+distinguishable.
+ 
+
+--- Page 4 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 2.1.3  Content  
+●  I  inspected  the  font  type  and  size  across  different  page  elements  (buttons,  inputs,  
+text,
+ 
+headings,
+ 
+links)
+ 
+to
+ 
+check
+ 
+for
+ 
+consistency.
+ ●  I  verified  that  headings  are  visually  distinct  from  normal  content  and  emphasize  
+hierarchy.
+ ●  I  checked  alignment  of  all  text  and  headings  to  ensure  proper  layout.  ●  I  reviewed  the  overall  page  structure  and  section  arrangement  for  clarity  and  
+readability.
+ ●  I  examined  the  display  of  product  lists,  input  fields,  and  buttons  to  confirm  
+uniformity
+ 
+and
+ 
+logical
+ 
+grouping.
+ ●  I  inspected  error  messages  and  tooltips  for  correctness,  visibility,  and  consistency  
+in
+ 
+presentation.
+ ●  I  noted  any  missing  elements  such  as  company  information,  privacy  policy,  or  
+search
+ 
+bar
+ 
+visibility.
+ 
+2.1.4  Image  
+●  I  checked  that  all  images  and  icons  are  properly  aligned.  ●  I  inspected  whether  images  are  optimized  for  size  and  quick  loading.  ●  I  ensured  that  buttons  have  consistent  size,  shape,  and  font.  ●  I  verified  that  banners  display  correctly  and  consistently.  ●  I  checked  that  text  is  positioned  correctly  relative  to  images.  ●  I  observed  page  usability  when  images  are  broken  or  missing.  
+2.1.5  Form  
+●  I  checked  that  required  and  optional  fields  are  indicated.  ●  I  verified  that  guidance  or  constraints  are  provided  for  complex  input  fields.  ●  I  confirmed  that  default  values  appear  when  the  page  loads  or  reloads.  ●  I  inspected  tables  and  forms  to  ensure  content  is  displayed  correctly  and  
+aligned
+ 
+properly.
+ ●  I  checked  that  radio  buttons  allow  only  one  selection  per  group.  ●  I  verified  that  checkboxes  can  be  selected  individually  or  in  multiples  where  
+available.
+ ●  I  checked  that  combo  boxes  or  list  boxes  have  options  in  a  logical  order.  
+ 
+
+--- Page 5 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+2.2  Usability   
+●  I  checked  whether  the  website  clearly  communicates  its  intended  audience.  ●  I  verified  that  the  interface  is  recognizable  and  elements  are  grouped  logically.  ●  I  observed  whether  common  users  can  operate  the  system  without  confusion  or  
+frustration.
+ 
+I
+ 
+inspected
+ 
+terminology,
+ 
+buttons,
+ 
+and
+ 
+lists
+ 
+for
+ 
+clarity,
+ 
+completeness,
+ 
+and
+ 
+proper
+ 
+ordering.
+ ●  I  checked  for  support  features,  tab  navigation,  and  progress  indicators  during  long  
+tasks.
+ 
+2.3  Compatibility  
+●  I  checked  whether  the  website  layout  and  text  display  correctly  at  different  screen  
+resolutions.
+ ●  I  verified  that  colors  and  fonts  are  consistent  and  readable  across  devices.  ●  I  ensured  that  images  and  elements  maintain  proper  alignment  and  sizing  on  
+various
+ 
+resolutions.
+ ●  I  considered  printer  compatibility,  including  text  and  image  alignment,  colors,  and  
+scaling
+ 
+for
+ 
+paper
+ 
+size.
+ ●  I  noted  whether  tables  and  page  content  print  clearly  without  cutting  off  
+information.
+ 
+ 
+ 
+ 
+
+--- Page 6 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+  
+ 
+3.  Task  2:  User  survey  and  feedback  
+ 
+ 
+
+--- Page 7 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+ 
+ 
+ 
+
+--- Page 8 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+ 
+
+--- Page 9 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+
+--- Page 10 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+ 
+
+--- Page 11 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ 
+ 
+4.  Task  3:  BrowserStack  1.  Open  the  BrowserStack:  https://www.browserstack.com/ 2.  Login  or  Sign  up  3.  Select  live  option  4.  Choose  a  platform  to  test  (Ex:  Android,  IOS,  MacOS)  
+
+--- Page 12 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 5.  Select  the  Device  (Ex:  S23  Ultra  (Android))  6.  Enter  url  and  test  for  the  payment  page.   
+ Figure  4.1:  Payment  page  on  MacOS  
+
+--- Page 13 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ Figure  4.2:  Payment  page  on  IOS  Ipad  
+
+--- Page 14 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+ Figure  4.3:  Payment  Page  on  Android  Samsung  Galaxy   
+
+--- Page 15 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 
+5.  Identified  bugs  
+ Figure  5.1:  I  have  found  3  bugs  in  payment  page  and  report  it  on  Mantis  System  
+6.  Self  Assessment   
+Self-Assessment  Report  
+Criteria  Outcomes  (Brief  description  about  what  you  get/trouble  from  each  requirement)  
+Grade  Self-Assessed  Grade  
+1  Checklist  of  one  GUI  50  50  
+ 1.1  Checklist  (30)  30  30  
+ 1.2  Bugs  20  20  
+
+--- Page 16 ---
+  UNIVERSITY  OF  SCIENCE  FACULTY  OF  INFORMATION  TECHNOLOGY  
+ 2  User  survey  and  feedback  40  40  
+ 2.1  Questions  (10)  10  10  
+ 2.2  Feedback  (7)  10  10  
+ 2.3  Report  10  10  
+ 2.4  Bug  10  10  
+3  BrowserStack  30  30  
+ Total  120  120  
+ 
+ 
+ 

@@ -1,0 +1,418 @@
+
+--- Page 1 ---
+Web
+Automation for 
+Web
+Group 07
+--- Page 2 ---
+Introduction Selenium
+AI-First Q&A
+Table of contents
+01 02
+03 04
+--- Page 3 ---
+INTRODUCTION
+01
+--- Page 4 ---
+What is Automation Testing?
+● A software testing technique that uses specialized tools and 
+scripts to automatically execute test cases
+● Compare actual outcomes with expected results, and generate 
+detailed reports
+● Does not require human intervention during execution
+--- Page 5 ---
+Why Automation?
+Speed: Test suites can be executed much 
+faster than manual testing.
+Accuracy: Eliminates human errors.
+Efficiency: Reduces manual effort, saving 
+time for testers to focus on complex test 
+scenarios.
+Reusability: Test scripts can be reused 
+across multiple versions or environments.
+Coverage: Allows running a large number of 
+test cases.
+
+--- Page 6 ---
+Which test cases to automate?
+● High-risk or business-critical workﬂows
+● Repetitive regression tests
+● Data-intensive tests
+● Cross-browser or cross-platform scenarios
+● Time-consuming manual processes 
+--- Page 7 ---
+Process of Automation Testing
+Choose suitable tools based 
+on project requirements (e.g., 
+Selenium for web, Appium for 
+mobile).
+Identify test cases that provide 
+maximum ROI.
+Test Tool Selection Deﬁne Scope of Automation
+--- Page 8 ---
+Three ideas
+Create automation 
+strategy, test scripts, 
+and environment setup.
+Run automated tests 
+and collect reports.
+Update scripts as 
+application changes to 
+ensure accuracy.
+Planning, Design, 
+and Development Test Execution Maintenance
+--- Page 9 ---
+Automation Testing Frameworks
+● Linear/Record & Playback: Easiest to use, minimal coding.
+● Modular/Component: Breaks tests into reusable modules.
+● Data-Driven: Separates test data from scripts.
+● Keyword-Driven: Uses keywords to represent actions.
+● Hybrid: Combines multiple frameworks for ﬂexibility.
+● BDD (Behavior-Driven Development): Uses natural language 
+syntax to improve collaboration between testers and developers.
+
+--- Page 10 ---
+ Popular Automation Tools
+● Selenium: Open-source tool for web application testing.
+● Appium: Mobile automation framework supporting Android and 
+iOS.
+● TestNG, JUnit: Testing frameworks for managing test execution.
+● Cypress, Playwright: Modern automation tools with faster 
+execution and better debugging.
+
+--- Page 11 ---
+SELENIUM
+02
+--- Page 12 ---
+2004 - Birth 
+of Selenium
+A Quick Walkthrough
+2006 - The 
+Evolution
+2008 & Beyond: 
+The Modern Era
+● Created by Jason 
+Huggins.
+● Original Name: 
+"JavaScript TestRunner".
+● Renamed: Selenium 
+Core.
+● Selenium RC was 
+developed.
+● Solved a major security 
+issue (cross-domain 
+policy) that limited 
+Selenium Core.
+● Selenium 1 merged with 
+a newer, faster project 
+called "WebDriver".
+● This created Selenium 2, 
+which evolved into the 
+Selenium WebDriver (3 & 
+4) we use today.
+--- Page 13 ---
+What is Selenium?
+● An open-source framework for automating web browsers.
+● Selenium is not just one tool or API, it comprises many tools.
+● Simulates a real user interacting with a web application: clicks 
+buttons, ﬁlls forms, navigates pages, veriﬁes results, etc.
+--- Page 14 ---
+Selenium Suite
+
+--- Page 15 ---
+Environment Setup (Python)
+1. Install Python
+- Ensure Python is installed on your system (from python.org).
+2. Install Required Libraries
+- Need two main packages
+
+--- Page 16 ---
+How Selenium Finds Web Elements
+Selenium needs to identify and 
+interact with web elements (such 
+as buttons, inputs, links, etc).
+→   To do this, Selenium uses 
+locators.
+
+--- Page 17 ---
+What are 
+Locators?
+A locator is a way to identify elements on a page. It is the 
+argument passed to the ﬁnding element methods.
+Locator
+--- Page 18 ---
+Common Selenium Locators
+Locator Description
+class name Locates elements whose class name contains 
+the search value
+css selector Locates elements matching a CSS selector
+id Locates elements whose ID attribute matches 
+the search value
+name Locates elements whose NAME attribute 
+matches the search value
+--- Page 19 ---
+Common Selenium Locators
+Locator Description
+link text Locates anchor (<a>) elements whose visible 
+text matches the search value
+partial link text Locates anchor (<a>) elements whose visible 
+text contains the search value (only the ﬁrst 
+match is selected)
+tag name Locates elements whose HTML tag name 
+matches the search value
+xpath Locates elements matching an XPath expression
+--- Page 20 ---
+
+--- Page 21 ---
+Interacting 
+with web elements
+Click
+Send keys
+Clear
+Submit
+Select
+Click the element
+Type text or send keyboard input
+Reset the content of an element
+Submit a form
+Select options from dropdowns
+Action Description
+--- Page 22 ---
+Waits - An essential concept
+Problem: Y our automation script often runs much 
+faster than the browser can load or render 
+elements.
+NEED TO USE WAITS
+--- Page 23 ---
+Why Thread.sleep() is a bad idea?
+- Hard wait: Thread.sleep() in Java or time.sleep() in 
+Python
+- It pauses execution for a ﬁxed amount of time
+Ex: time.sleep(5)
+=> Meaning: "Pause the entire script for exactly 5 
+seconds, no matter what."
+
+--- Page 24 ---
+Why Thread.sleep() is a bad idea?
+1. Slow: If the element appears in 1 second, your script wastes 4 
+useless seconds. (100 tests = 400+ wasted seconds).
+2. Unreliable (Flaky): If the network is slow and the element takes 6 
+seconds to load, your script waits 5s, wakes up, ﬁnds nothing, and 
+still FAILS.
+--- Page 25 ---
+Concept: Y ou tell the driver one time: "Hey, any time you use ﬁnd_element 
+and can't ﬁnd something, please keep retrying for up to X seconds before 
+you give up."
+The Good Way: Implicit Wait
+
+--- Page 26 ---
+Pro: Very easy, solves many basic loading issues.
+Con: Only checks one condition: "Is the element present in the 
+HTML?"  -  It doesn't care if the element is visible or clickable.
+The Good Way: Implicit Wait
+--- Page 27 ---
+Concept: "Wait for a speciﬁc condition to be true, for a 
+maximum amount of time."
+The Best Way: Explicit Wait
+- Y ou create a wait object (e.g., WebDriverWait(driver, 10) 
+for a 10s max wait).
+- Y ou tell the wait object to wait .until() your Expected 
+Condition is met.
+--- Page 28 ---
+Locator
+Explicit Wait
+
+--- Page 29 ---
+POM
+Introduction
+A design pattern that 
+encourages creating 
+separate classes for each 
+page of the application. 
+Each class holds locators and 
+methods/actions for that 
+page.
+
+--- Page 30 ---
+Data-Driven Testing Framework
+A framework where test data is separated from test scripts, allowing 
+tests to run with multiple sets of input without rewriting the code.
+Sources of data: CSV, Excel, JSON, database, or even hardcoded 
+lists.
+Beneﬁts:
+● Reduces duplicate test scripts
+● Makes adding new test scenarios easier
+● Improves test coverage
+--- Page 31 ---
+
+--- Page 32 ---
+Cross-Browser Testing
+- Users access web apps via various browsers (Chrome, Firefox, 
+Safari, Edge) and OS versions.
+- Different Rendering Engines (Blink, Gecko, WebKit) interpret 
+CSS/JS differently.
+-> A feature working on Chrome might break on Safari.
+ - Need to ensure consistent functionality and UX for all users, 
+regardless of their browser choice.
+
+--- Page 33 ---
+Handling Multiple Browsers with Selenium
+● Write one test script (Java/Python), run it anywhere.
+● Selenium interacts with speciﬁc browsers via Drivers:
+○ ChromeDriver    ->     Google Chrome
+○ GeckoDriver        ->     Firefox
+○ SafariDriver           ->     macOS Safari
+
+--- Page 34 ---
+Handling Multiple Browsers with Selenium
+
+--- Page 35 ---
+
+--- Page 36 ---
+Common Challenges in 
+Selenium
+--- Page 37 ---
+- IDs or Classes change on every page load or database 
+update (e.g., submit_123 -> submit_234).
+- Static locators become invalid immediately.
+=>  NoSuchElementExceptions
+1. Dynamic IDs/ XPath 
+--- Page 38 ---
+- Locate elements relative to stable parents or siblings (1). 
+- The Concept:
+- Dynamic IDs (e.g., id="ember123") break easily.
+- Visible Text (Labels, Titles) is stable.
+- Strategy: Use the Stable Neighbor (Label) as an anchor to ﬁnd the 
+Dynamic Target (Input/Button).
+Solution:
+(1) Nguyen, V., To, T., & Diep, G. H. (2021). Generating and selecting resilient and maintainable locators for Web automated testing. 
+Software Testing, Verification and Reliability, 31(3), e1760.
+
+--- Page 39 ---
+Handling Structural Changes (TodoMVC)
+Problem: List items change order (e.g., 
+"Cereal" moves down).
+Solution:
+- Instead of index: //input[1] (Fragile).
+
+--- Page 40 ---
+Handling Dynamic IDs (LinkedIn)
+
+--- Page 41 ---
+Handling Dynamic IDs (LinkedIn)
+Problem: Frameworks like EmberJS generate random IDs on every reload.
+Solution:
+- Instead of ID: //button[@id='ember4661'] (Fails on reload).
+
+--- Page 42 ---
+- Designed speciﬁcally to block 
+automation tools.
+- Captcha requires human cognitive 
+interaction.
+- OTPs require external devices
+2. Captcha & OTP
+--- Page 43 ---
+2. Captcha & OTP
+Solution:
+- Disable Captcha in Dev or Staging 
+environments.
+- Static OTP: Conﬁgure a hardcoded 
+code (ex: 999999) for test accounts.
+--- Page 44 ---
+3. iFrames
+- A webpage embedded inside another webpage
+- Selenium driver focuses only on the main page context.
+
+--- Page 45 ---
+
+--- Page 46 ---
+3. iFrames
+Solution:
+- Explicitly switch the driver's focus.
+ex:  driver.switch_to.frame("frame_id")
+- Must switch back to the main page after action.
+ex: driver.switch_to.default_content()
+--- Page 47 ---
+AI-First
+04
+--- Page 48 ---
+Integrate AI with 
+Selenium
+4.1
+--- Page 49 ---
+Generative AI in Test Design
+● AI analyzes User Stories/Requirements/Interfaces to generate Test 
+Cases.
+● Optimization: AI removes redundant test cases
+● Converts Test Steps into boilerplate Selenium scripts (Java/Python).
+● Tools: ChatGPT, GitHub Copilot,Gemini.
+--- Page 50 ---
+
+--- Page 51 ---
+Example
+● Writing test scripts is 
+time-consuming
+➔ Generative AI writes Selenium 
+tests from natural language 
+prompts.
+➔ AI tools automatically explore web 
+ﬂows and generate tests.
+
+--- Page 52 ---
+Self-Healing 
+Execution
+● Selenium tests rely on ﬁxed 
+locators (IDs, XPaths). When 
+developers update the UI, tests 
+break.
+➔ AI “learns” elements using 
+multiple attributes (text, position, 
+color, etc.). When the UI changes, 
+AI automatically ﬁnds and ﬁxes 
+the locator so that tests continue 
+running smoothly.
+➔ Tool: Healenium
+
+--- Page 53 ---
+Visual AI Validation
+● Selenium only reads code (DOM) - 
+it cannot see the interface. It 
+misses layout breaks, overlapping 
+text, or wrong colors.
+➔ AI compares the “baseline” image 
+with the current UI screenshot to 
+ﬁnd visual inconsistencies.
+➔ Tool: Applitools
+
+--- Page 54 ---
+
+--- Page 55 ---
+Make Selenium smarter, more 
+stable, and more efficient
+--- Page 56 ---
+AI-Native
+Low-Code Platforms
+4.2
+--- Page 57 ---
+AI-Powered Automation Platforms
+● Moving from raw coding to intelligent, low-code platforms.
+● Popular Tools: Katalon Platform, TestComplete, Testim, Mabl, 
+Tricentis Tosca.
+● AI features are built-in, no need to install separate libraries.
+● AI automatically handles page loading (solves Flakiness).
+● Learns from past failures to optimize test runs.
+--- Page 58 ---
+● A comprehensive Quality Management Platform for Web, Mobile, 
+API, and Desktop testing.
+● Integrated GPT to generate code from text
+● Native mechanisms to handle dynamic IDs and loading issues 
+automatically.
+● AI generates regression tests based on real user interactions in 
+Production environments.
+
+--- Page 59 ---
+
+--- Page 60 ---
+Q&A
+--- Page 61 ---
+Thanks
