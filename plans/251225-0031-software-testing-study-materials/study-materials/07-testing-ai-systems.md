@@ -427,165 +427,34 @@ Use Promptfoo when:
 ## 8. Application-Level Exam Questions (Updated)
 
 ### Question 1: Bias Testing Strategy
-**Scenario:** Hiring AI model shows 80% accuracy for male candidates but 65% for female candidates.
-
-**Question:** How would you test and mitigate this bias?
+**Scenario:** Hiring AI: 80% accuracy (male) vs 65% (female)
 
 **Answer:**
-```python
-# 1. Quantify bias
-from aif360.metrics import ClassificationMetric
-
-# Split data by gender
-metric = ClassificationMetric(
-    test_data,
-    predictions,
-    unprivileged_groups=[{'gender': 'F'}],
-    privileged_groups=[{'gender': 'M'}]
-)
-
-disparate_impact = metric.disparate_impact()  # Should be 0.8-1.25
-statistical_parity = metric.statistical_parity_difference()
-
-# 2. Identify bias sources
-# - Training data imbalance (check gender distribution)
-# - Feature correlation (check if features proxy for gender)
-# - Historical bias (past hiring data)
-
-# 3. Mitigation strategies
-# Pre-processing: Reweigh samples
-from aif360.algorithms.preprocessing import Reweighing
-rw = Reweighing(unprivileged_groups, privileged_groups)
-balanced_data = rw.fit_transform(training_data)
-
-# In-processing: Add fairness constraint
-from aif360.algorithms.inprocessing import PrejudiceRemover
-model = PrejudiceRemover(eta=1.0)  # eta = fairness weight
-
-# Post-processing: Calibrate thresholds
-from aif360.algorithms.postprocessing import CalibratedEqOddsPostprocessing
-calibrator = CalibratedEqOddsPostprocessing(unprivileged_groups, privileged_groups)
-fair_predictions = calibrator.fit_predict(dataset, predictions)
-
-# 4. Validation
-# - Retest with balanced test set
-# - Check disparate impact improved
-# - Verify accuracy still acceptable
-```
+1. **Quantify:** Disparate impact (goal: 0.8-1.25), statistical parity difference
+2. **Identify sources:** Data imbalance, feature proxy, historical bias
+3. **Mitigate:** Pre-processing (Reweighing), In-processing (PrejudiceRemover), Post-processing (CalibratedEqOdds)
+4. **Validate:** Retest, verify disparate impact improved, accuracy still acceptable
 
 ### Question 2: Test Oracle for Image Classifier
-**Scenario:** Image classification model for product defects. How do you define "correct" output?
+**Scenario:** Product defect classification - how to define "correct"?
 
-**Question:** Design a test oracle approach.
-
-**Answer:**
-```
-Approach: Multi-layer oracle with thresholds
-
-1. Statistical Oracle:
-   - Accept prediction if confidence > 0.85
-   - Flag for review if 0.50 < confidence < 0.85
-   - Reject if confidence < 0.50
-
-2. Metamorphic Testing:
-   - Rotation: Same class for rotated images
-   - Brightness: Same class for slight brightness changes
-   - Cropping: Same class if defect visible
-
-3. Differential Testing:
-   - Compare with human-labeled ground truth
-   - Use ensemble of models (majority vote)
-
-4. Reference Oracle:
-   - Small set of expert-labeled images
-   - Must achieve 95%+ accuracy on reference set
-
-Implementation:
-```python
-def oracle(prediction, image, reference_set=None):
-    # Layer 1: Confidence check
-    if prediction.confidence < 0.50:
-        return "REJECT", "Low confidence"
-    elif prediction.confidence < 0.85:
-        return "REVIEW", "Medium confidence"
-
-    # Layer 2: Metamorphic check
-    rotated = rotate(image, 90)
-    rotated_pred = model.predict(rotated)
-    if rotated_pred.label != prediction.label:
-        return "REVIEW", "Failed rotation invariance"
-
-    # Layer 3: Reference check (if applicable)
-    if image in reference_set:
-        if prediction.label != reference_set[image]:
-            return "FAIL", "Incorrect vs reference"
-
-    return "PASS", "All checks passed"
-```
+**Answer - Multi-layer Oracle:**
+| Layer | Method | Threshold |
+|-------|--------|-----------|
+| Statistical | Confidence check | Accept >0.85, Review 0.5-0.85, Reject <0.5 |
+| Metamorphic | Rotation/brightness invariance | Same class for transforms |
+| Reference | Expert-labeled set | ≥95% accuracy |
 
 ### Question 3: LLM Evaluation Strategy
-**Scenario:** RAG chatbot for customer support needs evaluation.
+**Scenario:** RAG chatbot evaluation plan
 
-**Question:** Design comprehensive evaluation plan.
-
-**Answer:**
-```
-Evaluation Dimensions:
-
-1. Retrieval Quality:
-   - Recall@K: % of relevant docs retrieved
-   - Precision@K: % of retrieved docs relevant
-   - MRR: Mean Reciprocal Rank
-
-2. Response Quality:
-   - Factual Accuracy: Cross-reference with knowledge base
-   - Relevance: Answer addresses question (LLM-as-judge)
-   - Completeness: All aspects answered
-
-3. Safety & Guardrails:
-   - Refusal rate for out-of-scope queries
-   - Hallucination detection
-   - PII handling
-
-4. User Experience:
-   - Response latency
-   - Conversation coherence
-   - Escalation rate to human
-
-Test Suite:
-```python
-def evaluate_rag_chatbot(chatbot, test_set):
-    results = {
-        "retrieval_recall": [],
-        "answer_relevance": [],
-        "factual_accuracy": [],
-        "safety": [],
-        "latency": []
-    }
-
-    for query, expected_docs, expected_answer in test_set:
-        # Retrieval evaluation
-        retrieved = chatbot.retrieve(query)
-        recall = len(set(retrieved) & set(expected_docs)) / len(expected_docs)
-        results["retrieval_recall"].append(recall)
-
-        # Response evaluation
-        start = time.time()
-        response = chatbot.respond(query)
-        latency = time.time() - start
-        results["latency"].append(latency)
-
-        # LLM-as-judge for relevance
-        relevance = evaluate_relevance(query, response)
-        results["answer_relevance"].append(relevance)
-
-        # Factual check against knowledge base
-        accuracy = check_facts(response, knowledge_base)
-        results["factual_accuracy"].append(accuracy)
-
-    # Aggregate metrics
-    return {k: np.mean(v) for k, v in results.items()}
-```
+**Answer - Dimensions:**
+| Dimension | Metrics |
+|-----------|---------|
+| Retrieval | Recall@K, Precision@K, MRR |
+| Response | Factual accuracy, Relevance (LLM-judge), Completeness |
+| Safety | Refusal rate, Hallucination, PII handling |
+| UX | Latency, Coherence, Escalation rate |
 
 ---
 
@@ -593,48 +462,25 @@ def evaluate_rag_chatbot(chatbot, test_set):
 
 ### ML Testing Commands
 
-```python
-# pytest-ml assertions
-import pytest_ml
-
-# Model accuracy
-pytest_ml.assert_model_accuracy(model, X_test, y_test, min_accuracy=0.85)
-
-# Feature importance
-pytest_ml.assert_feature_importance(model, X, threshold=0.05)
-
-# Distribution shift
-pytest_ml.assert_no_distribution_shift(X_train, X_test, p_value=0.05)
-```
+| Command | Purpose |
+|---------|---------|
+| `assert_model_accuracy(model, X, y, min=0.85)` | Check accuracy threshold |
+| `assert_feature_importance(model, X, threshold=0.05)` | Verify feature relevance |
+| `assert_no_distribution_shift(X_train, X_test)` | Check data drift |
 
 ### Fairness Metrics Quick Reference
 
-```python
-from aif360.metrics import ClassificationMetric
+| Metric | Goal |
+|--------|------|
+| `disparate_impact()` | 0.8-1.25 |
+| `statistical_parity_difference()` | ~0 |
+| `equal_opportunity_difference()` | ~0 |
+| `average_odds_difference()` | ~0 |
 
-metric = ClassificationMetric(dataset, predictions,
-    unprivileged_groups=[{'attr': 0}],
-    privileged_groups=[{'attr': 1}])
+### Adversarial Quick Reference
 
-# Common metrics
-metric.disparate_impact()           # Goal: 0.8-1.25
-metric.statistical_parity_difference()  # Goal: ~0
-metric.equal_opportunity_difference()   # Goal: ~0
-metric.average_odds_difference()        # Goal: ~0
-```
-
-### Adversarial Testing Quick Reference
-
-```python
-# FGSM attack
-epsilon = 0.03
-perturbation = epsilon * gradient.sign()
-adversarial = original + perturbation
-
-# Robustness metrics
-robustness = adversarial_accuracy / original_accuracy
-# Goal: > 70%
-```
+- FGSM: `adversarial = original + 0.03 * gradient.sign()`
+- Robustness: `adversarial_accuracy / original_accuracy` (goal: >70%)
 
 ### ML Testing Checklist
 

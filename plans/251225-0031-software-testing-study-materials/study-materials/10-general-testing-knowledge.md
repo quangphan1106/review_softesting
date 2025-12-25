@@ -399,19 +399,10 @@ Sprint 1          Sprint 2          Sprint 3
 - Fastest execution, easiest to debug
 - Tools: JUnit, pytest, Jest, NUnit
 
-```python
-# Unit Test Example
-def test_calculate_discount():
-    # Arrange
-    price = 100
-    discount_percent = 20
-
-    # Act
-    result = calculate_discount(price, discount_percent)
-
-    # Assert
-    assert result == 80
-```
+**AAA Pattern:** Arrange → Act → Assert
+- Arrange: Setup inputs (price=100, discount=20)
+- Act: Call function (calculate_discount)
+- Assert: Verify result (assert result == 80)
 
 **Level 2: Integration Testing**
 - Tests interaction between components/modules
@@ -836,39 +827,17 @@ System ready for production with minor known issues.
 **2. Statement Coverage**
 - Has each node/statement been executed?
 - Weakest coverage criterion
-
-```c
-void foo(int a, int b, int x) {
-    if ((a > 1) && (b == 0))
-        x = x / a;        // Statement 1
-    if (a == 2 || x > 1)
-        x = x + 1;        // Statement 2
-}
-
-// Test: a=2, b=0, x=4 → Both statements executed → 100% statement coverage
-```
+- Example: Test `a=2, b=0, x=4` → Both statements executed → 100%
 
 **3. Decision/Branch Coverage**
 - Has every edge (true/false branch) been executed?
 - Decision coverage ⊇ Statement coverage
-
-```c
-// Same code
-// Test 1: a=2, b=0, x=4  (both conditions true)
-// Test 2: a=0, b=0, x=0  (both conditions false)
-// → 100% Decision coverage
-```
+- Example: Need 2 tests - one where condition=T, one where condition=F
 
 **4. Condition Coverage**
 - Has each Boolean sub-expression evaluated to both true AND false?
 - Does NOT necessarily imply decision coverage
-
-```c
-// For: if ((a > 1) && (b == 0))
-// Test 1: a=2, b=0  → (a>1)=T, (b==0)=T
-// Test 2: a=1, b=1  → (a>1)=F, (b==0)=F
-// → 100% Condition coverage but NOT 100% Decision coverage!
-```
+- Example: For `(a > 1) && (b == 0)`, test each sub-condition T/F independently
 
 **5. Condition/Decision Coverage**
 - Both decision AND condition coverage satisfied
@@ -876,49 +845,17 @@ void foo(int a, int b, int x) {
 **6. Path Coverage**
 - Has every possible path been executed?
 - Path coverage ⊇ Decision coverage
-
-```c
-// 4 possible paths through the code:
-// Test 1: a=2, b=0, x=4  → Path: S1 executed, S2 executed
-// Test 2: a=0, b=0, x=0  → Path: S1 skipped, S2 skipped
-// Test 3: a=2, b=1, x=4  → Path: S1 skipped, S2 executed
-// Test 4: a=3, b=0, x=0  → Path: S1 executed, S2 skipped
-```
+- Example: 2 if statements = 4 possible paths (2² combinations)
 
 **7. Modified Condition/Decision Coverage (MC/DC)**
 - For safety-critical applications (aviation, medical)
 - Each condition must independently affect the decision outcome
-
-```
-For: if (a OR b) AND c
-
-Standard C/D Coverage (2 tests):
-  a=T, b=T, c=T → Result=T
-  a=F, b=F, c=F → Result=F
-
-MC/DC requires each variable to independently affect outcome:
-  a=F, b=F, c=T → Result=F
-  a=T, b=F, c=T → Result=T  ← 'a' independently affects result
-  a=F, b=T, c=T → Result=T  ← 'b' independently affects result
-  a=T, b=T, c=F → Result=F  ← 'c' independently affects result
-```
+- For `(a OR b) AND c`: Need tests where changing only ONE variable changes outcome
 
 **8. Multiple Condition Coverage**
 - ALL combinations of conditions tested
 - Most thorough, most expensive
-
-```
-For: if (a OR b) AND c  (3 variables)
-→ 2³ = 8 test cases required:
-  a=F, b=F, c=F
-  a=F, b=F, c=T
-  a=F, b=T, c=F
-  a=F, b=T, c=T
-  a=T, b=F, c=F
-  a=T, b=F, c=T
-  a=T, b=T, c=F
-  a=T, b=T, c=T
-```
+- For N conditions: 2^N test cases (e.g., 3 conditions = 8 tests)
 
 ### Control Flow Graph & Cyclomatic Complexity
 
@@ -928,22 +865,9 @@ For: if (a OR b) AND c  (3 variables)
 3. Select C basis paths
 4. Create test case for each basis path
 
-```c
-// Example:
-if (a > 0) {
-    x = x + 1;      // Node B
-}
-if (b == 3) {
-    y = 0;          // Node C
-}
-
-// CFG: 6 edges, 5 nodes
-// Cyclomatic Complexity = 6 - 5 + 2 = 3
-// 3 basis paths needed:
-// Path 1: A→D (a≤0, b≠3)
-// Path 2: A→B→D (a>0, b≠3)
-// Path 3: A→C→D (a≤0, b==3)
-```
+**Example:** Code with 2 if statements (6 edges, 5 nodes)
+- Cyclomatic Complexity = 6 - 5 + 2 = **3**
+- Need 3 basis paths (independent paths through CFG)
 
 ### Loop Testing
 
@@ -1527,21 +1451,15 @@ Tools for generating documentation from source code comments:
 | **JSDoc** | JavaScript | JavaScript API documentation |
 | **Swagger/OpenAPI** | REST APIs | API documentation from annotations |
 
-**Example - Javadoc Format:**
-```java
-/**
- * The time class represents a moment of time.
- *
- * @author John Doe
- */
-class Time {
-    /**
-     * Constructor that sets the time to a given value.
-     * @param timemillis milliseconds since Jan 1, 1970
-     */
-    public Time(long timemillis) { ... }
-}
-```
+**Javadoc Tags:**
+
+| Tag | Purpose |
+|-----|---------|
+| `@author` | Author name |
+| `@param` | Method parameter description |
+| `@return` | Return value description |
+| `@throws` | Exception documentation |
+| `@since` | Version introduced |
 
 **Benefits of Auto-Generated Docs:**
 - Code and documentation stay synchronized
@@ -1617,78 +1535,25 @@ Requirements → Design → Code → Test → Deploy
 | **IAST** (Interactive) | Runtime | Contrast Security |
 
 **SAST Example (GitHub Actions):**
-```yaml
-name: Security Scan
-on: [push, pull_request]
-
-jobs:
-  sast:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Semgrep
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: auto
-
-      - name: Run CodeQL
-        uses: github/codeql-action/analyze@v3
-```
+- Use `semgrep/semgrep-action` for pattern-based scanning
+- Use `github/codeql-action/analyze` for deep code analysis
+- Trigger on: `push`, `pull_request`
 
 **SCA Example:**
-```yaml
-  dependency-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Snyk Security Scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-```
+- Use `snyk/actions/node@master` for dependency scanning
+- Set `SNYK_TOKEN` secret for authentication
+- Configure: `--severity-threshold=high`
 
 ### 10.3 Testing in CI/CD Pipeline
 
 **Recommended Test Stages:**
 
-```yaml
-# .github/workflows/test.yml
-name: Test Pipeline
-
-on: [push]
-
-jobs:
-  # Stage 1: Fast feedback (< 5 min)
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm test
-
-  # Stage 2: Integration (< 15 min)
-  integration-tests:
-    needs: unit-tests
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm run test:integration
-
-  # Stage 3: Security (parallel)
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm audit
-      - uses: snyk/actions/node@master
-
-  # Stage 4: E2E (< 30 min)
-  e2e-tests:
-    needs: [unit-tests, integration-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - run: npx playwright test
-```
+| Stage | Job | Command | Dependencies |
+|-------|-----|---------|--------------|
+| 1 (Fast) | unit-tests | `npm test` | None |
+| 2 (Integration) | integration-tests | `npm run test:integration` | unit-tests |
+| 3 (Security) | security-scan | `npm audit`, Snyk | None (parallel) |
+| 4 (E2E) | e2e-tests | `npx playwright test` | unit + integration |
 
 **Test Stage Recommendations:**
 

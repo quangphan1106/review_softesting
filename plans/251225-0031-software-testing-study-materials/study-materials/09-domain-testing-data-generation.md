@@ -74,32 +74,21 @@
 
 **Best Practice:** Use ECP for partitions, BVA for boundaries.
 
-```python
-def test_cases_for_age(min_age=1, max_age=120):
-    """Generate comprehensive test cases combining ECP + BVA"""
-    test_cases = []
+**Example - Age Field (1-120):**
 
-    # Invalid low (ECP)
-    test_cases.append((-10, "invalid", "Far below minimum"))
-    test_cases.append((0, "invalid", "BVA: Just below min"))
-    test_cases.append((1, "valid", "BVA: At minimum"))
-    test_cases.append((2, "valid", "BVA: Just above min"))
-
-    # Valid partitions (ECP representatives)
-    test_cases.append((5, "valid", "ECP: Child representative"))
-    test_cases.append((15, "valid", "ECP: Teen representative"))
-    test_cases.append((50, "valid", "ECP: Adult representative"))
-
-    # Upper boundary (BVA)
-    test_cases.append((119, "valid", "BVA: Just below max"))
-    test_cases.append((120, "valid", "BVA: At maximum"))
-    test_cases.append((121, "invalid", "BVA: Just above max"))
-
-    # Invalid high (ECP)
-    test_cases.append((200, "invalid", "Far above maximum"))
-
-    return test_cases
-```
+| Value | Technique | Expected | Description |
+|-------|-----------|----------|-------------|
+| -10 | ECP | Invalid | Far below minimum |
+| 0 | BVA | Invalid | Just below min |
+| 1 | BVA | Valid | At minimum boundary |
+| 2 | BVA | Valid | Just above min |
+| 5 | ECP | Valid | Child representative |
+| 15 | ECP | Valid | Teen representative |
+| 50 | ECP | Valid | Adult representative |
+| 119 | BVA | Valid | Just below max |
+| 120 | BVA | Valid | At maximum boundary |
+| 121 | BVA | Invalid | Just above max |
+| 200 | ECP | Invalid | Far above maximum |
 
 ---
 
@@ -145,16 +134,10 @@ def test_cases_for_age(min_age=1, max_age=120):
 | **Pairwiser** | Web | Fast, visualization |
 | **Hexawise** | Cloud | Enterprise features |
 
-**PICT Example:**
-```
-# input.txt
-Browser: Chrome, Firefox, Safari
-OS: Windows, macOS, Linux
-Screen: 800x600, 1920x1080
-Language: EN, FR, ES
-
-# Run: pict input.txt > output.csv
-```
+**PICT Usage:**
+1. Create input.txt with parameters: `Browser: Chrome, Firefox, Safari`
+2. Run: `pict input.txt > output.csv`
+3. Tool generates minimum pairwise combinations
 
 ---
 
@@ -164,82 +147,24 @@ Language: EN, FR, ES
 
 **Purpose:** Generate realistic fake data programmatically.
 
-**Installation:**
-```bash
-pip install faker  # Python
-npm install @faker-js/faker  # JavaScript
-```
+**Installation:** `pip install faker` (Python) or `npm install @faker-js/faker` (JS)
 
-**Python Example:**
-```python
-from faker import Faker
+**Common Methods:**
 
-fake = Faker()
-fake_vn = Faker('vi_VN')  # Vietnamese locale
+| Category | Methods | Example Output |
+|----------|---------|----------------|
+| Personal | `fake.name()`, `fake.email()` | "John Smith", "john@example.com" |
+| Address | `fake.address()`, `fake.city()` | "123 Main St", "New York" |
+| Phone | `fake.phone_number()` | "(555) 123-4567" |
+| Date | `fake.date_of_birth(min_age=18)` | datetime object |
+| Internet | `fake.ipv4()`, `fake.url()` | "192.168.1.1", "https://..." |
+| Commerce | `fake.credit_card_number()`, `fake.company()` | "4111...", "Acme Inc." |
+| Text | `fake.text()`, `fake.sentence()` | Lorem ipsum content |
 
-# Basic usage
-print(fake.name())        # "John Smith"
-print(fake.email())       # "john.smith@example.com"
-print(fake.address())     # "123 Main St, City, State"
-print(fake.phone_number()) # "(555) 123-4567"
-
-# Vietnamese data
-print(fake_vn.name())     # "Nguyễn Văn A"
-print(fake_vn.address())  # "123 Đường ABC, Quận 1, TP.HCM"
-
-# Generate test data
-def generate_users(count=100):
-    users = []
-    for _ in range(count):
-        users.append({
-            'id': fake.uuid4(),
-            'name': fake.name(),
-            'email': fake.unique.email(),  # Unique emails
-            'phone': fake.phone_number(),
-            'address': fake.address(),
-            'dob': fake.date_of_birth(minimum_age=18, maximum_age=80),
-            'created_at': fake.date_time_this_year()
-        })
-    return users
-
-# Generate specific data types
-fake.credit_card_number()      # "4111111111111111"
-fake.credit_card_expire()      # "05/25"
-fake.ipv4()                    # "192.168.1.1"
-fake.url()                     # "https://example.com"
-fake.company()                 # "Acme Inc."
-fake.job()                     # "Software Engineer"
-fake.text(max_nb_chars=200)    # Lorem ipsum text
-fake.sentence(nb_words=6)      # "Random sentence here."
-```
-
-**JavaScript Example:**
-```javascript
-const { faker } = require('@faker-js/faker');
-
-// Generate user data
-function generateUsers(count) {
-  return Array.from({ length: count }, () => ({
-    id: faker.string.uuid(),
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    phone: faker.phone.number(),
-    address: faker.location.streetAddress(),
-    createdAt: faker.date.recent()
-  }));
-}
-
-// Generate product data
-function generateProducts(count) {
-  return Array.from({ length: count }, () => ({
-    id: faker.string.uuid(),
-    name: faker.commerce.productName(),
-    price: faker.commerce.price({ min: 10, max: 1000 }),
-    category: faker.commerce.department(),
-    description: faker.commerce.productDescription()
-  }));
-}
-```
+**Key Features:**
+- Unique values: `fake.unique.email()` - guarantees no duplicates
+- Localization: `Faker('vi_VN')` - Vietnamese data
+- Reproducible: `Faker.seed(123)` - consistent random data
 
 ### 3.2 Mockaroo
 
@@ -262,16 +187,12 @@ function generateProducts(count) {
 4. Download in desired format
 
 **Mockaroo Formula Examples:**
-```
-# Conditional values
-if field("age") >= 18 then "adult" else "minor" end
 
-# Random from list
-random("Red", "Green", "Blue")
-
-# Related data
-this.address_city + ", " + this.address_state
-```
+| Formula | Result |
+|---------|--------|
+| `if field("age") >= 18 then "adult" else "minor" end` | Conditional values |
+| `random("Red", "Green", "Blue")` | Random from list |
+| `this.address_city + ", " + this.address_state` | Concatenate related fields |
 
 ### 3.3 Faker vs Mockaroo Comparison
 
@@ -337,83 +258,26 @@ this.address_city + ", " + this.address_state
 | 5 | "tool" | 10 | 10000 | 10000 | name_desc | Exact price match |
 | 6 | "hammer" | null | 0 | 0 | null | All hammers |
 
-### 4.3 Data Generation Script
+### 4.3 Data Generation Script Concepts
 
-```python
-from faker import Faker
-import json
-import csv
+**Toolshop Test Data Generation:**
 
-fake = Faker()
+| Entity | Count | Key Fields | Special Handling |
+|--------|-------|------------|------------------|
+| Categories | 50 | id, name, slug | Auto-generated |
+| Products | 1,000 | id, name, price, category_id, stock | FK to categories, 20% rentals |
+| Users | 50 | first_name, last_name, email, dob | Unique emails |
+| Transactions | 1,000 | user_id, product_id, quantity, status | FK to users/products |
 
-# Generate test data for Toolshop
-def generate_toolshop_data():
-    # Categories
-    categories = []
-    for i in range(1, 51):
-        categories.append({
-            'id': i,
-            'name': fake.word().title() + " " + fake.word().title(),
-            'slug': fake.slug()
-        })
+**Key Techniques:**
+- Referential integrity: `category_id = fake.random_int(min=1, max=50)`
+- Unique constraint: `fake.unique.email()`
+- Distribution control: `fake.boolean(chance_of_getting_true=20)`
+- Random enum: `fake.random_element(['pending', 'completed', 'cancelled'])`
 
-    # Products
-    products = []
-    for i in range(1, 1001):
-        products.append({
-            'id': i,
-            'name': fake.catch_phrase(),
-            'description': fake.text(max_nb_chars=500),
-            'price': round(fake.pyfloat(min_value=1, max_value=1000), 2),
-            'category_id': fake.random_int(min=1, max=50),
-            'stock': fake.random_int(min=0, max=100),
-            'is_rental': fake.boolean(chance_of_getting_true=20)
-        })
-
-    # Users
-    users = []
-    for i in range(1, 51):
-        users.append({
-            'id': i,
-            'first_name': fake.first_name(),
-            'last_name': fake.last_name(),
-            'email': fake.unique.email(),
-            'password_hash': fake.sha256(),
-            'dob': str(fake.date_of_birth(minimum_age=18, maximum_age=80)),
-            'created_at': str(fake.date_time_this_year())
-        })
-
-    # Transactions
-    transactions = []
-    for i in range(1, 1001):
-        transactions.append({
-            'id': i,
-            'user_id': fake.random_int(min=1, max=50),
-            'product_id': fake.random_int(min=1, max=1000),
-            'quantity': fake.random_int(min=1, max=5),
-            'total': round(fake.pyfloat(min_value=10, max_value=5000), 2),
-            'status': fake.random_element(['pending', 'completed', 'cancelled']),
-            'created_at': str(fake.date_time_this_year())
-        })
-
-    return {
-        'categories': categories,
-        'products': products,
-        'users': users,
-        'transactions': transactions
-    }
-
-# Export to JSON
-data = generate_toolshop_data()
-with open('test_data.json', 'w') as f:
-    json.dump(data, f, indent=2)
-
-# Export to CSV (products example)
-with open('products.csv', 'w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames=data['products'][0].keys())
-    writer.writeheader()
-    writer.writerows(data['products'])
-```
+**Export Formats:**
+- JSON: `json.dump(data, file, indent=2)`
+- CSV: `csv.DictWriter` with header
 
 ---
 
@@ -465,33 +329,35 @@ with open('products.csv', 'w', newline='') as f:
 **Question:** Design comprehensive test cases.
 
 **Answer:**
-```python
-test_cases = [
-    # BVA for length
-    ("Pass12", "invalid", "7 chars - below min"),
-    ("Pass123", "invalid", "7 chars - at boundary-1"),
-    ("Pass1234", "valid", "8 chars - at min boundary"),
-    ("Pass12345", "valid", "9 chars - above min"),
-    ("A" * 19 + "a1", "valid", "20 chars - at max boundary"),
-    ("A" * 20 + "a1", "invalid", "21 chars - above max"),
 
-    # ECP for character requirements
-    ("password123", "invalid", "no uppercase"),
-    ("PASSWORD123", "invalid", "no lowercase"),
-    ("Passworddd", "invalid", "no digit"),
-    ("Pass word1", "invalid", "contains space"),
-    ("Pass1234", "valid", "all requirements met"),
+**BVA for Length:**
 
-    # Combined edge cases
-    ("Aa1" + "x" * 5, "valid", "minimum valid: 8 chars with all reqs"),
-    ("Aa1", "invalid", "has all reqs but too short"),
-    ("aaa11111", "invalid", "correct length, missing uppercase"),
+| Password | Chars | Expected | Description |
+|----------|-------|----------|-------------|
+| Pass12 | 6 | Invalid | Below min |
+| Pass123 | 7 | Invalid | At boundary-1 |
+| Pass1234 | 8 | Valid | At min boundary |
+| Pass12345 | 9 | Valid | Above min |
+| A×19 + a1 | 20 | Valid | At max boundary |
+| A×20 + a1 | 21 | Invalid | Above max |
 
-    # Special characters (if allowed)
-    ("Pass123!", "valid", "with special char"),
-    ("Pass@#$1", "valid", "multiple special chars"),
-]
-```
+**ECP for Character Requirements:**
+
+| Password | Expected | Missing Requirement |
+|----------|----------|---------------------|
+| password123 | Invalid | No uppercase |
+| PASSWORD123 | Invalid | No lowercase |
+| Passworddd | Invalid | No digit |
+| Pass word1 | Invalid | Contains space |
+| Pass1234 | Valid | All requirements met |
+
+**Edge Cases:**
+
+| Password | Expected | Reason |
+|----------|----------|--------|
+| Aa1xxxxx (8 chars) | Valid | Minimum valid with all reqs |
+| Aa1 (3 chars) | Invalid | Has all reqs but too short |
+| aaa11111 | Invalid | Correct length, no uppercase |
 
 ### Question 2: Pairwise Test Reduction
 **Scenario:** Testing a form with:
@@ -503,31 +369,26 @@ test_cases = [
 **Question:** Calculate exhaustive vs pairwise test count.
 
 **Answer:**
-```
-Exhaustive: 3 × 3 × 2 × 2 = 36 combinations
 
-Pairwise (manually):
+**Calculation:**
+- Exhaustive: 3 × 3 × 2 × 2 = **36 combinations**
+- Pairwise: **9 test cases** (75% reduction)
+
+**Pairwise Test Set:**
+
 | TC | Country | Payment | Shipping | Gift |
 |----|---------|---------|----------|------|
-| 1  | US      | Card    | Standard | Yes  |
-| 2  | US      | Bank    | Express  | No   |
-| 3  | US      | Cash    | Standard | No   |
-| 4  | UK      | Card    | Express  | No   |
-| 5  | UK      | Bank    | Standard | Yes  |
-| 6  | UK      | Cash    | Express  | Yes  |
-| 7  | VN      | Card    | Standard | Yes  |
-| 8  | VN      | Bank    | Express  | Yes  |
-| 9  | VN      | Cash    | Standard | No   |
+| 1 | US | Card | Standard | Yes |
+| 2 | US | Bank | Express | No |
+| 3 | US | Cash | Standard | No |
+| 4 | UK | Card | Express | No |
+| 5 | UK | Bank | Standard | Yes |
+| 6 | UK | Cash | Express | Yes |
+| 7 | VN | Card | Standard | Yes |
+| 8 | VN | Bank | Express | Yes |
+| 9 | VN | Cash | Standard | No |
 
-Total: 9 test cases (75% reduction)
-
-Verification: All pairs covered
-- US-Card ✓, US-Bank ✓, US-Cash ✓
-- UK-Card ✓, UK-Bank ✓, UK-Cash ✓
-- VN-Card ✓, VN-Bank ✓, VN-Cash ✓
-- Card-Standard ✓, Card-Express ✓
-- (etc. for all pairs)
-```
+**Verification:** All pairs covered (US-Card ✓, US-Bank ✓, UK-Card ✓, Card-Standard ✓, etc.)
 
 ### Question 3: Data Generation Strategy
 **Scenario:** Need to test:
@@ -539,51 +400,25 @@ Verification: All pairs covered
 **Question:** How would you generate this data?
 
 **Answer:**
-```python
-from faker import Faker
-from collections import defaultdict
 
-def generate_users_with_distribution(count=100000):
-    fakers = {
-        'US': Faker('en_US'),
-        'EU': Faker(['en_GB', 'de_DE', 'fr_FR']),
-        'Asia': Faker(['ja_JP', 'ko_KR', 'vi_VN'])
-    }
+**Strategy:**
 
-    distribution = {'US': 0.6, 'EU': 0.3, 'Asia': 0.1}
-    used_emails = set()
-    users = []
+| Step | Technique |
+|------|-----------|
+| 1. Create regional Fakers | `Faker('en_US')`, `Faker(['de_DE', 'fr_FR'])`, `Faker('vi_VN')` |
+| 2. Calculate counts | US: 60K, EU: 30K, Asia: 10K |
+| 3. Ensure unique emails | Track in `set()`, regenerate if duplicate |
+| 4. Batch insert | 1,000 records per batch for performance |
 
-    for region, percentage in distribution.items():
-        region_count = int(count * percentage)
-        fake = fakers[region]
+**Key Faker Concepts:**
+- Locale-specific: `Faker('vi_VN')` → Vietnamese names, addresses
+- Multi-locale: `Faker(['en_GB', 'de_DE'])` → Random from list
+- Phone formats auto-match locale
 
-        for _ in range(region_count):
-            # Generate unique email
-            email = fake.email()
-            while email in used_emails:
-                email = fake.email()
-            used_emails.add(email)
-
-            users.append({
-                'name': fake.name(),
-                'email': email,
-                'phone': fake.phone_number(),  # Format per locale
-                'address': fake.address(),
-                'region': region
-            })
-
-    return users
-
-# Batch insert for performance
-def batch_insert(users, batch_size=1000):
-    for i in range(0, len(users), batch_size):
-        batch = users[i:i+batch_size]
-        db.bulk_insert('users', batch)
-
-users = generate_users_with_distribution(100000)
-batch_insert(users)
-```
+**Performance Tips:**
+- Use `db.bulk_insert()` instead of single inserts
+- Batch size: 1,000 records
+- Track used emails in `set()` for O(1) lookup
 
 ---
 
@@ -591,73 +426,38 @@ batch_insert(users)
 
 ### ECP Quick Reference
 
-```
-Valid Equivalence Classes:
-- All values expected to behave the same way
-- Test ONE representative from each class
-
-Invalid Equivalence Classes:
-- Test EACH invalid class separately
-- Each invalid class may trigger different error
-
-Example: Age 18-65
-- Invalid (low): < 18 → Test: 10
-- Valid: 18-65 → Test: 40
-- Invalid (high): > 65 → Test: 70
-```
+| Type | Rule | Example (Age 18-65) |
+|------|------|---------------------|
+| Valid class | Test ONE representative | 18-65 → Test: 40 |
+| Invalid (low) | Test each invalid separately | < 18 → Test: 10 |
+| Invalid (high) | Different errors possible | > 65 → Test: 70 |
 
 ### BVA Quick Reference
 
-```
-Standard 7 values:
-- min - 1 (invalid)
-- min (boundary)
-- min + 1 (just inside)
-- nominal (typical)
-- max - 1 (just inside)
-- max (boundary)
-- max + 1 (invalid)
+| Value Type | Purpose | Example (1-100) |
+|------------|---------|-----------------|
+| min - 1 | Invalid boundary | 0 |
+| min | Boundary | 1 |
+| min + 1 | Just inside | 2 |
+| nominal | Typical | 50 |
+| max - 1 | Just inside | 99 |
+| max | Boundary | 100 |
+| max + 1 | Invalid boundary | 101 |
 
-Example: Input 1-100
-Test: 0, 1, 2, 50, 99, 100, 101
-```
+### Faker Methods Cheatsheet
 
-### Faker Cheatsheet
+| Category | Methods |
+|----------|---------|
+| Personal | `name()`, `first_name()`, `email()`, `phone_number()`, `ssn()`, `date_of_birth()` |
+| Address | `address()`, `city()`, `country()`, `zipcode()` |
+| Business | `company()`, `job()`, `catch_phrase()` |
+| Internet | `url()`, `domain_name()`, `ipv4()`, `mac_address()`, `user_agent()` |
+| Commerce | `credit_card_number()`, `credit_card_expire()`, `price()`, `currency()` |
+| Text | `text()`, `sentence()`, `paragraph()`, `word()` |
 
-```python
-from faker import Faker
-fake = Faker()
-
-# Personal
-fake.name()              fake.first_name()
-fake.email()             fake.phone_number()
-fake.address()           fake.city()
-fake.ssn()               fake.date_of_birth()
-
-# Business
-fake.company()           fake.job()
-fake.catch_phrase()      fake.bs()
-
-# Internet
-fake.url()               fake.domain_name()
-fake.ipv4()              fake.mac_address()
-fake.user_agent()        fake.slug()
-
-# Commerce
-fake.credit_card_number()
-fake.credit_card_expire()
-fake.price()             fake.currency()
-
-# Text
-fake.text()              fake.sentence()
-fake.paragraph()         fake.word()
-
-# Unique values
-fake.unique.email()
-
-# Localization
-fake_vn = Faker('vi_VN')
-```
+**Special Features:**
+- Unique: `fake.unique.email()`
+- Locale: `Faker('vi_VN')`
 
 ### Domain Testing Checklist
 
