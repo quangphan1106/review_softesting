@@ -63,16 +63,9 @@
 - **Action**: Reusable unit of code
 
 **Event Triggers:**
-```yaml
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-  schedule:
-    - cron: '0 0 * * *'  # Daily at midnight
-  workflow_dispatch:      # Manual trigger
-```
+- `push` / `pull_request` - code changes
+- `schedule` (cron) - periodic runs
+- `workflow_dispatch` - manual trigger
 
 ---
 
@@ -92,82 +85,33 @@ on:
 
 ### 2.2 GitHub Actions Advanced Patterns
 
-**Matrix Strategy:**
-```yaml
-strategy:
-  fail-fast: false  # Don't cancel other jobs on failure
-  matrix:
-    os: [ubuntu-latest, windows-latest, macos-latest]
-    node: [18, 20, 22]
-    exclude:
-      - os: macos-latest
-        node: 18
-    include:
-      - os: ubuntu-latest
-        node: 22
-        experimental: true
-```
+**Matrix Strategy Concepts:**
+- Run same job across multiple configurations (OS × Node versions)
+- `fail-fast: false` - don't cancel other jobs on failure
+- `exclude` - skip specific combinations
+- `include` - add specific combinations with extra variables
 
-**Caching Best Practices:**
-```yaml
-- uses: actions/cache@v4
-  with:
-    path: |
-      ~/.npm
-      node_modules
-    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    restore-keys: |
-      ${{ runner.os }}-node-
-```
+**Caching Concepts:**
+- Cache path: dependencies folder (`node_modules`, `~/.npm`)
+- Key: `runner.os` + `hashFiles('package-lock.json')`
+- `restore-keys`: fallback keys for partial cache hit
 
 **Artifacts:**
-```yaml
-- uses: actions/upload-artifact@v4
-  with:
-    name: coverage-report
-    path: coverage/
-    retention-days: 7
-
-- uses: actions/download-artifact@v4
-  with:
-    name: coverage-report
-```
+- Upload: save files between jobs (`coverage/`, `reports/`)
+- Download: retrieve in subsequent jobs
+- `retention-days`: auto-cleanup after N days
 
 ### 2.3 Docker in CI/CD
 
-**Multi-stage Build Example:**
-```dockerfile
-# Build stage
-FROM node:20 AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# Production stage
-FROM node:20-slim
-WORKDIR /app
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-CMD ["node", "dist/index.js"]
-```
+**Multi-stage Build Concept:**
+- Stage 1 (builder): Install deps, compile code
+- Stage 2 (production): Copy only built artifacts → smaller image
+- Key: `COPY --from=builder` to copy from previous stage
 
 **Docker Compose for Testing:**
-```yaml
-services:
-  app:
-    build: .
-    depends_on:
-      - db
-      - redis
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_PASSWORD: test
-  redis:
-    image: redis:7
-```
+- Define multiple services: app, db, redis
+- `depends_on`: startup order control
+- Isolated environment for integration tests
 
 ---
 
@@ -221,298 +165,102 @@ services:
 
 ### 4.1 Common CI/CD Failures
 
-**Problem 1: Flaky Tests**
-```
-Symptom: Tests pass locally but fail intermittently in CI
-Root Causes:
-- Race conditions in async code
-- Shared state between tests
-- External service dependencies
-- Time-based tests (timezone issues)
-
-Solution:
-- Add retry logic: `jest --bail --maxWorkers=1`
-- Use test containers for DB
-- Mock external services
-- Use fixed timestamps in tests
-```
-
-**Problem 2: Cache Corruption**
-```
-Symptom: Build fails after cache restore
-Root Causes:
-- Incompatible cache across branches
-- Partial cache write (timeout)
-- Lock file changed but cache key unchanged
-
-Solution:
-- Include branch in cache key
-- Use hashFiles() for dependencies
-- Add cache version: key-v2-${{ hashFiles('...') }}
-```
-
-**Problem 3: Docker Build Failures**
-```
-Symptom: Image build times out or fails
-Root Causes:
-- No layer caching configured
-- Large context (include/exclude not set)
-- Base image unavailable
-
-Solution:
-- Configure BuildKit cache: DOCKER_BUILDKIT=1
-- Use .dockerignore
-- Pin base image versions
-```
-
-**Problem 4: Secret Exposure**
-```
-Symptom: Secrets visible in logs
-Root Causes:
-- Echoing secret values
-- Debug mode enabled
-- Third-party action logging
-
-Solution:
-- Never echo secrets
-- Use `add-mask` for dynamic secrets
-- Audit third-party actions
-```
+| Problem | Symptoms | Root Causes | Solutions |
+|---------|----------|-------------|-----------|
+| **Flaky Tests** | Pass locally, fail in CI | Race conditions, shared state, external deps | Retry logic, test containers, mock services |
+| **Cache Corruption** | Build fails after restore | Incompatible cache, partial write | Include branch in key, use `hashFiles()`, version keys |
+| **Docker Build Fail** | Timeout or error | No layer cache, large context | Enable BuildKit, use `.dockerignore`, pin versions |
+| **Secret Exposure** | Secrets in logs | Echo secrets, debug mode | Never echo, use `add-mask`, audit 3rd-party actions |
 
 ### 4.2 Debugging Pipeline Failures
 
-**Step-by-Step Debug Process:**
+**Debug Process:**
 1. Check job logs for exact error message
 2. Identify failing step (expand in UI)
-3. Look for environment differences
+3. Look for environment differences (OS, versions)
 4. Run locally with same configuration
-5. Add debug output: `ACTIONS_STEP_DEBUG=true`
-6. Use SSH debug action for interactive debugging
-
-**Useful Debug Commands:**
-```yaml
-- name: Debug environment
-  run: |
-    echo "OS: ${{ runner.os }}"
-    echo "Node: $(node --version)"
-    echo "NPM: $(npm --version)"
-    pwd && ls -la
-    env | sort
-```
+5. Enable debug: `ACTIONS_STEP_DEBUG=true`
+6. Add env dump step: print OS, versions, `pwd`, `env | sort`
 
 ---
 
 ## 5. Toolshop Homework Connection
 
-### 5.1 From Automation Testing Homework (HW06)
+### 5.1 Automation Testing (HW06) Integration
 
-The Toolshop project uses CI/CD for automated test execution:
+**Pipeline Concept:**
+- Trigger: push/PR to main
+- Matrix: run across chrome, firefox, edge (parallel)
+- Steps: checkout → setup Python → install deps → run pytest → upload artifacts
 
-**Pipeline Configuration:**
-```yaml
-name: Automation Tests
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+**Key Points:**
+- Cross-browser testing via matrix
+- Artifact upload for test reports per browser
+- Parallel execution = faster feedback
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [chrome, firefox, edge]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run Selenium tests
-        run: pytest tests/ --browser=${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.browser }}
-          path: reports/
-```
+### 5.2 Performance Testing (HW07) Integration
 
-**Key Integration Points:**
-- Cross-browser testing via matrix strategy
-- Artifact upload for test reports
-- Parallel execution across 3 browsers
-- Centralized result collection
-
-### 5.2 From Performance Testing Homework (HW07)
-
-Performance tests integrated into CI/CD:
-
-```yaml
-jobs:
-  performance:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install JMeter
-        run: |
-          wget https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-5.6.3.tgz
-          tar -xzf apache-jmeter-5.6.3.tgz
-      - name: Run load test
-        run: ./apache-jmeter-5.6.3/bin/jmeter -n -t tests/loadtest.jmx -l results.jtl
-      - name: Analyze results
-        run: python scripts/analyze_perf.py results.jtl
-```
+**Pipeline Concept:**
+- Install JMeter in CI environment
+- Run load test: `jmeter -n -t loadtest.jmx -l results.jtl`
+- Analyze results with Python script
 
 ---
 
 ## 6. Application-Level Exam Questions
 
 ### Question 1: Matrix Build Optimization
-**Scenario:** Your team has a test suite that needs to run on 4 OS (Ubuntu, Windows, macOS, Alpine) × 5 Node versions (16, 18, 20, 22, 23). Full matrix = 20 jobs, taking 2 hours.
+**Scenario:** 4 OS × 5 Node versions = 20 jobs, taking 2 hours.
 
-**Question:** How would you optimize this for faster feedback while maintaining coverage?
+**Question:** How to optimize for faster feedback?
 
 **Answer:**
-```yaml
-strategy:
-  fail-fast: true
-  matrix:
-    os: [ubuntu-latest]
-    node: [18, 20, 22]
-    include:
-      # Add critical combinations only
-      - os: windows-latest
-        node: 20
-      - os: macos-latest
-        node: 20
-  # Total: 5 jobs instead of 20
-  # Critical coverage maintained
-  # Run full matrix on release branches only
-```
-
-**Key Points:**
-- Use `fail-fast: true` for early failure detection
-- Primary OS covers most cases
-- Include specific combinations for cross-platform issues
-- Schedule full matrix for nightly/release builds
+- Use `fail-fast: true` - stop early on failure
+- Primary OS (ubuntu) with 3 Node versions (18, 20, 22) = 3 jobs
+- `include` only critical cross-platform: windows+node20, macos+node20
+- Total: 5 jobs instead of 20
+- Full matrix only on release/nightly builds
 
 ### Question 2: Cache Strategy Design
-**Scenario:** Your Next.js app has:
-- npm dependencies (package-lock.json)
-- Next.js build cache (.next/cache)
-- Turbo monorepo cache
+**Scenario:** Next.js app with npm deps, .next/cache, Turbo cache.
 
-**Question:** Design a caching strategy to minimize build time.
+**Question:** Design caching strategy to minimize build time.
 
 **Answer:**
-```yaml
-- name: Cache node_modules
-  uses: actions/cache@v4
-  with:
-    path: node_modules
-    key: deps-${{ hashFiles('package-lock.json') }}
+| Cache | Path | Key Strategy |
+|-------|------|--------------|
+| node_modules | `node_modules` | `hashFiles('package-lock.json')` |
+| Next.js | `.next/cache` | `hashFiles('**/*.js')` + restore-keys |
+| Turbo | `.turbo` | `github.sha` (incremental) |
 
-- name: Cache Next.js
-  uses: actions/cache@v4
-  with:
-    path: .next/cache
-    key: next-${{ hashFiles('**/*.js', '**/*.jsx') }}
-    restore-keys: next-
-
-- name: Cache Turbo
-  uses: actions/cache@v4
-  with:
-    path: .turbo
-    key: turbo-${{ github.sha }}
-    restore-keys: turbo-
-```
-
-**Key Points:**
-- Separate caches for different purposes
-- Use `hashFiles()` for content-based invalidation
-- Use `restore-keys` for partial cache hits
-- SHA-based key for turbo (incremental)
+Key: Separate caches, content-based invalidation, restore-keys for fallback
 
 ### Question 3: Debugging Failed Deployment
-**Scenario:** Production deployment fails silently. Logs show success but users report errors.
-
-**Question:** What debugging steps would you take?
+**Scenario:** Logs show success but users report errors.
 
 **Answer:**
-1. **Add smoke tests post-deployment:**
-```yaml
-- name: Smoke test
-  run: |
-    curl -f https://prod.example.com/health || exit 1
-    curl -f https://prod.example.com/api/version | jq .
-```
-
-2. **Compare environment variables:**
-```yaml
-- name: Verify env
-  run: |
-    echo "Expected: v${{ github.sha }}"
-    curl https://prod.example.com/api/version
-```
-
-3. **Check deployment logs:**
-- Verify correct artifact deployed
-- Check container startup logs
-- Verify database migrations ran
-
-4. **Add rollback automation:**
-```yaml
-- name: Rollback on failure
-  if: failure()
-  run: |
-    kubectl rollout undo deployment/app
-```
+1. **Smoke tests**: `curl -f /health`, `curl /api/version`
+2. **Verify env**: Compare deployed SHA vs expected
+3. **Check logs**: Container startup, DB migrations
+4. **Rollback**: `if: failure()` → `kubectl rollout undo`
 
 ---
 
 ## 7. Cheatsheet / Quick Reference
 
-### GitHub Actions Syntax
+### GitHub Actions Quick Syntax
 
-```yaml
-# Workflow structure
-name: CI
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm test
-
-# Environment variables
-env:
-  NODE_ENV: test
-
-# Secrets
-${{ secrets.API_KEY }}
-
-# Conditionals
-if: github.event_name == 'push'
-if: success()
-if: failure()
-if: always()
-
-# Job dependencies
-needs: [job1, job2]
-
-# Matrix
-strategy:
-  matrix:
-    node: [18, 20]
-
-# Caching
-- uses: actions/cache@v4
-  with:
-    path: ~/.npm
-    key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-```
+| Element | Syntax | Purpose |
+|---------|--------|---------|
+| Workflow | `name: CI` + `on: [push]` | Define pipeline |
+| Job | `jobs: build: runs-on: ubuntu-latest` | Group of steps |
+| Step | `- uses: action@v4` or `- run: cmd` | Individual task |
+| Env var | `env: NODE_ENV: test` | Set environment |
+| Secret | `${{ secrets.API_KEY }}` | Access encrypted value |
+| Conditional | `if: success()` / `failure()` / `always()` | Control flow |
+| Dependency | `needs: [job1, job2]` | Job ordering |
+| Matrix | `strategy: matrix: node: [18,20]` | Multi-config |
+| Cache | `actions/cache@v4` + `key: hashFiles()` | Speed up builds |
 
 ### Common Actions
 

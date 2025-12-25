@@ -145,79 +145,26 @@ Total: 5.5 minutes, no infrastructure
 
 ### 3.1 Visual Regression Test Implementation
 
-**Playwright + Applitools Example:**
-```javascript
-const { test } = require('@playwright/test');
-const { Eyes, Target, Configuration, BatchInfo } = require('@applitools/eyes-playwright');
+**Applitools Concepts:**
+- Setup: Create `Eyes`, configure batch, API key
+- Open: `eyes.open(page, 'App', 'Test', {width, height})`
+- Check: `eyes.check('Name', Target.window().fully())`
+- Region: `Target.region('#nav')`
+- Ignore dynamic: `.ignoreRegions('.price', '.timestamp')`
+- Close: `eyes.close()` / `eyes.abort()`
 
-let eyes;
-
-test.beforeAll(async () => {
-  eyes = new Eyes();
-  const config = new Configuration();
-  config.setBatch(new BatchInfo('Toolshop Visual Tests'));
-  config.setApiKey(process.env.APPLITOOLS_API_KEY);
-  eyes.setConfiguration(config);
-});
-
-test('homepage visual check', async ({ page }) => {
-  await eyes.open(page, 'Toolshop', 'Homepage', { width: 1920, height: 1080 });
-  await page.goto('https://practicesoftwaretesting.com');
-
-  // Full page screenshot
-  await eyes.check('Homepage', Target.window().fully());
-
-  // Specific region
-  await eyes.check('Navigation', Target.region('#nav'));
-
-  // Ignore dynamic content
-  await eyes.check('Products', Target.region('.products')
-    .ignoreRegions('.price', '.timestamp'));
-
-  await eyes.close();
-});
-
-test.afterAll(async () => {
-  await eyes.abort();
-});
-```
-
-**Percy + Playwright Example:**
-```javascript
-const { test } = require('@playwright/test');
-const percySnapshot = require('@percy/playwright');
-
-test('homepage visual check', async ({ page }) => {
-  await page.goto('https://practicesoftwaretesting.com');
-
-  // Take Percy snapshot
-  await percySnapshot(page, 'Homepage');
-
-  // With options
-  await percySnapshot(page, 'Homepage Mobile', {
-    widths: [375, 768, 1280],
-    percyCSS: '.dynamic-content { visibility: hidden; }'
-  });
-});
-```
+**Percy Concepts:**
+- Snapshot: `percySnapshot(page, 'Name')`
+- Multi-width: `widths: [375, 768, 1280]`
+- Hide dynamic: `percyCSS: '.dynamic { visibility: hidden; }'`
 
 ### 3.2 Accessibility Testing
 
-**axe-core Integration:**
-```javascript
-const { test, expect } = require('@playwright/test');
-const AxeBuilder = require('@axe-core/playwright').default;
-
-test('accessibility check', async ({ page }) => {
-  await page.goto('https://practicesoftwaretesting.com');
-
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa'])
-    .analyze();
-
-  expect(results.violations).toEqual([]);
-});
-```
+**axe-core Concepts:**
+- Create: `new AxeBuilder({ page })`
+- Filter: `.withTags(['wcag2a', 'wcag2aa'])`
+- Run: `.analyze()` returns violations array
+- Assert: `expect(results.violations).toEqual([])`
 
 **Common WCAG Violations:**
 | Issue | Impact | Fix |
@@ -265,82 +212,28 @@ test('accessibility check', async ({ page }) => {
 
 ### 4.1 Common Visual Testing Issues
 
-**Problem 1: False Positives from Anti-Aliasing**
-```
-Symptom: Same content flagged as different
-Root Cause: Font rendering differs across OS/browsers
+| Problem | Symptom | Solutions |
+|---------|---------|-----------|
+| **Anti-Aliasing False Positives** | Same content flagged different | Use Visual AI, set `matchLevel: 'Layout'` |
+| **Flaky Screenshots** | Intermittent failures | Wait for animations/images, ignore dynamic regions |
+| **Responsive Failures** | Layout broken at breakpoints | Test 375/768/1024/1280, check media queries, verify viewport meta |
 
-Solutions:
-1. Use Visual AI (Applitools) - handles automatically
-2. Set threshold: `matchLevel: 'Strict'` vs `'Layout'`
-3. Use CSS font smoothing: `-webkit-font-smoothing: antialiased`
-```
-
-**Problem 2: Flaky Screenshots**
-```
-Symptom: Tests fail intermittently
-Root Causes:
-- Animations not complete
-- Lazy-loaded images
-- Dynamic content (ads, timestamps)
-
-Solutions:
-1. Wait for animations:
-   await page.waitForFunction(() => !document.querySelector('.animating'))
-
-2. Wait for images:
-   await page.waitForFunction(() =>
-     Array.from(document.images).every(img => img.complete)
-   )
-
-3. Ignore dynamic regions:
-   await eyes.check('Page', Target.window()
-     .ignoreRegions('.ad-banner', '.timestamp'))
-```
-
-**Problem 3: Mobile Responsiveness Failures**
-```
-Symptom: Layout broken at specific breakpoints
-Root Causes:
-- Missing media queries
-- Fixed width elements
-- Viewport meta tag missing
-
-Debug Steps:
-1. Test at exact breakpoints (375, 768, 1024, 1280)
-2. Check CSS media queries
-3. Verify viewport: <meta name="viewport" content="width=device-width">
-4. Use Chrome DevTools Device Mode
-```
+**Key Fixes:**
+- Wait for animations: `waitForFunction(() => !document.querySelector('.animating'))`
+- Ignore dynamic: `.ignoreRegions('.ad-banner', '.timestamp')`
 
 ### 4.2 Usability Issue Identification
 
-**Heuristic Evaluation Process:**
-```
-1. Select 3-5 evaluators (Nielsen's recommendation)
-2. Each evaluates against 10 heuristics
-3. Document issues with severity rating:
-   - 0: Not a problem
-   - 1: Cosmetic
-   - 2: Minor
-   - 3: Major
-   - 4: Catastrophic
-4. Consolidate findings
-5. Prioritize fixes by severity × frequency
-```
+**Heuristic Evaluation:**
+- 3-5 evaluators, each against 10 heuristics
+- Severity: 0 (not a problem) → 4 (catastrophic)
+- Prioritize: severity × frequency
 
-**Example Issues Found:**
-```
-Issue: Form submission with no feedback
-Heuristic Violated: #1 (Visibility of System Status)
-Severity: 3 (Major)
-Recommendation: Add loading spinner and success message
-
-Issue: No undo for delete action
-Heuristic Violated: #3 (User Control & Freedom)
-Severity: 4 (Catastrophic)
-Recommendation: Add confirmation dialog or soft delete
-```
+**Example Issues:**
+| Issue | Heuristic | Severity | Fix |
+|-------|-----------|----------|-----|
+| No form feedback | #1 Visibility | 3 (Major) | Add spinner + success msg |
+| No undo for delete | #3 User Control | 4 (Catastrophic) | Confirmation or soft delete |
 
 ---
 
@@ -348,28 +241,11 @@ Recommendation: Add confirmation dialog or soft delete
 
 ### 5.1 GUI Testing Applied to Toolshop
 
-**Visual Regression Test Scenarios:**
-```javascript
-// Homepage visual test
-test('toolshop homepage visual', async ({ page }) => {
-  await page.goto('https://practicesoftwaretesting.com');
-  await page.waitForLoadState('networkidle');
-
-  // Full page
-  await expect(page).toHaveScreenshot('homepage.png', {
-    fullPage: true,
-    animations: 'disabled'
-  });
-});
-
-// Product card consistency
-test('product card visual', async ({ page }) => {
-  await page.goto('https://practicesoftwaretesting.com');
-  const productCard = page.locator('.product-card').first();
-
-  await expect(productCard).toHaveScreenshot('product-card.png');
-});
-```
+**Visual Test Concepts:**
+- Wait for load: `page.waitForLoadState('networkidle')`
+- Full page: `expect(page).toHaveScreenshot('name.png', {fullPage: true})`
+- Disable animations: `{animations: 'disabled'}`
+- Element screenshot: `expect(locator).toHaveScreenshot()`
 
 ### 5.2 Usability Issues Found in Toolshop
 
@@ -393,106 +269,36 @@ test('product card visual', async ({ page }) => {
 ## 6. Application-Level Exam Questions
 
 ### Question 1: Visual Testing Strategy
-**Scenario:** E-commerce site with 200 pages needs visual regression testing in CI/CD. Budget is limited.
+**Scenario:** 200-page e-commerce site, limited budget
 
-**Question:** Design a visual testing strategy balancing coverage and cost.
+**Answer - Tiered Strategy:**
+| Tier | Pages | Frequency | Browsers |
+|------|-------|-----------|----------|
+| 1 (Critical) | Homepage, Login, Checkout, Cart | Every PR | Chrome only |
+| 2 (Important) | Product list, Search, Account | Daily | Chrome, FF, Safari |
+| 3 (All) | Full site | Weekly/Release | All combos |
 
-**Answer:**
-```
-Tiered Strategy:
-
-Tier 1: Critical Pages (Every PR)
-- Homepage, Login, Checkout, Cart
-- Use Applitools AI (avoid false positives)
-- Run on primary browser (Chrome) only
-
-Tier 2: Important Pages (Daily)
-- Product listing, Search results, Account
-- Run on Chrome, Firefox, Safari
-- Use Ultrafast Grid
-
-Tier 3: All Pages (Weekly/Release)
-- Full site coverage
-- All browser/device combinations
-- Schedule during off-hours
-
-Cost Optimization:
-- Use layout match level (not strict pixel)
-- Batch similar pages together
-- Ignore known dynamic regions
-- Review and approve baselines weekly
-```
+**Cost Optimization:** Layout match level, batch pages, ignore dynamic, weekly baseline review
 
 ### Question 2: Handling Dynamic Content
-**Scenario:** Dashboard has real-time data (prices, timestamps, user avatars) that changes constantly.
+**Scenario:** Dashboard with real-time prices, timestamps, avatars
 
-**Question:** How would you implement visual testing?
-
-**Answer:**
-```javascript
-// Strategy: Ignore dynamic, test layout
-
-// 1. Define ignore regions
-await eyes.check('Dashboard', Target.window()
-  .ignoreRegions('.real-time-price', '.timestamp', '.user-avatar')
-  .layout()  // Focus on layout, not exact content
-);
-
-// 2. Use data-test attributes for stable regions
-await eyes.check('Charts', Target.region('[data-test="chart-container"]'));
-
-// 3. Mock dynamic data for consistency
-await page.route('**/api/prices', route => {
-  route.fulfill({
-    body: JSON.stringify({ price: 100.00 })
-  });
-});
-
-// 4. Freeze animations
-await page.evaluate(() => {
-  document.querySelectorAll('*').forEach(el => {
-    el.style.animation = 'none';
-    el.style.transition = 'none';
-  });
-});
-```
+**Answer - Strategies:**
+1. Ignore regions: `.ignoreRegions('.price', '.timestamp')`
+2. Layout match: `.layout()` (focus on structure, not content)
+3. Mock data: `page.route('**/api/prices', mockResponse)`
+4. Freeze animations: Set `style.animation = 'none'`
 
 ### Question 3: Accessibility Testing Priority
-**Scenario:** Limited time to fix accessibility issues before audit.
-
-**Question:** Prioritize these violations:
-- A: Missing form labels (5 instances)
-- B: Low color contrast on footer (1 instance)
-- C: No skip-to-content link (1 instance)
-- D: Images without alt text (20 instances)
+**Scenario:** Limited time, fix order for violations
 
 **Answer:**
-```
-Priority Order (WCAG severity + user impact):
-
-1. D: Images without alt text (Critical)
-   - 20 instances = high frequency
-   - Screen reader users completely blocked
-   - WCAG Level A violation
-
-2. A: Missing form labels (Critical)
-   - 5 instances on forms = high impact
-   - Forms unusable for screen reader users
-   - WCAG Level A violation
-
-3. C: No skip-to-content link (Major)
-   - Keyboard users must tab through nav repeatedly
-   - WCAG Level A violation
-   - Single fix affects all pages
-
-4. B: Low color contrast footer (Minor)
-   - Only footer affected
-   - WCAG Level AA violation (less critical)
-   - Visual users can still see (just harder)
-
-Quick wins: Fix labels and alt text with tools
-Long-term: Implement design system with accessibility built-in
-```
+| Priority | Issue | Reason |
+|----------|-------|--------|
+| 1 | D: Images no alt (20) | High frequency, blocks screen readers, WCAG A |
+| 2 | A: Missing labels (5) | Forms unusable, WCAG A |
+| 3 | C: No skip link (1) | Affects all pages, WCAG A |
+| 4 | B: Low contrast footer (1) | Minor impact, WCAG AA |
 
 ---
 
@@ -500,57 +306,32 @@ Long-term: Implement design system with accessibility built-in
 
 ### Applitools Configuration
 
-```javascript
-// Configuration options
-const config = new Configuration();
-config.setApiKey(process.env.APPLITOOLS_API_KEY);
-config.setBatch(new BatchInfo('Batch Name'));
-config.setMatchLevel(MatchLevel.Strict);  // or Layout, Content, Exact
-config.setIgnoreCaret(true);
-config.setHideCaret(true);
-config.setHideScrollbars(true);
-
-// Check options
-await eyes.check('Name', Target.window()
-  .fully()                    // Full page
-  .layout()                   // Layout match level
-  .strict()                   // Strict match level
-  .ignoreRegions('.dynamic')  // Ignore specific regions
-  .floatingRegion('.popup', 10, 10, 10, 10)  // Allow movement
-);
-```
+| Config | Purpose |
+|--------|---------|
+| `setApiKey()` | Authentication |
+| `setBatch()` | Group tests |
+| `setMatchLevel(Strict/Layout/Content)` | Comparison mode |
+| `Target.window().fully()` | Full page |
+| `.ignoreRegions('.dynamic')` | Ignore areas |
+| `.floatingRegion('.popup', 10, 10, 10, 10)` | Allow movement |
 
 ### Playwright Visual Testing
 
-```javascript
-// Built-in screenshot comparison
-await expect(page).toHaveScreenshot('name.png', {
-  fullPage: true,
-  animations: 'disabled',
-  mask: [page.locator('.dynamic')],
-  maxDiffPixels: 100,  // Allow small differences
-  threshold: 0.2       // 20% difference threshold
-});
+| Option | Purpose |
+|--------|---------|
+| `fullPage: true` | Capture entire page |
+| `animations: 'disabled'` | Freeze animations |
+| `mask: [locator]` | Hide elements |
+| `maxDiffPixels: 100` | Allow small differences |
+| `--update-snapshots` | Update baselines |
 
-// Element screenshot
-await expect(locator).toHaveScreenshot('element.png');
+### Accessibility Commands
 
-// Update baselines
-// npx playwright test --update-snapshots
-```
-
-### Accessibility Testing Commands
-
-```bash
-# Run axe-core
-npx axe https://example.com
-
-# Lighthouse accessibility audit
-npx lighthouse https://example.com --only-categories=accessibility
-
-# Pa11y CLI
-npx pa11y https://example.com
-```
+| Tool | Command |
+|------|---------|
+| axe-core | `npx axe https://example.com` |
+| Lighthouse | `npx lighthouse URL --only-categories=accessibility` |
+| Pa11y | `npx pa11y https://example.com` |
 
 ### Usability Heuristics Quick Reference
 

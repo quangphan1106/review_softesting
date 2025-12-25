@@ -1,4 +1,4 @@
-# Topic 3: Automation Testing (Web + Desktop) - Comprehensive Study Guide
+# Topic 3: Automation Testing (Web + Desktop + Mobile) - Comprehensive Study Guide
 **CS423 Software Testing | Final Exam Preparation**
 
 ---
@@ -126,6 +126,73 @@
 | **Sikuli** | Cross-platform | Python/Java | Image-based |
 | **AutoGUI** | Cross-platform | Python | Simple scripting |
 
+### 2.4 Mobile Automation Tools
+
+| Tool | Platform | Language | Best For |
+|------|----------|----------|----------|
+| **Appium** | iOS + Android | Java, Python, JS, C# | Cross-platform mobile |
+| **Espresso** | Android only | Java/Kotlin | Native Android (fast) |
+| **XCUITest** | iOS only | Swift/Obj-C | Native iOS (fast) |
+| **Detox** | iOS + Android | JavaScript | React Native apps |
+| **Flutter Driver** | iOS + Android | Dart | Flutter apps |
+| **Maestro** | iOS + Android | YAML | Simple E2E flows |
+
+**Mobile Automation Architecture (Appium):**
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│  Test Code   │───>│   Appium     │───>│  Device/     │
+│  (Python/    │    │   Server     │    │  Emulator    │
+│   Java)      │    │  (Node.js)   │    │  (iOS/Android)│
+└──────────────┘    └──────────────┘    └──────────────┘
+                           │
+                    WebDriver Protocol
+                    + Mobile Extensions
+```
+
+**When to Use Each Mobile Tool:**
+
+**Use Appium when:**
+- Cross-platform testing (iOS + Android with same tests)
+- Team expertise in Selenium/WebDriver
+- Testing native, hybrid, or mobile web apps
+- Need to test on real devices + emulators
+
+**Use Espresso/XCUITest when:**
+- Single platform (Android or iOS only)
+- Need fastest execution speed
+- Dev team writes tests (same language as app)
+- CI integration with native build tools
+
+**Use Detox when:**
+- React Native applications
+- JavaScript/TypeScript team
+- Need gray-box testing capabilities
+
+**Mobile Locator Strategies:**
+| Strategy | Android | iOS |
+|----------|---------|-----|
+| **ID** | `resource-id` | `accessibilityIdentifier` |
+| **Accessibility** | `content-desc` | `accessibilityLabel` |
+| **Class** | `android.widget.Button` | `XCUIElementTypeButton` |
+| **XPath** | Supported (slow) | Supported (slow) |
+| **UIAutomator** | Android only | N/A |
+| **Predicate** | N/A | iOS only (fast) |
+
+**Mobile Test Concepts (Appium):**
+- Setup: Create driver with `UiAutomator2Options` (platform, device, app path)
+- Connect: `webdriver.Remote("http://localhost:4723", options)`
+- Find elements: `driver.find_element("id", "com.app:id/email")`
+- Actions: `send_keys()`, `click()`
+- Assert: Check element text contains expected value
+
+**Key Mobile Testing Challenges:**
+1. **Device fragmentation** - Many screen sizes, OS versions
+2. **Gestures** - Swipe, pinch, long press (not in web)
+3. **App states** - Background, foreground, killed
+4. **Permissions** - Camera, location, notifications
+5. **Network conditions** - Offline, slow, switching
+6. **Battery/performance** - Resource constraints
+
 ---
 
 ## 3. Practical Test Case Design
@@ -133,148 +200,39 @@
 ### 3.1 Page Object Model Implementation
 
 **Directory Structure:**
-```
-tests/
-├── pages/
-│   ├── __init__.py
-│   ├── base_page.py
-│   ├── login_page.py
-│   ├── product_page.py
-│   └── cart_page.py
-├── tests/
-│   ├── test_login.py
-│   ├── test_checkout.py
-│   └── conftest.py
-├── utils/
-│   ├── driver_factory.py
-│   └── config.py
-└── pytest.ini
-```
+- `pages/` - Base page + page objects (login_page, product_page, cart_page)
+- `tests/` - Test files + conftest.py (fixtures)
+- `utils/` - Driver factory, config
 
-**Base Page (Selenium/Python):**
-```python
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+**POM Pattern Concepts:**
 
-class BasePage:
-    def __init__(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+| Layer | Purpose | Example |
+|-------|---------|---------|
+| **BasePage** | Common methods (find, click, type, wait) | Explicit wait wrapper |
+| **PageObject** | Page-specific locators + actions | `LoginPage.login(email, pwd)` |
+| **TestCase** | Business logic assertions | `assert "My Account" in page` |
 
-    def find(self, locator):
-        return self.wait.until(EC.presence_of_element_located(locator))
+**Key Points:**
+- Define locators as class constants: `EMAIL = (By.ID, "email")`
+- Use explicit waits: `WebDriverWait(driver, 10).until(EC.element_to_be_clickable)`
+- Methods return `self` for chaining: `page.open().login(email, pwd)`
+- Separate page structure from test logic
 
-    def click(self, locator):
-        self.wait.until(EC.element_to_be_clickable(locator)).click()
+### 3.2 Playwright POM Concepts
 
-    def type(self, locator, text):
-        element = self.find(locator)
-        element.clear()
-        element.send_keys(text)
+**PageObject:**
+- Constructor: Store `page` + define locators using `page.locator()`
+- Methods: `goto()`, `login(email, pwd)`, `getErrorMessage()`
+- Actions: `fill()`, `click()`, `textContent()`
 
-    def get_text(self, locator):
-        return self.find(locator).text
-```
+**Test:**
+- Create page object: `const loginPage = new LoginPage(page)`
+- Call methods: `loginPage.goto()`, `loginPage.login()`
+- Assert with `expect()`: `await expect(page).toHaveURL(/.*account/)`
 
-**Login Page:**
-```python
-from selenium.webdriver.common.by import By
-from pages.base_page import BasePage
-
-class LoginPage(BasePage):
-    # Locators
-    EMAIL_INPUT = (By.ID, "email")
-    PASSWORD_INPUT = (By.ID, "password")
-    LOGIN_BUTTON = (By.CSS_SELECTOR, "[data-test='login-submit']")
-    ERROR_MESSAGE = (By.CLASS_NAME, "alert-danger")
-
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.url = "https://practicesoftwaretesting.com/auth/login"
-
-    def open(self):
-        self.driver.get(self.url)
-        return self
-
-    def login(self, email, password):
-        self.type(self.EMAIL_INPUT, email)
-        self.type(self.PASSWORD_INPUT, password)
-        self.click(self.LOGIN_BUTTON)
-        return self
-
-    def get_error_message(self):
-        return self.get_text(self.ERROR_MESSAGE)
-```
-
-**Test Case:**
-```python
-import pytest
-from pages.login_page import LoginPage
-
-class TestLogin:
-    def test_valid_login(self, driver):
-        login_page = LoginPage(driver)
-        login_page.open()
-        login_page.login("customer@practicesoftwaretesting.com", "welcome01")
-
-        assert "My Account" in driver.page_source
-
-    def test_invalid_password(self, driver):
-        login_page = LoginPage(driver)
-        login_page.open()
-        login_page.login("customer@practicesoftwaretesting.com", "wrong")
-
-        assert "Invalid email or password" in login_page.get_error_message()
-```
-
-### 3.2 Playwright Implementation
-
-```javascript
-// pages/login.page.js
-class LoginPage {
-  constructor(page) {
-    this.page = page;
-    this.emailInput = page.locator('#email');
-    this.passwordInput = page.locator('#password');
-    this.loginButton = page.locator('[data-test="login-submit"]');
-    this.errorMessage = page.locator('.alert-danger');
-  }
-
-  async goto() {
-    await this.page.goto('/auth/login');
-  }
-
-  async login(email, password) {
-    await this.emailInput.fill(email);
-    await this.passwordInput.fill(password);
-    await this.loginButton.click();
-  }
-
-  async getErrorMessage() {
-    return await this.errorMessage.textContent();
-  }
-}
-
-// tests/login.spec.js
-const { test, expect } = require('@playwright/test');
-const { LoginPage } = require('../pages/login.page');
-
-test('valid login', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-  await loginPage.login('customer@practicesoftwaretesting.com', 'welcome01');
-
-  await expect(page).toHaveURL(/.*account/);
-});
-
-test('invalid password', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-  await loginPage.login('customer@practicesoftwaretesting.com', 'wrong');
-
-  await expect(loginPage.errorMessage).toContainText('Invalid');
-});
-```
+**Key Difference vs Selenium:**
+- Auto-wait built-in (no explicit waits needed)
+- Locators evaluated at action time (no stale element)
 
 ### 3.3 Test Cases for Automation
 
@@ -308,103 +266,26 @@ test('invalid password', async ({ page }) => {
 
 ### 4.1 Common Automation Failures
 
-**Problem 1: Element Not Found (NoSuchElementException)**
-```python
-# Root Causes:
-# 1. Element not loaded yet
-# 2. Element in iframe
-# 3. Wrong locator
-# 4. Element dynamically generated
+| Problem | Root Causes | Solutions |
+|---------|-------------|-----------|
+| **Element Not Found** | Not loaded, in iframe, wrong locator | Explicit wait, switch to frame, verify in DevTools |
+| **Stale Element** | Page changed after finding | Re-locate before use with explicit wait |
+| **Test Flakiness** | Race conditions, network, animations | Wait for networkidle, retry mechanism, unique test data |
 
-# Solution 1: Explicit wait
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-element = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.ID, "dynamic-element"))
-)
-
-# Solution 2: iframe handling
-iframe = driver.find_element(By.TAG_NAME, "iframe")
-driver.switch_to.frame(iframe)
-# ... interact with elements
-driver.switch_to.default_content()
-
-# Solution 3: Verify locator in DevTools
-# Right-click > Inspect > Copy > Copy selector/XPath
-```
-
-**Problem 2: Stale Element Reference**
-```python
-# Root Cause: Element reference invalid (page changed)
-
-# Wrong approach
-element = driver.find_element(By.ID, "btn")
-# ... page updates
-element.click()  # StaleElementReferenceException
-
-# Correct approach: Re-locate before use
-def click_safe(driver, locator):
-    element = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(locator)
-    )
-    element.click()
-```
-
-**Problem 3: Test Flakiness**
-```python
-# Causes:
-# 1. Race conditions
-# 2. Network latency
-# 3. Animation delays
-# 4. Shared test data
-
-# Solutions:
-# 1. Wait for network idle (Playwright)
-await page.wait_for_load_state('networkidle')
-
-# 2. Retry mechanism
-@pytest.mark.flaky(reruns=2)
-def test_flaky_feature():
-    ...
-
-# 3. Use unique test data
-import uuid
-email = f"test_{uuid.uuid4()}@example.com"
-```
+**Key Fixes:**
+- Explicit wait: `WebDriverWait(driver, 10).until(EC.element_to_be_clickable(locator))`
+- iframe: `driver.switch_to.frame(iframe)` then `switch_to.default_content()`
+- Unique data: `f"test_{uuid.uuid4()}@example.com"`
 
 ### 4.2 Debugging Techniques
 
-**Selenium Debugging:**
-```python
-# Take screenshot on failure
-def test_example(driver):
-    try:
-        # test code
-    except Exception as e:
-        driver.save_screenshot("failure.png")
-        raise
-
-# Print page source
-print(driver.page_source)
-
-# Execute JavaScript for debugging
-driver.execute_script("console.log(document.body.innerHTML)")
-```
-
-**Playwright Debugging:**
-```javascript
-// Trace viewer
-await page.context().tracing.start({ screenshots: true, snapshots: true });
-// ... test code
-await page.context().tracing.stop({ path: 'trace.zip' });
-
-// Pause execution
-await page.pause();  // Opens inspector
-
-// Slow motion
-const browser = await chromium.launch({ slowMo: 100 });
-```
+| Tool | Technique | Purpose |
+|------|-----------|---------|
+| **Selenium** | `driver.save_screenshot("fail.png")` | Capture state on failure |
+| **Selenium** | `print(driver.page_source)` | Inspect DOM |
+| **Playwright** | `page.pause()` | Opens inspector mid-test |
+| **Playwright** | Trace viewer (`tracing.start/stop`) | Record full session |
+| **Playwright** | `slowMo: 100` | Slow down for visual debugging |
 
 ---
 
@@ -412,193 +293,63 @@ const browser = await chromium.launch({ slowMo: 100 });
 
 ### 5.1 From Automation Testing Homework (HW06)
 
-**Project Structure:**
-```
-automation_project/
-├── pages/
-│   ├── login_page.py
-│   ├── product_page.py
-│   ├── cart_page.py
-│   └── checkout_page.py
-├── tests/
-│   ├── test_login.py
-│   ├── test_product.py
-│   └── test_checkout.py
-├── conftest.py
-├── requirements.txt
-└── pytest.ini
-```
+**Project Structure:** pages/ (POM classes) + tests/ + conftest.py (fixtures)
 
-**Multi-Browser Configuration:**
-```python
-# conftest.py
-import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+**Multi-Browser Concept:**
+- Use `@pytest.fixture(params=["chrome", "firefox", "edge"])`
+- webdriver-manager auto-downloads drivers
+- Same test runs 3x (once per browser)
 
-@pytest.fixture(params=["chrome", "firefox", "edge"])
-def driver(request):
-    if request.param == "chrome":
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    elif request.param == "firefox":
-        from selenium.webdriver.firefox.service import Service as FFService
-        from webdriver_manager.firefox import GeckoDriverManager
-        driver = webdriver.Firefox(service=FFService(GeckoDriverManager().install()))
-    elif request.param == "edge":
-        from selenium.webdriver.edge.service import Service as EdgeService
-        from webdriver_manager.microsoft import EdgeChromiumDriverManager
-        driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
+**Test Results:**
 
-    driver.maximize_window()
-    yield driver
-    driver.quit()
-```
+| Metric | Value |
+|--------|-------|
+| Total TCs | 50 |
+| Pass Rate | 80% (40/50) |
+| Chrome | 96% |
+| Firefox | 84% |
+| Edge | 90% |
 
-**Test Results from Homework:**
-```
-Total Test Cases: 50
-Passed: 40 (80%)
-Failed: 10 (20%)
+**Failure Categories:** Element not found (4), Assertion (3), Timeout (2), Stale (1)
 
-Failures by Category:
-- Element not found: 4
-- Assertion failures: 3
-- Timeout: 2
-- Stale element: 1
+### 5.2 Key Test Scenarios
 
-Browser Distribution:
-- Chrome: 48/50 passed (96%)
-- Firefox: 42/50 passed (84%)
-- Edge: 45/50 passed (90%)
-```
-
-### 5.2 Key Test Scenarios from Homework
-
-**Scenario 1: Product Search**
-```python
-def test_search_product(driver):
-    home_page = HomePage(driver)
-    home_page.open()
-    home_page.search("hammer")
-
-    results = home_page.get_search_results()
-    assert len(results) > 0
-    assert "hammer" in results[0].text.lower()
-```
-
-**Scenario 2: Add to Cart**
-```python
-def test_add_to_cart(driver):
-    product_page = ProductPage(driver)
-    product_page.open_product(123)
-    product_page.add_to_cart()
-
-    cart_page = CartPage(driver)
-    cart_page.open()
-
-    assert cart_page.get_item_count() == 1
-```
+| Scenario | Steps | Assertion |
+|----------|-------|-----------|
+| Product Search | Open home → search "hammer" | Results > 0, contains "hammer" |
+| Add to Cart | Open product → add to cart → open cart | Item count = 1 |
 
 ---
 
 ## 6. Application-Level Exam Questions
 
 ### Question 1: Choosing Automation Framework
-**Scenario:** Team of 5 developers (Python experts) needs to automate testing for:
-- Web application with dynamic content
-- Supports Chrome, Firefox, Safari
-- Integrates with Jenkins CI/CD
-- Has iframes and Shadow DOM components
+**Scenario:** Python team, dynamic web app, Chrome/Firefox/Safari, iframes + Shadow DOM
 
-**Question:** Which framework would you recommend and why?
-
-**Answer:**
-```
-Recommendation: Playwright (Python)
-
-Justification:
-1. Python support - matches team expertise
-2. Cross-browser - Chromium, Firefox, WebKit (Safari engine)
-3. CI/CD - excellent Jenkins integration
-4. iframes - native frameLocator() support
-5. Shadow DOM - native pierce capability
-6. Auto-wait - reduces flakiness vs Selenium
-7. Trace viewer - superior debugging
-
-Alternative: Selenium (if legacy browser support needed)
-- More protocol support
-- Larger ecosystem
-- But: more flaky, manual waits required
-```
+**Answer:** Playwright (Python)
+- Python support ✓
+- Cross-browser (Chromium, Firefox, WebKit) ✓
+- Native iframe + Shadow DOM support ✓
+- Auto-wait reduces flakiness
+- Alternative: Selenium (if legacy browser needed)
 
 ### Question 2: Handling Dynamic Content
-**Scenario:** Page has a product list that loads via AJAX. Products appear 2-5 seconds after page load. Tests are failing intermittently.
-
-**Question:** How would you fix this?
+**Scenario:** AJAX loads products 2-5s after page load, tests fail intermittently
 
 **Answer:**
-```python
-# WRONG: Hard sleep
-time.sleep(5)  # Unreliable, slow
-
-# WRONG: Implicit wait alone
-driver.implicitly_wait(10)  # May not wait for AJAX
-
-# CORRECT: Explicit wait for specific condition
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-def wait_for_products(driver):
-    # Wait for at least one product to appear
-    products = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located(
-            (By.CSS_SELECTOR, ".product-card")
-        )
-    )
-    return products
-
-# CORRECT with Playwright (auto-wait)
-products = page.locator('.product-card')
-await expect(products.first).to_be_visible()
-```
+- ❌ Hard sleep: `time.sleep(5)` - unreliable, slow
+- ❌ Implicit wait alone - may not wait for AJAX
+- ✓ Explicit wait: `WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located(locator))`
+- ✓ Playwright: Auto-wait with `expect(locator).to_be_visible()`
 
 ### Question 3: Multi-Browser Test Design
-**Scenario:** Test needs to run on Chrome, Firefox, Edge. Some behaviors differ between browsers.
-
-**Question:** How would you structure tests to handle browser-specific behavior?
+**Scenario:** Tests need to run on Chrome, Firefox, Edge with some browser-specific behavior
 
 **Answer:**
-```python
-import pytest
-
-# Parameterized fixture for browsers
-@pytest.fixture(params=["chrome", "firefox", "edge"])
-def browser(request):
-    return create_driver(request.param)
-
-# Generic test (runs on all)
-def test_login(browser):
-    # Same test, all browsers
-    pass
-
-# Browser-specific test
-@pytest.mark.skipif(
-    "firefox" not in pytest.config.getoption("--browser"),
-    reason="Firefox-specific test"
-)
-def test_firefox_specific_feature(browser):
-    pass
-
-# Handle browser differences in page objects
-class LoginPage:
-    def submit(self):
-        if self.browser_name == "safari":
-            # Safari-specific handling
-            self.click_with_js(self.SUBMIT_BUTTON)
-        else:
-            self.click(self.SUBMIT_BUTTON)
-```
+- Parameterized fixture: `@pytest.fixture(params=["chrome", "firefox", "edge"])`
+- Generic tests: Run on all browsers automatically
+- Browser-specific: Use `@pytest.mark.skipif` or conditional in page object
+- Handle differences in page objects, not test cases
 
 ---
 
@@ -606,89 +357,28 @@ class LoginPage:
 
 ### Selenium Commands
 
-```python
-# Navigation
-driver.get("https://example.com")
-driver.back()
-driver.forward()
-driver.refresh()
-
-# Finding elements
-driver.find_element(By.ID, "id")
-driver.find_element(By.CSS_SELECTOR, ".class")
-driver.find_element(By.XPATH, "//div[@id='x']")
-driver.find_elements(By.TAG_NAME, "a")  # Returns list
-
-# Actions
-element.click()
-element.send_keys("text")
-element.clear()
-element.text
-element.get_attribute("href")
-
-# Waits
-WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.ID, "btn"))
-)
-
-# JavaScript execution
-driver.execute_script("return document.title")
-driver.execute_script("arguments[0].click()", element)
-
-# Screenshots
-driver.save_screenshot("screenshot.png")
-
-# iframes
-driver.switch_to.frame("frame_name")
-driver.switch_to.default_content()
-
-# Alerts
-alert = driver.switch_to.alert
-alert.accept()
-alert.dismiss()
-alert.text
-```
+| Category | Command |
+|----------|---------|
+| **Navigate** | `driver.get(url)`, `back()`, `forward()`, `refresh()` |
+| **Find** | `find_element(By.ID, "id")`, `By.CSS_SELECTOR`, `By.XPATH` |
+| **Action** | `click()`, `send_keys()`, `clear()`, `.text`, `.get_attribute()` |
+| **Wait** | `WebDriverWait(driver, 10).until(EC.element_to_be_clickable(loc))` |
+| **JS** | `execute_script("return document.title")` |
+| **Screenshot** | `save_screenshot("file.png")` |
+| **iframe** | `switch_to.frame(frame)`, `switch_to.default_content()` |
+| **Alert** | `switch_to.alert`, `accept()`, `dismiss()`, `.text` |
 
 ### Playwright Commands
 
-```javascript
-// Navigation
-await page.goto('https://example.com');
-await page.goBack();
-await page.goForward();
-await page.reload();
-
-// Locators
-page.locator('#id');
-page.locator('.class');
-page.locator('text=Submit');
-page.locator('[data-test="btn"]');
-page.getByRole('button', { name: 'Submit' });
-page.getByTestId('submit');
-
-// Actions
-await locator.click();
-await locator.fill('text');
-await locator.clear();
-await locator.textContent();
-await locator.getAttribute('href');
-
-// Waits (mostly automatic)
-await page.waitForSelector('#element');
-await page.waitForLoadState('networkidle');
-
-// Assertions
-await expect(locator).toBeVisible();
-await expect(locator).toHaveText('Expected');
-await expect(page).toHaveURL(/.*success/);
-
-// Screenshots
-await page.screenshot({ path: 'screenshot.png' });
-
-// iframes
-const frame = page.frameLocator('#iframe');
-await frame.locator('#button').click();
-```
+| Category | Command |
+|----------|---------|
+| **Navigate** | `page.goto(url)`, `goBack()`, `goForward()`, `reload()` |
+| **Locator** | `locator('#id')`, `getByRole()`, `getByTestId()` |
+| **Action** | `click()`, `fill()`, `clear()`, `textContent()` |
+| **Wait** | Auto-wait, or `waitForSelector()`, `waitForLoadState()` |
+| **Assert** | `expect(loc).toBeVisible()`, `.toHaveText()`, `.toHaveURL()` |
+| **Screenshot** | `page.screenshot({ path: 'file.png' })` |
+| **iframe** | `frameLocator('#iframe').locator('#btn').click()` |
 
 ### Automation Best Practices
 
@@ -707,13 +397,17 @@ await frame.locator('#button').click();
 
 ## 8. Key Takeaways for Exam
 
-1. **Framework Choice**: Selenium (legacy), Playwright (modern), Cypress (JS only)
+1. **Framework Choice**:
+   - Web: Selenium (legacy), Playwright (modern), Cypress (JS only)
+   - Desktop: Pywinauto (Windows), WinAppDriver, Sikuli (image-based)
+   - Mobile: Appium (cross-platform), Espresso (Android), XCUITest (iOS)
 2. **POM Pattern**: Separate page structure from test logic
 3. **Waits**: Always use explicit waits, never hard sleeps
 4. **Flakiness**: Auto-wait (Playwright/Cypress) > manual waits (Selenium)
 5. **Cross-browser**: Test on multiple browsers, handle differences
 6. **Locators**: ID > CSS > XPath (by reliability)
-7. **Toolshop HW06**: 80% pass rate, 50 test cases, 3 browsers
+7. **Mobile challenges**: Device fragmentation, gestures, app states, permissions
+8. **Toolshop HW06**: 80% pass rate, 50 test cases, 3 browsers
 
 ---
 

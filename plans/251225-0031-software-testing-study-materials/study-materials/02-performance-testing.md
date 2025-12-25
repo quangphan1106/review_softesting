@@ -138,102 +138,44 @@ Tool comparison test results (same endpoint):
 ### 3.1 Load Test Scenario Design
 
 **Scenario: E-commerce Checkout Flow**
-```
-User Journey:
-1. Browse products (GET /products) - 3 seconds think time
-2. View product details (GET /products/{id}) - 5 seconds
-3. Add to cart (POST /cart) - 2 seconds
-4. View cart (GET /cart) - 3 seconds
-5. Checkout (POST /checkout) - varies
-```
+
+| Step | Action | Endpoint | Think Time |
+|------|--------|----------|------------|
+| 1 | Browse products | GET /products | 3s |
+| 2 | View details | GET /products/{id} | 5s |
+| 3 | Add to cart | POST /cart | 2s |
+| 4 | View cart | GET /cart | 3s |
+| 5 | Checkout | POST /checkout | - |
 
 **JMeter Test Plan Structure:**
+- Thread Group: Users (100), Ramp-up (60s), Loop (10)
+- HTTP Requests: Each step above
+- Timers: Constant timer between requests (think time)
+- Response Assertion: Verify status codes
+- Listeners: Summary Report, Aggregate Report
+
+### 3.2 k6 Script Concepts
+
+**Key Components:**
+- `stages`: Define ramp-up/down pattern (duration + target VUs)
+- `thresholds`: Pass/fail criteria (e.g., `p(95)<500`, `rate<0.01`)
+- `http.get/post`: Make HTTP requests
+- `check()`: Validate response
+- `sleep()`: Think time between actions
+
+**Example Pattern:**
 ```
-Test Plan
-├── Thread Group (Users: 100, Ramp-up: 60s, Loop: 10)
-│   ├── HTTP Request: Browse Products
-│   ├── Constant Timer: 3000ms
-│   ├── HTTP Request: Product Details
-│   ├── Constant Timer: 5000ms
-│   ├── HTTP Request: Add to Cart
-│   ├── Constant Timer: 2000ms
-│   ├── HTTP Request: View Cart
-│   ├── Constant Timer: 3000ms
-│   ├── HTTP Request: Checkout
-│   └── Response Assertion
-├── View Results Tree
-├── Summary Report
-└── Aggregate Report
-```
-
-### 3.2 k6 Script Example
-
-```javascript
-import http from 'k6/http';
-import { check, sleep } from 'k6';
-
-export const options = {
-  stages: [
-    { duration: '2m', target: 100 },  // Ramp up
-    { duration: '5m', target: 100 },  // Steady state
-    { duration: '2m', target: 200 },  // Stress
-    { duration: '1m', target: 0 },    // Ramp down
-  ],
-  thresholds: {
-    http_req_duration: ['p(95)<500'],  // 95% under 500ms
-    http_req_failed: ['rate<0.01'],    // Error rate < 1%
-  },
-};
-
-export default function () {
-  // Browse products
-  let res = http.get('https://api.example.com/products');
-  check(res, { 'browse status 200': (r) => r.status === 200 });
-  sleep(3);
-
-  // View details
-  res = http.get('https://api.example.com/products/123');
-  check(res, { 'details status 200': (r) => r.status === 200 });
-  sleep(5);
-
-  // Add to cart
-  res = http.post('https://api.example.com/cart', JSON.stringify({
-    productId: 123,
-    quantity: 1
-  }), { headers: { 'Content-Type': 'application/json' } });
-  check(res, { 'cart status 200': (r) => r.status === 200 });
-  sleep(2);
-}
+Ramp up (2m → 100 users) → Steady (5m) → Stress (2m → 200) → Ramp down (1m → 0)
 ```
 
-### 3.3 Locust Script Example
+### 3.3 Locust Script Concepts
 
-```python
-from locust import HttpUser, task, between
-
-class ShopUser(HttpUser):
-    wait_time = between(1, 5)  # Random wait 1-5 seconds
-
-    def on_start(self):
-        """Login on start"""
-        self.client.post("/login", {
-            "email": "test@example.com",
-            "password": "welcome01"
-        })
-
-    @task(3)  # Weight: 3x more likely
-    def browse_products(self):
-        self.client.get("/products")
-
-    @task(2)
-    def view_product(self):
-        self.client.get("/products/123")
-
-    @task(1)
-    def checkout(self):
-        self.client.post("/cart", json={"productId": 123})
-        self.client.post("/checkout")
-```
+**Key Components:**
+- `HttpUser`: Define user behavior class
+- `wait_time = between(1, 5)`: Random think time
+- `on_start()`: Login/setup before tests
+- `@task(weight)`: Define task with weight (3 = 3x more likely)
+- `self.client.get/post`: Make HTTP calls
 
 ### 3.4 Test Cases for Performance Testing
 
@@ -267,52 +209,16 @@ class ShopUser(HttpUser):
 
 ### 4.1 Common Performance Issues
 
-**Problem 1: Response Time Degradation Under Load**
-```
-Symptom: P95 increases from 200ms to 2000ms at 100 users
-Root Causes:
-- Database connection pool exhausted
-- Single-threaded bottleneck
-- Memory pressure (GC overhead)
-- Network bandwidth saturation
+| Problem | Symptom | Root Causes | Debug Steps |
+|---------|---------|-------------|-------------|
+| **Response Time Degradation** | P95: 200ms → 2000ms at load | DB pool exhausted, thread bottleneck, GC overhead | Check DB connections, thread count, GC logs |
+| **High Error Rate** | 5%+ HTTP 500 at peak | Timeout too low, OOM, deadlocks | Check error logs, increase timeout, monitor resources |
+| **JMeter OOM** | OutOfMemoryError | Too many listeners, View Results Tree | Disable listeners, increase heap, run non-GUI mode |
 
-Debug Steps:
-1. Monitor DB connections: SHOW PROCESSLIST
-2. Check thread count: jstack <pid>
-3. Analyze GC logs: -XX:+PrintGCDetails
-4. Monitor network: netstat -an | grep ESTABLISHED
-```
-
-**Problem 2: High Error Rate**
-```
-Symptom: 5%+ HTTP 500 errors at peak load
-Root Causes:
-- Timeout configuration too low
-- Out of memory errors
-- Database deadlocks
-- External service failures
-
-Debug Steps:
-1. Check error logs for stack traces
-2. Increase timeout temporarily
-3. Monitor resource usage (CPU, memory)
-4. Add circuit breakers for external calls
-```
-
-**Problem 3: JMeter Memory Issues**
-```
-Symptom: JMeter crashes with OutOfMemoryError
-Root Causes:
-- Too many listeners collecting results
-- View Results Tree enabled
-- Insufficient heap allocation
-
-Solutions:
-1. Disable View Results Tree in load test
-2. Increase heap: JVM_ARGS="-Xms1g -Xmx4g"
-3. Use Simple Data Writer instead of listeners
-4. Run in non-GUI mode: jmeter -n -t test.jmx
-```
+**JMeter Optimization Tips:**
+- Run non-GUI: `jmeter -n -t test.jmx`
+- Increase heap: `JVM_ARGS="-Xms1g -Xmx4g"`
+- Disable View Results Tree during load tests
 
 ### 4.2 Metric Interpretation
 
@@ -336,77 +242,21 @@ Checkout    | 500       | 345     | 120 | 2340 | 289     | 1.20%  | 42.1/sec
 
 ### 5.1 From Performance Testing Homework (HW07)
 
-**Test Environment:**
-- Application: ToolShop Practice Software Testing
-- URL: https://with-bugs.practicesoftwaretesting.com
-- Tool: Apache JMeter
+**Test Environment:** ToolShop (https://with-bugs.practicesoftwaretesting.com) using JMeter
 
-**Test Scenarios Executed:**
+| Scenario | Config | Key Results |
+|----------|--------|-------------|
+| **Load Test** | 100 users, 60s ramp, 5min | Avg: 245ms, P95: 520ms, Errors: 0.5% |
+| **Stress Test** | 200 users, 30s ramp | Breaking point: ~180 users, RT: 1.8s, Errors: 3.2% |
+| **Spike Test** | 50→200 users in 5s | Peak errors: 8%, Recovery: 45s |
 
-**Scenario 1: Load Test (100 Users)**
-```
-Thread Group: 100 users
-Ramp-up: 60 seconds
-Duration: 5 minutes
-Target: Homepage, Product List, Product Detail
+### 5.2 JMeter Test Plan Concepts
 
-Results:
-- Average Response Time: 245ms
-- Throughput: 156.3 requests/sec
-- Error Rate: 0.5%
-- P95: 520ms
-```
-
-**Scenario 2: Stress Test (200 Users)**
-```
-Thread Group: 200 users
-Ramp-up: 30 seconds
-Duration: 3 minutes
-
-Results:
-- Breaking point at ~180 users
-- Response time degraded to 1.8s
-- Error rate increased to 3.2%
-```
-
-**Scenario 3: Spike Test**
-```
-Pattern: 50 → 200 users in 5 seconds
-Hold: 2 minutes
-Recovery: 1 minute
-
-Results:
-- Peak error rate: 8% during spike
-- Recovery time: 45 seconds
-- System stabilized at 200 users
-```
-
-### 5.2 JMeter Test Plan from Homework
-
-```xml
-<!-- Simplified representation -->
-<TestPlan>
-  <ThreadGroup>
-    <numThreads>200</numThreads>
-    <rampUp>30</rampUp>
-    <duration>180</duration>
-  </ThreadGroup>
-
-  <HTTPSampler>
-    <path>/products</path>
-    <method>GET</method>
-  </HTTPSampler>
-
-  <UniformRandomTimer>
-    <range>2000</range>
-    <offset>1000</offset>
-  </UniformRandomTimer>
-
-  <ResponseAssertion>
-    <testString>200</testString>
-  </ResponseAssertion>
-</TestPlan>
-```
+**Key Elements:**
+- Thread Group: numThreads (VUs), rampUp (seconds), duration
+- HTTPSampler: path, method (GET/POST)
+- Timer: UniformRandomTimer (range, offset) for think time
+- ResponseAssertion: Verify status code
 
 ---
 
@@ -432,56 +282,28 @@ Results:
 - Soak test catches memory leaks under sustained load
 
 ### Question 2: Metric Interpretation
-**Scenario:** Test results show:
-- Average: 150ms
-- P50: 120ms
-- P95: 800ms
-- P99: 3500ms
-- Error rate: 0.8%
+**Scenario:** Avg=150ms, P50=120ms, P95=800ms, P99=3500ms, Errors=0.8%
 
-**Question:** Is this performance acceptable? What does it indicate?
+**Question:** Is this acceptable?
 
 **Answer:**
-```
-Analysis:
-- P50 (120ms) is good - half of users have good experience
-- P95 (800ms) is concerning - 5% wait nearly 1 second
-- P99 (3500ms) is problematic - 1% wait 3.5 seconds
-- Large gap between average and P99 indicates:
-  - Inconsistent performance
-  - Possible resource contention
-  - Database slow queries for certain requests
-
-Recommendation:
-- Investigate specific requests causing P99 spikes
-- Check database query performance
-- Review connection pooling
-- NOT acceptable for production without fixes
-```
+- P50 good, P95 concerning (nearly 1s), P99 problematic (3.5s)
+- Large gap P50→P99 = inconsistent performance
+- Indicates: resource contention, slow DB queries for some requests
+- **NOT acceptable** - investigate P99 spikes, check DB, fix before production
 
 ### Question 3: Tool Selection
-**Scenario:** Team needs to performance test:
-- REST API endpoints
-- WebSocket real-time features
-- Database queries directly
+**Scenario:** Need to test REST API + WebSocket + Database queries
 
-**Question:** Which tool(s) would you recommend?
+**Question:** Which tool(s)?
 
 **Answer:**
-```
-Option 1: JMeter (comprehensive)
-- Pros: Supports all three (HTTP, WebSocket plugin, JDBC)
-- Cons: Resource-heavy, complex setup
+| Option | Tool(s) | Pros | Cons |
+|--------|---------|------|------|
+| 1 | JMeter only | All 3 supported | Resource-heavy |
+| 2 | k6 + JMeter | k6 for API/WS, JMeter for JDBC | 2 tools |
 
-Option 2: k6 + JMeter hybrid
-- k6: REST API + WebSocket (efficient, modern)
-- JMeter: Database testing (JDBC sampler)
-- Pros: Best of both worlds
-- Cons: Two tools to maintain
-
-Recommendation: k6 for API/WebSocket (CI/CD friendly),
-JMeter only for database testing if needed.
-```
+**Recommendation:** k6 for API/WebSocket (CI/CD friendly), JMeter only if need JDBC
 
 ---
 
@@ -489,54 +311,29 @@ JMeter only for database testing if needed.
 
 ### JMeter Quick Reference
 
-```
-# Non-GUI mode (production tests)
-jmeter -n -t test.jmx -l results.jtl
-
-# Generate HTML report
-jmeter -g results.jtl -o report/
-
-# Increase heap
-export JVM_ARGS="-Xms1g -Xmx4g"
-
-# Key Elements:
-- Thread Group: Virtual users
-- Sampler: HTTP Request, JDBC Request
-- Timer: Constant, Gaussian, Uniform Random
-- Assertion: Response, JSON, Duration
-- Listener: Summary Report, Aggregate Report
-```
+| Command/Element | Purpose |
+|-----------------|---------|
+| `jmeter -n -t test.jmx -l results.jtl` | Run non-GUI mode |
+| `jmeter -g results.jtl -o report/` | Generate HTML report |
+| `JVM_ARGS="-Xms1g -Xmx4g"` | Increase heap |
+| Thread Group | Define virtual users, ramp-up, duration |
+| HTTP/JDBC Sampler | Make requests |
+| Timer (Constant/Random) | Think time |
+| Assertion | Validate response |
+| Listener | Collect results (Summary, Aggregate) |
 
 ### k6 Quick Reference
 
-```javascript
-// Run test
-// k6 run script.js
-
-// Key options
-export const options = {
-  vus: 100,                    // Virtual users
-  duration: '5m',              // Test duration
-  stages: [                    // Ramping pattern
-    { duration: '1m', target: 100 },
-    { duration: '3m', target: 100 },
-    { duration: '1m', target: 0 },
-  ],
-  thresholds: {                // Pass/fail criteria
-    http_req_duration: ['p(95)<500'],
-    http_req_failed: ['rate<0.01'],
-  },
-};
-
-// Key functions
-import http from 'k6/http';
-import { check, sleep } from 'k6';
-
-http.get(url);
-http.post(url, body, params);
-check(response, { 'status 200': (r) => r.status === 200 });
-sleep(seconds);
-```
+| Element | Syntax/Example |
+|---------|----------------|
+| Run | `k6 run script.js` |
+| VUs | `vus: 100` |
+| Duration | `duration: '5m'` |
+| Stages | `stages: [{duration: '1m', target: 100}]` |
+| Threshold | `http_req_duration: ['p(95)<500']` |
+| Request | `http.get(url)`, `http.post(url, body)` |
+| Check | `check(res, {'ok': r => r.status === 200})` |
+| Think time | `sleep(seconds)` |
 
 ### Performance Testing Checklist
 
@@ -570,126 +367,44 @@ Example:
 ### 8.1 Artillery
 
 **What is Artillery?**
-- Modern, Node.js-based load testing toolkit
-- YAML-based configuration (like k6)
+- Node.js-based load testing, YAML config
 - Built-in Playwright support for browser testing
-- Cloud-native with AWS/Azure integration
+- Cloud-native (AWS/Azure integration)
 
-**Installation:**
-```bash
-npm install -g artillery
-```
+**Key Concepts:**
+- `config.target`: Base URL
+- `config.phases`: Load pattern (duration, arrivalRate)
+- `scenarios.flow`: User journey steps (get, post, think)
 
-**Basic Usage:**
-```yaml
-# load-test.yml
-config:
-  target: "https://api.example.com"
-  phases:
-    - duration: 60
-      arrivalRate: 10      # 10 new users/second
-    - duration: 120
-      arrivalRate: 50      # Ramp to 50
-  defaults:
-    headers:
-      Authorization: "Bearer {{token}}"
-
-scenarios:
-  - name: "Browse and Purchase"
-    flow:
-      - get:
-          url: "/products"
-      - think: 2
-      - post:
-          url: "/cart"
-          json:
-            productId: "123"
-      - post:
-          url: "/checkout"
-```
-
-**Run Test:**
-```bash
-artillery run load-test.yml
-artillery run --output report.json load-test.yml
-artillery report report.json
-```
+**Commands:** `artillery run test.yml`, `artillery report report.json`
 
 **Artillery vs k6:**
 
 | Aspect | Artillery | k6 |
 |--------|-----------|-----|
-| Language | YAML + JS | JavaScript |
-| Browser | Playwright built-in | xk6-browser extension |
-| Cloud | Artillery Cloud | Grafana Cloud |
+| Config | YAML + JS | JavaScript |
+| Browser | Playwright built-in | Extension needed |
 | Learning | Easier (YAML) | More flexible |
 
 ### 8.2 Core Web Vitals Testing
 
 **What are Core Web Vitals?**
-- Google's metrics for user experience
-- Affects SEO rankings
+- Google's UX metrics, affects SEO rankings
 - Measured in Chrome, Lighthouse, PageSpeed
 
 **Metrics:**
 
-| Metric | Measures | Good | Needs Work | Poor |
-|--------|----------|------|------------|------|
-| **LCP** (Largest Contentful Paint) | Loading | <2.5s | 2.5-4s | >4s |
-| **FID** (First Input Delay) | Interactivity | <100ms | 100-300ms | >300ms |
-| **CLS** (Cumulative Layout Shift) | Stability | <0.1 | 0.1-0.25 | >0.25 |
-| **INP** (Interaction to Next Paint) | Responsiveness | <200ms | 200-500ms | >500ms |
+| Metric | Measures | Good | Poor |
+|--------|----------|------|------|
+| **LCP** (Largest Contentful Paint) | Loading | <2.5s | >4s |
+| **FID** (First Input Delay) | Interactivity | <100ms | >300ms |
+| **CLS** (Cumulative Layout Shift) | Stability | <0.1 | >0.25 |
+| **INP** (Interaction to Next Paint) | Responsiveness | <200ms | >500ms |
 
-**Testing with Playwright:**
-```javascript
-const { chromium } = require('playwright');
-
-async function measureCoreWebVitals(url) {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-
-  // Enable performance metrics
-  await page.goto(url, { waitUntil: 'networkidle' });
-
-  // Get Web Vitals
-  const vitals = await page.evaluate(() => {
-    return new Promise((resolve) => {
-      new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        resolve({
-          LCP: entries.find(e => e.entryType === 'largest-contentful-paint')?.startTime,
-          CLS: entries.filter(e => e.entryType === 'layout-shift')
-                     .reduce((sum, e) => sum + e.value, 0),
-        });
-      }).observe({ type: 'largest-contentful-paint', buffered: true });
-    });
-  });
-
-  console.log('Core Web Vitals:', vitals);
-  await browser.close();
-}
-```
-
-**Lighthouse CI:**
-```bash
-npm install -g @lhci/cli
-
-# Run Lighthouse
-lhci autorun --collect.url=https://example.com
-
-# Config: lighthouserc.js
-module.exports = {
-  ci: {
-    assert: {
-      assertions: {
-        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        'first-contentful-paint': ['warn', { maxNumericValue: 1800 }],
-      },
-    },
-  },
-};
-```
+**Testing Methods:**
+- Playwright: Use PerformanceObserver API to measure LCP, CLS
+- Lighthouse CI: `lhci autorun --collect.url=https://example.com`
+- Set assertions in `lighthouserc.js` for CI/CD integration
 
 ---
 
