@@ -74,21 +74,9 @@ UI Change → Locator Breaks → AI Finds Alternative → Test Passes
 5. Reports healed locators for manual review
 
 **Setup:**
-```java
-// Maven dependency
-<dependency>
-    <groupId>com.epam.healenium</groupId>
-    <artifactId>healenium-web</artifactId>
-    <version>3.4.0</version>
-</dependency>
-
-// Usage
-WebDriver delegate = new ChromeDriver();
-WebDriver driver = SelfHealingDriver.create(delegate);
-
-// Use normally - healing happens automatically
-driver.findElement(By.id("old-id")).click();  // Heals if ID changed
-```
+- Add Maven dependency: `healenium-web`
+- Wrap driver: `SelfHealingDriver.create(new ChromeDriver())`
+- Use normally - healing happens automatically
 
 **Limitations:**
 - First run creates baseline (can't heal on first execution)
@@ -109,50 +97,14 @@ driver.findElement(By.id("old-id")).click();  // Heals if ID changed
 | **Review Needed** | Yes (domain experts) | Essential |
 
 **Qodo Example:**
-```python
-# Input function
-def calculate_discount(price, customer_type):
-    if customer_type == "premium":
-        return price * 0.8
-    elif customer_type == "regular":
-        return price * 0.9
-    else:
-        return price
+- Input: `calculate_discount(price, customer_type)` function
+- Qodo auto-generates: premium/regular/unknown tests + edge cases (zero, negative price)
+- Key: Identifies edge cases automatically
 
-# Qodo generates:
-def test_calculate_discount_premium_customer():
-    assert calculate_discount(100, "premium") == 80.0
-
-def test_calculate_discount_regular_customer():
-    assert calculate_discount(100, "regular") == 90.0
-
-def test_calculate_discount_unknown_customer():
-    assert calculate_discount(100, "unknown") == 100.0
-
-def test_calculate_discount_zero_price():
-    assert calculate_discount(0, "premium") == 0.0
-
-def test_calculate_discount_negative_price():
-    # Edge case Qodo identifies
-    assert calculate_discount(-100, "premium") == -80.0
-```
-
-**ChatGPT Prompting for Tests:**
-```
-Prompt: "Generate pytest test cases for this function, including:
-- Happy path tests
-- Edge cases (boundary values)
-- Error handling tests
-- Negative tests
-
-Function:
-[paste code]
-
-Requirements:
-- Use pytest fixtures
-- Include docstrings
-- Cover 100% branches"
-```
+**ChatGPT Prompting:**
+- Include: happy path, edge cases, error handling, negative tests
+- Specify: framework (pytest), coverage target, output format
+- Always provide code + business context in prompt
 
 ### 2.3 Applitools Visual AI
 
@@ -171,125 +123,37 @@ Requirements:
 | **Batch Verification** | Review similar changes together |
 | **Layout Matching** | Ignores text, checks structure |
 
-**Integration Example (Playwright):**
-```javascript
-const { Eyes, Target } = require('@applitools/eyes-playwright');
-
-test('homepage visual', async ({ page }) => {
-    const eyes = new Eyes();
-    await eyes.open(page, 'App Name', 'Test Name');
-
-    await page.goto('https://example.com');
-
-    // Full page check
-    await eyes.check('Homepage', Target.window().fully());
-
-    // Element check
-    await eyes.check('Header', Target.region('#header'));
-
-    // Ignore dynamic content
-    await eyes.check('Dashboard', Target.window()
-        .ignoreRegions('.timestamp', '.ad-banner'));
-
-    await eyes.close();
-});
-```
+**Integration Concepts:**
+- `eyes.open(page, 'App', 'Test')` - Start session
+- `eyes.check('Name', Target.window().fully())` - Full page
+- `Target.region('#header')` - Element only
+- `.ignoreRegions('.timestamp')` - Skip dynamic content
+- `eyes.close()` - End session
 
 ---
 
 ## 3. Practical Test Case Design
 
-### 3.1 Self-Healing Test Implementation
+### 3.1 Self-Healing Test Concepts
 
-**Scenario: Login Page Test with Healenium**
-```java
-public class LoginTest {
-    private SelfHealingDriver driver;
+**Healenium Usage:**
+- Wrap driver: `SelfHealingDriver.create(delegate)`
+- Use `findElement()` normally - heals automatically
+- Review healing report: original locator → healed locator + score
 
-    @Before
-    public void setup() {
-        WebDriver delegate = new ChromeDriver();
-        driver = SelfHealingDriver.create(delegate);
-    }
-
-    @Test
-    public void testLogin() {
-        driver.get("https://practicesoftwaretesting.com/auth/login");
-
-        // These locators will self-heal if UI changes
-        WebElement email = driver.findElement(By.id("email"));
-        WebElement password = driver.findElement(By.id("password"));
-        WebElement submit = driver.findElement(By.cssSelector("[data-test='login-submit']"));
-
-        email.sendKeys("customer@test.com");
-        password.sendKeys("welcome01");
-        submit.click();
-
-        // Verify login success
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.urlContains("/account"));
-    }
-
-    @After
-    public void teardown() {
-        driver.quit();
-    }
-}
-```
-
-**Healing Report Review:**
-```json
-{
-  "healedElements": [
-    {
-      "originalLocator": "By.id: email",
-      "healedLocator": "By.cssSelector: [name='email']",
-      "score": 0.95,
-      "screenshot": "healed_element_1.png"
-    }
-  ]
-}
-```
+**Healing Report Contains:**
+- Original vs healed locator
+- Confidence score (e.g., 0.95)
+- Screenshot for review
 
 ### 3.2 AI-Generated Test Review Process
 
-**Step 1: Generate Tests**
-```python
-# Use Qodo/ChatGPT to generate initial tests
-# for payment module
-```
+**Review Checklist:**
+1. **Generate** - Use Qodo/ChatGPT for initial scaffold
+2. **Domain Review** - AI may miss business context (e.g., negative = refund, not error)
+3. **Add Missing** - Currency conversion, idempotency, security tests
 
-**Step 2: Review for Domain Logic**
-```python
-# AI generated:
-def test_payment_negative_amount():
-    assert process_payment(-100) == {"error": "Invalid amount"}
-
-# Manual review needed:
-# - Is negative amount actually invalid?
-# - What if it's a refund?
-# - Add business context
-def test_payment_negative_amount_is_refund():
-    """Negative amounts represent refunds"""
-    result = process_payment(-100)
-    assert result["type"] == "refund"
-    assert result["amount"] == 100
-```
-
-**Step 3: Add Missing Edge Cases**
-```python
-# AI might miss:
-def test_payment_currency_conversion():
-    """Test multi-currency handling"""
-    result = process_payment(100, currency="EUR")
-    assert result["converted_amount"] > 0
-
-def test_payment_idempotency():
-    """Same payment ID should not charge twice"""
-    process_payment(100, payment_id="123")
-    result = process_payment(100, payment_id="123")
-    assert result["status"] == "duplicate"
-```
+**Key Point:** AI lacks domain knowledge - manual review essential
 
 ### 3.3 Test Cases for AI Testing Tools
 
@@ -319,88 +183,26 @@ def test_payment_idempotency():
 
 ### 4.1 Healenium Issues
 
-**Problem 1: Incorrect Healing**
-```
-Symptom: Test passes but clicks wrong element
-
-Root Cause:
-- Multiple similar elements
-- Low confidence score accepted
-
-Solution:
-1. Set minimum confidence threshold:
-   healenium.properties: heal.min.score=0.8
-
-2. Use more specific original locators:
-   By.cssSelector("[data-test='submit-btn']")
-   instead of By.className("btn")
-
-3. Review healing reports regularly
-```
-
-**Problem 2: Healing Backend Issues**
-```
-Symptom: "Cannot connect to Healenium backend"
-
-Debug Steps:
-1. Check PostgreSQL is running:
-   docker ps | grep healenium
-
-2. Verify connection string:
-   spring.datasource.url=jdbc:postgresql://localhost:5432/healenium
-
-3. Check network/firewall
-4. Review logs: docker logs healenium-backend
-```
+| Problem | Symptom | Solution |
+|---------|---------|----------|
+| Incorrect Healing | Clicks wrong element | Set `heal.min.score=0.8`, use specific locators |
+| Backend Connection | Cannot connect error | Check PostgreSQL, verify connection string |
 
 ### 4.2 AI Test Generation Issues
 
-**Problem 1: Generated Tests Don't Compile**
-```
-Symptom: Syntax errors, undefined imports
+| Problem | Symptom | Solution |
+|---------|---------|----------|
+| Won't Compile | Syntax errors | Specify language version, use IDE plugin |
+| Missing Business Logic | Tests pass but wrong | Include requirements in prompt, manual review |
 
-Solutions:
-1. Specify exact language version in prompt
-2. Provide import context
-3. Use IDE plugin (Qodo) instead of web ChatGPT
-4. Add example test as template
-```
-
-**Problem 2: Tests Miss Business Logic**
-```
-Symptom: Tests pass but don't validate requirements
-
-Root Cause: AI lacks domain context
-
-Solutions:
-1. Include requirements in prompt:
-   "Given these business rules: [rules]"
-
-2. Add existing test examples as context
-
-3. Manual review checklist:
-   - [ ] Validates business rules
-   - [ ] Tests error conditions
-   - [ ] Covers edge cases
-   - [ ] Uses realistic data
-```
+**Review Checklist:** Validates rules, error conditions, edge cases, realistic data
 
 ### 4.3 Visual Testing Issues
 
-**Problem 1: Too Many False Positives**
-```
-Symptom: Every test flags differences (fonts, anti-aliasing)
-
-Solutions:
-1. Use Layout match level:
-   eyes.setMatchLevel(MatchLevel.Layout)
-
-2. Ignore dynamic regions:
-   Target.window().ignoreRegions('.dynamic')
-
-3. Set baseline with stable environment
-4. Use Visual AI (Applitools) instead of pixel-diff
-```
+| Problem | Solution |
+|---------|----------|
+| False Positives | Use `MatchLevel.Layout`, ignore dynamic regions |
+| Font Differences | Use Visual AI instead of pixel-diff |
 
 ---
 
@@ -432,226 +234,77 @@ Expected Output: "cat" with 95% confidence? 90%? 85%?
 | **Dynamic Oracle** | ML learns expected behavior | Long-running systems |
 | **Pseudo-Oracle** | Separate validation program | Complex calculations |
 
-**Statistical Oracle Example:**
-```python
-def test_sentiment_model():
-    """Accept predictions within confidence range"""
-    result = sentiment_model.predict("I love this product!")
-
-    # Oracle: positive sentiment with >80% confidence
-    assert result.label == "positive"
-    assert 0.80 <= result.confidence <= 1.0
-```
-
-**Metamorphic Testing Example:**
-```python
-def test_image_classifier_rotation():
-    """Rotating image shouldn't change classification"""
-    original = classify(image)
-    rotated = classify(rotate(image, 90))
-
-    # Metamorphic relation: same class regardless of rotation
-    assert original.label == rotated.label
-```
+**Examples:**
+- **Statistical Oracle:** Accept confidence ≥80% for sentiment model
+- **Metamorphic Testing:** Rotating image shouldn't change classification result
 
 ---
 
 ## 6. Application-Level Exam Questions
 
 ### Question 1: Healenium Architecture
-**Scenario:** Test suite has 500 tests with 2000 locators. After UI redesign, 30% of locators broke.
-
-**Question:** How would Healenium help? What are limitations?
+**Scenario:** 500 tests, 2000 locators, 30% broke after UI redesign
 
 **Answer:**
-```
-Benefits:
-1. Auto-heal 30% broken locators (600 elements)
-2. Reduce manual fix time from days to hours
-3. Generate healing report for review
-4. Tests continue running during redesign
+| Benefits | Limitations |
+|----------|-------------|
+| Auto-heal 600 locators | Can't heal first run |
+| Days → hours for fixes | May suggest wrong heals |
+| Reports for review | New elements won't heal |
+| Tests continue running | Requires PostgreSQL |
 
-Process:
-- First run after redesign: Creates new baseline
-- Subsequent runs: Heals changed locators
-- Review reports: Accept/reject healed locators
-- Update locators based on recommendations
-
-Limitations:
-1. Can't heal on first run (needs history)
-2. May suggest incorrect heals (review required)
-3. New elements not in history won't heal
-4. Requires PostgreSQL backend
-5. Some locator changes too drastic to heal
-
-Recommendation:
-- Use Healenium for maintenance reduction
-- Implement data-test attributes for critical elements
-- Review healing reports weekly
-- Manual update for new features
-```
+**Recommendation:** Use for maintenance, add data-test attributes, review reports weekly
 
 ### Question 2: AI Test Generation Strategy
-**Scenario:** New payment module needs tests. Team is considering Qodo vs ChatGPT.
-
-**Question:** Compare the approaches and recommend a strategy.
+**Scenario:** Payment module needs tests - Qodo vs ChatGPT?
 
 **Answer:**
-```
-Comparison:
+| Tool | Pros | Cons |
+|------|------|------|
+| Qodo | IDE integration, edge case detection | Limited languages, misses business logic |
+| ChatGPT | Any language, flexible | No code context, may not compile |
 
-Qodo:
-- Pro: IDE integration (inline suggestions)
-- Pro: Deep code analysis (understands context)
-- Pro: Automatic edge case detection
-- Con: Limited language support
-- Con: May miss business logic
-
-ChatGPT:
-- Pro: Any language, flexible prompting
-- Pro: Can include business requirements
-- Pro: Explains generated tests
-- Con: No code context (limited window)
-- Con: May generate non-compiling code
-- Con: Inconsistent quality
-
-Recommended Strategy:
-1. Use Qodo for initial test scaffold (technical tests)
-2. Use ChatGPT for business logic tests (with requirements in prompt)
-3. Manual review ALL generated tests
-4. Add domain-specific edge cases manually
-5. Run mutation testing to verify quality
-
-Example Workflow:
-- Qodo generates: Unit tests, boundary tests
-- ChatGPT generates: Integration scenarios with business rules
-- Manual adds: Security tests, performance tests
-- Review removes: Duplicate, incorrect tests
-```
+**Strategy:** Qodo for technical tests → ChatGPT for business logic → Manual review ALL → Add security/performance tests
 
 ### Question 3: Visual AI vs Pixel-Diff
-**Scenario:** E-commerce site has frequent false positives in visual tests due to:
-- Font rendering differences between CI and local
-- Dynamic prices and timestamps
-- Promotional banners that change
-
-**Question:** How would Visual AI help?
+**Scenario:** False positives from fonts, dynamic prices, banners
 
 **Answer:**
-```
-Visual AI (Applitools) Advantages:
+| Issue | Pixel-Diff | Visual AI |
+|-------|------------|-----------|
+| Fonts | Fails on anti-aliasing | Recognizes text |
+| Dynamic | Manual ignore config | Auto-ignores timestamps |
+| Banners | Fails on every change | Use Layout match |
 
-1. Font Rendering:
-   - Pixel-diff: Fails on anti-aliasing differences
-   - Visual AI: Recognizes text regardless of rendering
-
-2. Dynamic Content:
-   - Pixel-diff: Must manually configure ignores
-   - Visual AI: Intelligent content recognition
-   - Auto-ignores timestamps, IDs, prices
-   - Can set "Ignore Colors" for promotional changes
-
-3. Promotional Banners:
-   - Pixel-diff: Fails every time banner changes
-   - Visual AI: Use "Layout" match level
-   - Compares structure, not content
-
-Implementation:
-```javascript
-// Configure for e-commerce
-const eyes = new Eyes();
-
-eyes.setConfiguration(
-    config.setMatchLevel(MatchLevel.Layout)  // Structure only
-          .setIgnoreDisplacements(true)       // Allow element movement
-);
-
-await eyes.check('Product Page', Target.window()
-    .ignoreRegions('.price', '.promo-banner', '.timestamp')
-    .layoutRegions('.product-grid'));  // Only check layout
-```
-
-Result:
-- 90% reduction in false positives
-- Tests focus on meaningful visual changes
-- CI/CD stable across environments
-```
+**Result:** 90% reduction in false positives, stable CI/CD
 
 ---
 
 ## 7. Cheatsheet / Quick Reference
 
-### Healenium Commands
+### Healenium Config
 
-```java
-// Setup
-WebDriver delegate = new ChromeDriver();
-SelfHealingDriver driver = SelfHealingDriver.create(delegate);
+| Setting | Purpose |
+|---------|---------|
+| `SelfHealingDriver.create(delegate)` | Wrap driver |
+| `heal.min.score=0.7` | Minimum confidence |
+| `enable.self.healing=true` | Enable healing |
 
-// Configuration (healenium.properties)
-recovery-tries=1
-heal.min.score=0.7
-enable.self.healing=true
+### Applitools Config
 
-// Docker setup
-docker run -d --name healenium-backend \
-    -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/healenium \
-    healenium/hlm-backend:latest
-```
+| Config/Check | Purpose |
+|--------------|---------|
+| `eyes.setApiKey()` | Authentication |
+| `config.setMatchLevel()` | Exact/Strict/Content/Layout |
+| `Target.window().fully()` | Full page |
+| `.ignoreRegions('.dynamic')` | Skip areas |
+| `.layoutRegions('.ads')` | Structure only |
 
-### Applitools Commands
+**Match Levels:** Exact (pixel-perfect) → Strict (default) → Content (ignore colors) → Layout (structure)
 
-```javascript
-// Setup
-const { Eyes, Target, Configuration } = require('@applitools/eyes-playwright');
-const eyes = new Eyes();
+### AI Test Generation Prompt
 
-// Configuration
-const config = new Configuration();
-config.setApiKey(process.env.APPLITOOLS_API_KEY);
-config.setBatch(new BatchInfo('Batch Name'));
-config.setMatchLevel(MatchLevel.Strict);  // or Layout, Content
-
-// Checks
-await eyes.check('Full Page', Target.window().fully());
-await eyes.check('Region', Target.region('#element'));
-await eyes.check('Ignore', Target.window()
-    .ignoreRegions('.dynamic')
-    .layoutRegions('.ads'));
-
-// Match levels
-MatchLevel.Exact      // Pixel-perfect
-MatchLevel.Strict     // Smart pixel diff (default)
-MatchLevel.Content    // Ignores colors
-MatchLevel.Layout     // Structure only
-```
-
-### AI Test Generation Prompt Template
-
-```
-Generate [framework] tests for the following code:
-
-Requirements:
-1. Test happy path
-2. Test boundary values
-3. Test error handling
-4. Test edge cases
-5. Achieve 100% branch coverage
-
-Business Rules:
-- [List business requirements]
-
-Code:
-```[language]
-[paste code]
-```
-
-Output format:
-- Use descriptive test names
-- Include docstrings
-- Use fixtures for setup
-- Add assertions with clear messages
-```
+Include in prompt: framework, happy path, boundaries, errors, edge cases, coverage target, business rules, output format
 
 ### AI Testing Checklist
 

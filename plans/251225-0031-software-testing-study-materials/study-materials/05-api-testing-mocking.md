@@ -90,22 +90,13 @@
 - Monitors
 
 **Newman CLI:**
-```bash
-# Run collection
-newman run collection.json
-
-# With environment
-newman run collection.json -e environment.json
-
-# Multiple reporters
-newman run collection.json --reporters cli,json,html
-
-# With iterations
-newman run collection.json -n 10
-
-# With data file
-newman run collection.json -d testdata.csv
-```
+| Command | Purpose |
+|---------|---------|
+| `newman run collection.json` | Basic run |
+| `-e environment.json` | With environment |
+| `--reporters cli,json,html` | Multiple reporters |
+| `-n 10` | 10 iterations |
+| `-d testdata.csv` | Data-driven testing |
 
 ### 2.3 Mock Server Tools
 
@@ -155,102 +146,33 @@ newman run collection.json -d testdata.csv
     └── 🔴 POST /payment/check (invalid card)
 ```
 
-### 3.2 Postman Test Scripts
+### 3.2 Postman Test Concepts
 
-**Basic Test:**
-```javascript
-// Status code check
-pm.test("Status is 200", function() {
-    pm.response.to.have.status(200);
-});
+**Common Assertions:**
+| Assertion | Syntax |
+|-----------|--------|
+| Status code | `pm.response.to.have.status(200)` |
+| JSON array | `pm.expect(json.data).to.be.an("array")` |
+| Length > 0 | `pm.expect(json.data.length).to.be.greaterThan(0)` |
+| Schema | `pm.response.to.have.jsonSchema(schema)` |
 
-// JSON validation
-pm.test("Response has products", function() {
-    const response = pm.response.json();
-    pm.expect(response.data).to.be.an("array");
-    pm.expect(response.data.length).to.be.greaterThan(0);
-});
-
-// Schema validation
-const schema = {
-    type: "object",
-    required: ["id", "name", "price"],
-    properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        price: { type: "number", minimum: 0 }
-    }
-};
-
-pm.test("Schema is valid", function() {
-    pm.response.to.have.jsonSchema(schema);
-});
-```
-
-**Pre-request Script (Auth):**
-```javascript
-// Get auth token and set as variable
-const loginRequest = {
-    url: pm.environment.get("base_url") + "/users/login",
-    method: 'POST',
-    header: { 'Content-Type': 'application/json' },
-    body: {
-        mode: 'raw',
-        raw: JSON.stringify({
-            email: pm.environment.get("email"),
-            password: pm.environment.get("password")
-        })
-    }
-};
-
-pm.sendRequest(loginRequest, function(err, response) {
-    const token = response.json().access_token;
-    pm.environment.set("auth_token", token);
-});
-```
+**Pre-request Auth Pattern:**
+1. Build login request with `pm.environment.get("base_url")`
+2. Send via `pm.sendRequest(request, callback)`
+3. Extract token: `response.json().access_token`
+4. Store: `pm.environment.set("auth_token", token)`
 
 ### 3.3 Contract Testing with OpenAPI
 
-**OpenAPI Spec Example:**
-```yaml
-openapi: 3.0.0
-info:
-  title: Toolshop API
-  version: 1.0.0
-paths:
-  /products:
-    get:
-      summary: List products
-      parameters:
-        - name: by_brand
-          in: query
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Product'
-```
+**OpenAPI Spec Concepts:**
+- Define paths, methods, parameters, responses
+- Schema validation with `$ref` to component schemas
+- Response codes with expected content types
 
 **Contract Validation (Dredd):**
-```bash
-# Install Dredd
-npm install -g dredd
-
-# Run contract tests
-dredd api-spec.yaml http://localhost:3000
-
-# With hooks
-dredd api-spec.yaml http://localhost:3000 --hookfiles=./hooks.js
-```
+- `dredd api-spec.yaml http://localhost:3000` - Run contract tests
+- Validates API implementation matches spec
+- Use `--hookfiles` for custom setup/teardown
 
 ### 3.4 Test Cases for API Testing
 
@@ -289,62 +211,16 @@ dredd api-spec.yaml http://localhost:3000 --hookfiles=./hooks.js
 
 ### 4.1 Common API Testing Issues
 
-**Problem 1: Authentication Failures**
-```
-Symptom: 401 Unauthorized on protected endpoints
+| Problem | Symptoms | Solutions |
+|---------|----------|-----------|
+| **Auth Failures** | 401 on protected endpoints | Verify token set, check format `Bearer <token>`, check expiry |
+| **Response Mismatch** | Passes Postman, fails Newman | Export env with values, add delays, verify paths |
+| **Flaky Tests** | Random pass/fail | Unique test data `test_${Date.now()}@example.com`, retry logic |
 
-Debug Steps:
-1. Verify token is being set:
-   console.log(pm.environment.get("auth_token"))
-
-2. Check token format:
-   Authorization: Bearer <token>
-
-3. Verify token hasn't expired:
-   Decode JWT and check exp claim
-
-4. Check token scope/permissions:
-   Some endpoints require admin token
-
-Solution:
-- Refresh token in pre-request script
-- Use collection-level auth
-- Add token refresh logic
-```
-
-**Problem 2: Response Mismatch**
-```
-Symptom: Test passes in Postman, fails in Newman
-
-Causes:
-- Environment variables not exported
-- Timing issues (async operations)
-- Different base URLs
-
-Solutions:
-1. Export environment with current values
-2. Add delays between requests:
-   pm.setTimeout(() => {}, 1000)
-3. Verify environment file paths
-```
-
-**Problem 3: Flaky Tests**
-```
-Symptom: Tests pass/fail randomly
-
-Causes:
-- Race conditions
-- Shared test data
-- External dependencies
-
-Solutions:
-1. Use unique test data:
-   const email = `test_${Date.now()}@example.com`
-
-2. Chain requests with pm.sendRequest
-3. Add retry logic:
-   pm.test.retry(3, function() { ... })
-```
+**Debug Tips:**
+- Log token: `console.log(pm.environment.get("auth_token"))`
+- Use pre-request to refresh tokens
+- Chain requests with `pm.sendRequest`
 
 ### 4.2 API Security Testing
 
@@ -363,14 +239,7 @@ Solutions:
 | **Improper Asset Management** | Find undocumented endpoints |
 | **Logging & Monitoring** | Verify security events logged |
 
-**BOLA Test Example:**
-```javascript
-// Test: User A shouldn't access User B's data
-pm.test("Cannot access other user's order", function() {
-    // Logged in as User A, trying User B's order ID
-    pm.response.to.have.status(403);
-});
-```
+**BOLA Test:** User A accessing User B's data should return 403
 
 ---
 
@@ -378,181 +247,62 @@ pm.test("Cannot access other user's order", function() {
 
 ### 5.1 From API Testing Homework (HW08)
 
-**Test Environment:**
-- Application: ToolShop Practice Software Testing (Sprint 5 with bugs)
-- Base URL: https://api-with-bugs.practicesoftwaretesting.com
-- Documentation: /api/documentation
+**Test Environment:** ToolShop API (Sprint 5 with bugs)
 
-**APIs Tested:**
-
-**API 1: User Authentication**
-```
-Endpoints: /users/login, /users/register
-Test Cases: 22
-Pass Rate: 63.64%
-Bugs Found: 8
-- SQL injection vulnerability (CRITICAL)
-- Wrong HTTP status codes (MAJOR)
-- Missing field validation (MAJOR)
-```
-
-**API 2: Product Search & Filter**
-```
-Endpoints: /products, /products/search
-Test Cases: 32
-Pass Rate: 100%
-Bugs Found: 0
-```
-
-**API 3: Payment Processing**
-```
-Endpoint: /payment/check
-Test Cases: 25
-Pass Rate: 60%
-Bugs Found: 10
-- Missing field validation
-- Invalid format acceptance
-```
+| API | Endpoints | TCs | Pass Rate | Bugs |
+|-----|-----------|-----|-----------|------|
+| User Auth | /users/login, /register | 22 | 63.64% | 8 (incl. SQL injection CRITICAL) |
+| Product Search | /products, /search | 32 | 100% | 0 |
+| Payment | /payment/check | 25 | 60% | 10 |
 
 ### 5.2 Key Test Results
 
-**Overall Statistics:**
-- Total Test Cases: 79
-- Passed: 61 (77.22%)
-- Failed: 18
-- Critical Bugs: 1
-- Major Bugs: 17
+**Overall:** 79 TCs, 77.22% pass, 1 critical + 17 major bugs
 
-**Bug Categories:**
-| Category | Count |
-|----------|-------|
-| Missing Field Validation | 9 |
-| Wrong HTTP Status Codes | 6 |
-| SQL Injection Vulnerability | 1 |
-| Invalid Format Acceptance | 2 |
+**Bug Categories:** Validation (9), Wrong status codes (6), SQL injection (1), Format acceptance (2)
 
-**Example Bug Report:**
-```
-BUG-001: SQL Injection in Login
-Severity: CRITICAL
-Endpoint: POST /users/login
-Input: {"email": "' OR '1'='1", "password": "test"}
-Expected: 400 Bad Request
-Actual: 200 OK (bypasses authentication)
-Impact: Complete authentication bypass
-```
+**Example Bug:** SQL Injection - `{"email": "' OR '1'='1"}` bypasses auth (200 OK instead of 400)
 
 ---
 
 ## 6. Application-Level Exam Questions
 
 ### Question 1: API Test Design
-**Scenario:** Design tests for a new "Wishlist" API:
-- POST /wishlist/items (add item)
-- GET /wishlist (get all items)
-- DELETE /wishlist/items/{id} (remove item)
+**Scenario:** Wishlist API: POST /items, GET /, DELETE /items/{id}
 
-**Question:** List 10 test cases covering positive, negative, and edge cases.
-
-**Answer:**
-```
-Positive Tests:
-1. Add valid item to wishlist → 201 Created
-2. Get wishlist with items → 200 OK, items returned
-3. Delete existing item → 204 No Content
-4. Add multiple items → All appear in GET
-
-Negative Tests:
-5. Add item without auth → 401 Unauthorized
-6. Add non-existent product → 404 Not Found
-7. Delete non-existent item → 404 Not Found
-8. Add duplicate item → 409 Conflict (or 200 if allowed)
-
-Edge Cases:
-9. Empty wishlist GET → 200 OK, empty array
-10. Add item at max wishlist size → 400 or 201
-
-Boundary Tests:
-11. Product ID at boundary (0, max_int) → appropriate response
-12. Very long product name → handled correctly
-```
+**Answer - 10 Test Cases:**
+| Type | Test Case | Expected |
+|------|-----------|----------|
+| Positive | Add valid item | 201 |
+| Positive | Get with items | 200, items returned |
+| Positive | Delete existing | 204 |
+| Negative | Add without auth | 401 |
+| Negative | Add non-existent product | 404 |
+| Negative | Delete non-existent | 404 |
+| Negative | Add duplicate | 409 or 200 |
+| Edge | Empty wishlist GET | 200, empty array |
+| Edge | Max wishlist size | 400 or 201 |
+| Boundary | Product ID at min/max | Appropriate response |
 
 ### Question 2: Mock Server Selection
-**Scenario:** Team needs to mock a payment gateway for testing. Requirements:
-- Simulate delays (1-5 seconds)
-- Record actual API calls for debugging
-- Run in CI/CD pipeline
+**Scenario:** Mock payment gateway with delays, recording, CI/CD support
 
-**Question:** Which mock tool would you recommend?
-
-**Answer:**
-```
-Recommendation: WireMock
-
-Justification:
-1. Response Delays: Fixed/random/chunked delays supported
-   {"fixedDelayMilliseconds": 2000}
-
-2. Recording: Proxy mode records actual traffic
-   wiremock --record-mappings --proxy-all="https://payment.api.com"
-
-3. CI/CD: Docker image available
-   docker run -d wiremock/wiremock:latest
-
-Why not Postman Mock:
-- Fixed delays only (no random)
-- No recording capability
-- Rate-limited on free tier
-
-Configuration Example:
-{
-  "request": {
-    "method": "POST",
-    "url": "/payment/process"
-  },
-  "response": {
-    "status": 200,
-    "body": "{\"success\": true}",
-    "fixedDelayMilliseconds": 2000
-  }
-}
-```
+**Answer:** WireMock
+- Delays: `{"fixedDelayMilliseconds": 2000}` (fixed/random/chunked)
+- Recording: `--record-mappings --proxy-all`
+- CI/CD: Docker image available
+- Why not Postman Mock: Fixed delays only, no recording, rate-limited
 
 ### Question 3: Security Test Design
-**Scenario:** API returns user data including email, phone, and password hash. How would you test for excessive data exposure?
+**Scenario:** Test for excessive data exposure
 
-**Answer:**
-```javascript
-// Test: Response should not include sensitive fields
-pm.test("No sensitive data exposed", function() {
-    const response = pm.response.json();
-
-    // Should NOT be in response
-    pm.expect(response).to.not.have.property("password");
-    pm.expect(response).to.not.have.property("password_hash");
-    pm.expect(response).to.not.have.property("ssn");
-
-    // Phone should be masked
-    if (response.phone) {
-        pm.expect(response.phone).to.match(/\*{6}\d{4}/);
-    }
-
-    // Email should be partial
-    if (response.email) {
-        pm.expect(response.email).to.match(/^.{2}\*+@/);
-    }
-});
-
-// Test: Admin endpoint shouldn't be accessible
-pm.test("Admin data not accessible to regular user", function() {
-    pm.response.to.have.status(403);
-});
-
-// Additional checks:
-// - Verify response headers (no server info leaked)
-// - Check error messages don't reveal stack traces
-// - Ensure IDs are not sequential (prevent enumeration)
-```
+**Answer - Checks:**
+- No password/ssn in response: `.not.have.property("password")`
+- Phone masked: `/\*{6}\d{4}/`
+- Email partial: `/^.{2}\*+@/`
+- Admin endpoints return 403 for regular users
+- No stack traces in error messages
+- Non-sequential IDs (prevent enumeration)
 
 ---
 
@@ -560,78 +310,37 @@ pm.test("Admin data not accessible to regular user", function() {
 
 ### Postman Test Syntax
 
-```javascript
-// Response checks
-pm.response.to.have.status(200);
-pm.response.to.have.status("OK");
-pm.response.to.be.ok;
-pm.response.to.be.json;
-pm.response.to.have.header("Content-Type", "application/json");
-
-// JSON checks
-const json = pm.response.json();
-pm.expect(json.name).to.equal("Test");
-pm.expect(json.items).to.be.an("array");
-pm.expect(json.count).to.be.greaterThan(0);
-pm.expect(json).to.have.property("id");
-
-// Response time
-pm.expect(pm.response.responseTime).to.be.below(200);
-
-// Environment variables
-pm.environment.set("key", value);
-pm.environment.get("key");
-pm.globals.set("key", value);
-pm.collectionVariables.set("key", value);
-
-// Chained requests
-pm.sendRequest(request, function(err, response) {
-    // Handle response
-});
-```
+| Category | Syntax |
+|----------|--------|
+| Status | `pm.response.to.have.status(200)` |
+| JSON | `pm.response.to.be.json` |
+| Header | `pm.response.to.have.header("Content-Type")` |
+| Property | `pm.expect(json).to.have.property("id")` |
+| Array | `pm.expect(json.items).to.be.an("array")` |
+| Comparison | `pm.expect(json.count).to.be.greaterThan(0)` |
+| Time | `pm.expect(pm.response.responseTime).to.be.below(200)` |
+| Set var | `pm.environment.set("key", value)` |
+| Get var | `pm.environment.get("key")` |
+| Chain | `pm.sendRequest(req, callback)` |
 
 ### Newman Commands
 
-```bash
-# Basic run
-newman run collection.json
-
-# With environment
-newman run collection.json -e env.json
-
-# Reporters
-newman run collection.json --reporters cli,html,json
-
-# Iterations
-newman run collection.json -n 10
-
-# Data file
-newman run collection.json -d data.csv
-
-# Bail on error
-newman run collection.json --bail
-
-# Delay between requests
-newman run collection.json --delay-request 1000
-
-# Export results
-newman run collection.json --reporter-html-export report.html
-```
+| Command | Purpose |
+|---------|---------|
+| `newman run collection.json` | Basic run |
+| `-e env.json` | With environment |
+| `--reporters cli,html,json` | Multiple reporters |
+| `-n 10` | Iterations |
+| `-d data.csv` | Data file |
+| `--bail` | Stop on error |
+| `--delay-request 1000` | Delay between requests |
 
 ### Common HTTP Headers
 
-```
-# Request Headers
-Content-Type: application/json
-Authorization: Bearer <token>
-Accept: application/json
-X-Request-ID: uuid
-
-# Response Headers to Check
-Content-Type: application/json
-X-RateLimit-Remaining: 99
-Cache-Control: no-cache
-```
+| Type | Header |
+|------|--------|
+| Request | `Content-Type: application/json`, `Authorization: Bearer <token>` |
+| Response | `X-RateLimit-Remaining`, `Cache-Control` |
 
 ### API Testing Checklist
 
@@ -661,117 +370,26 @@ Cache-Control: no-cache
 
 ### 8.2 GraphQL Query Testing
 
-**Basic Query Test:**
-```javascript
-// Postman test for GraphQL
-const query = `
-  query GetUser($id: ID!) {
-    user(id: $id) {
-      id
-      name
-      email
-      posts {
-        title
-      }
-    }
-  }
-`;
-
-pm.sendRequest({
-  url: pm.environment.get('graphql_url'),
-  method: 'POST',
-  header: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + pm.environment.get('token')
-  },
-  body: {
-    mode: 'raw',
-    raw: JSON.stringify({
-      query: query,
-      variables: { id: "123" }
-    })
-  }
-}, (err, res) => {
-  pm.test('User query returns data', () => {
-    const json = res.json();
-    pm.expect(json.data.user).to.not.be.null;
-    pm.expect(json.data.user.name).to.be.a('string');
-    pm.expect(json.errors).to.be.undefined;
-  });
-});
-```
+**Query Concepts:**
+- POST to single endpoint with `query` and `variables` in body
+- Check: `json.data.user` exists, `json.errors` undefined
+- Specify only needed fields (no over-fetching)
 
 ### 8.3 GraphQL Mutation Testing
 
-```javascript
-const mutation = `
-  mutation CreateUser($input: CreateUserInput!) {
-    createUser(input: $input) {
-      id
-      name
-      email
-    }
-  }
-`;
-
-const variables = {
-  input: {
-    name: "John Doe",
-    email: "john@example.com",
-    password: "Pass1234!"
-  }
-};
-
-// Test mutation
-pm.test('Mutation creates user', () => {
-  const json = pm.response.json();
-  pm.expect(json.data.createUser.id).to.exist;
-  pm.expect(json.data.createUser.name).to.eql("John Doe");
-});
-```
+**Mutation Concepts:**
+- `mutation CreateUser($input: CreateUserInput!)` defines operation
+- Variables passed separately: `{input: {name, email, password}}`
+- Assert: `json.data.createUser.id` exists
 
 ### 8.4 GraphQL Security Testing
 
-**Common Vulnerabilities:**
-
-| Vulnerability | Test Approach |
-|--------------|---------------|
-| **Introspection** | Query `__schema` - should be disabled in prod |
-| **Depth attack** | Send deeply nested queries |
-| **Batching attack** | Send multiple queries in one request |
-| **Injection** | Test special chars in variables |
-
-**Introspection Test:**
-```graphql
-# Should fail in production
-query IntrospectionQuery {
-  __schema {
-    types {
-      name
-    }
-  }
-}
-```
-
-**Depth Attack Test:**
-```graphql
-# Malicious deep query - should be rejected
-query DeepAttack {
-  user(id: "1") {
-    posts {
-      author {
-        posts {
-          author {
-            posts {
-              # ... recursively
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+| Vulnerability | Test | Expected |
+|--------------|------|----------|
+| **Introspection** | Query `__schema` | Should fail in prod |
+| **Depth attack** | Deeply nested queries | Should be rejected |
+| **Batching** | Multiple queries in one request | Should be limited |
+| **Injection** | Special chars in variables | Should be sanitized |
 
 ### 8.5 GraphQL Testing Tools
 

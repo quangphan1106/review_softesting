@@ -100,50 +100,16 @@ AI/ML Software:
 
 ### 2.3 Data Validation Tools
 
-**Great Expectations:**
-```python
-import great_expectations as gx
+**Great Expectations Concepts:**
+- Create expectation suite with rules
+- Common expectations: `NotBeNull`, `ValuesToBeBetween`, `DistinctValuesToBeInSet`
+- Run `validator.validate()` to check data
 
-# Create expectation suite
-expectation_suite = gx.ExpectationSuite(
-    name="training_data_suite"
-)
-
-# Define expectations
-expectation_suite.add_expectation(
-    gx.expectations.ExpectColumnValuesToNotBeNull(column="age")
-)
-expectation_suite.add_expectation(
-    gx.expectations.ExpectColumnValuesToBeBetween(
-        column="age", min_value=0, max_value=120
-    )
-)
-expectation_suite.add_expectation(
-    gx.expectations.ExpectColumnDistinctValuesToBeInSet(
-        column="gender", value_set=["M", "F", "Other"]
-    )
-)
-
-# Validate data
-results = validator.validate()
-```
-
-**TensorFlow Data Validation:**
-```python
-import tensorflow_data_validation as tfdv
-
-# Generate statistics
-stats = tfdv.generate_statistics_from_csv(data_path)
-
-# Infer schema
-schema = tfdv.infer_schema(stats)
-
-# Validate new data against schema
-anomalies = tfdv.validate_statistics(new_stats, schema)
-
-# Visualize
-tfdv.visualize_statistics(stats)
-```
+**TensorFlow Data Validation Concepts:**
+- Generate statistics: `tfdv.generate_statistics_from_csv()`
+- Infer schema from data: `tfdv.infer_schema(stats)`
+- Validate new data: `tfdv.validate_statistics(new_stats, schema)`
+- Detect anomalies automatically
 
 ---
 
@@ -151,93 +117,23 @@ tfdv.visualize_statistics(stats)
 
 ### 3.1 ML Model Unit Tests
 
-```python
-import pytest
-import numpy as np
-
-class TestModelPredictions:
-    @pytest.fixture
-    def model(self):
-        """Load trained model"""
-        from model import load_model
-        return load_model("model_v1.pkl")
-
-    def test_output_shape(self, model):
-        """Verify output dimensions"""
-        input_data = np.random.randn(10, 50)  # 10 samples, 50 features
-        predictions = model.predict(input_data)
-        assert predictions.shape == (10,)
-
-    def test_output_range(self, model):
-        """Verify predictions are in valid range"""
-        input_data = np.random.randn(100, 50)
-        predictions = model.predict(input_data)
-        assert np.all(predictions >= 0)
-        assert np.all(predictions <= 1)  # For probability outputs
-
-    def test_determinism(self, model):
-        """Same input should produce same output"""
-        np.random.seed(42)
-        input_data = np.random.randn(5, 50)
-
-        pred1 = model.predict(input_data)
-        pred2 = model.predict(input_data)
-
-        np.testing.assert_array_almost_equal(pred1, pred2)
-
-    def test_edge_cases(self, model):
-        """Test boundary inputs"""
-        # All zeros
-        zero_input = np.zeros((1, 50))
-        assert model.predict(zero_input) is not None
-
-        # Very large values
-        large_input = np.ones((1, 50)) * 1e6
-        assert model.predict(large_input) is not None
-
-        # Negative values
-        neg_input = np.ones((1, 50)) * -1
-        assert model.predict(neg_input) is not None
-```
+**Key Test Types:**
+| Test | What to Check | Assert |
+|------|---------------|--------|
+| Output shape | Dimensions correct | `predictions.shape == (N,)` |
+| Output range | Values valid | `0 <= predictions <= 1` (probabilities) |
+| Determinism | Same input → same output | `assert_array_almost_equal(pred1, pred2)` |
+| Edge cases | Zeros, large, negative values | Returns without error |
 
 ### 3.2 Model Accuracy Tests
 
-```python
-class TestModelAccuracy:
-    @pytest.fixture
-    def test_data(self):
-        """Load test dataset"""
-        from data import load_test_data
-        return load_test_data()
-
-    def test_accuracy_threshold(self, model, test_data):
-        """Model should meet minimum accuracy"""
-        X_test, y_test = test_data
-        accuracy = model.score(X_test, y_test)
-        assert accuracy >= 0.85, f"Accuracy {accuracy} below threshold 0.85"
-
-    def test_precision_recall(self, model, test_data):
-        """Check precision and recall balance"""
-        from sklearn.metrics import precision_score, recall_score
-
-        X_test, y_test = test_data
-        y_pred = model.predict(X_test)
-
-        precision = precision_score(y_test, y_pred)
-        recall = recall_score(y_test, y_pred)
-
-        assert precision >= 0.80, f"Precision {precision} too low"
-        assert recall >= 0.80, f"Recall {recall} too low"
-
-    def test_no_regression(self, model, test_data):
-        """New model shouldn't be worse than baseline"""
-        baseline_accuracy = 0.82  # From previous model
-        X_test, y_test = test_data
-        current_accuracy = model.score(X_test, y_test)
-
-        assert current_accuracy >= baseline_accuracy - 0.02, \
-            f"Regression detected: {current_accuracy} < {baseline_accuracy - 0.02}"
-```
+**Key Metrics:**
+| Test | Threshold | Assert |
+|------|-----------|--------|
+| Accuracy | ≥85% | `model.score(X_test, y_test) >= 0.85` |
+| Precision | ≥80% | `precision_score(y_test, y_pred) >= 0.80` |
+| Recall | ≥80% | `recall_score(y_test, y_pred) >= 0.80` |
+| No regression | ≥baseline - 2% | Current accuracy ≥ previous model |
 
 ### 3.3 Test Cases for AI Systems
 
@@ -292,51 +188,15 @@ class TestModelAccuracy:
 
 ### 4.3 Fairness Testing with AIF360
 
-```python
-from aif360.datasets import BinaryLabelDataset
-from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
-from aif360.algorithms.preprocessing import Reweighing
+**Key Concepts:**
+- Define protected groups: `unprivileged_groups=[{'gender': 0}]`
+- Calculate metrics: `BinaryLabelDatasetMetric`, `ClassificationMetric`
+- Goal: Disparate Impact 0.8-1.25, Equal Opportunity Difference ~0
 
-# Load data
-dataset = BinaryLabelDataset(
-    df=df,
-    label_names=['hired'],
-    protected_attribute_names=['gender'],
-    favorable_label=1,
-    unfavorable_label=0
-)
-
-# Calculate disparate impact
-metric = BinaryLabelDatasetMetric(
-    dataset,
-    unprivileged_groups=[{'gender': 0}],  # Female
-    privileged_groups=[{'gender': 1}]      # Male
-)
-
-print(f"Disparate Impact: {metric.disparate_impact()}")
-# Goal: Between 0.8 and 1.25
-
-# Calculate equalized odds
-predictions_dataset = dataset.copy()
-predictions_dataset.labels = model.predict(X)
-
-clf_metric = ClassificationMetric(
-    dataset,
-    predictions_dataset,
-    unprivileged_groups=[{'gender': 0}],
-    privileged_groups=[{'gender': 1}]
-)
-
-print(f"Equal Opportunity Difference: {clf_metric.equal_opportunity_difference()}")
-# Goal: Close to 0
-
-# Mitigation: Reweighing
-rw = Reweighing(
-    unprivileged_groups=[{'gender': 0}],
-    privileged_groups=[{'gender': 1}]
-)
-dataset_transformed = rw.fit_transform(dataset)
-```
+**Mitigation Strategies:**
+- Pre-processing: `Reweighing` to balance samples
+- In-processing: `PrejudiceRemover` with fairness constraint
+- Post-processing: `CalibratedEqOddsPostprocessing` to adjust thresholds
 
 ---
 
@@ -355,61 +215,14 @@ dataset_transformed = rw.fit_transform(dataset)
 ### 5.2 Adversarial Testing Techniques
 
 **FGSM (Fast Gradient Sign Method):**
-```python
-import torch
+- Formula: `adversarial = original + epsilon * gradient.sign()`
+- Typical epsilon: 0.03
+- Clamp to valid range [0, 1]
 
-def fgsm_attack(image, epsilon, gradient):
-    """Generate adversarial example"""
-    # Get sign of gradient
-    sign = gradient.sign()
-
-    # Create perturbed image
-    perturbed = image + epsilon * sign
-
-    # Clamp to valid range
-    perturbed = torch.clamp(perturbed, 0, 1)
-
-    return perturbed
-
-# Usage
-model.eval()
-image.requires_grad = True
-output = model(image)
-loss = criterion(output, label)
-loss.backward()
-
-adversarial_image = fgsm_attack(image, epsilon=0.03, gradient=image.grad)
-```
-
-**Testing Robustness:**
-```python
-def test_adversarial_robustness(model, test_data, epsilon=0.03):
-    """Test model robustness to adversarial examples"""
-    original_correct = 0
-    adversarial_correct = 0
-
-    for image, label in test_data:
-        # Original prediction
-        original_pred = model.predict(image)
-        if original_pred == label:
-            original_correct += 1
-
-        # Adversarial prediction
-        adversarial_image = generate_adversarial(image, epsilon)
-        adversarial_pred = model.predict(adversarial_image)
-        if adversarial_pred == label:
-            adversarial_correct += 1
-
-    original_accuracy = original_correct / len(test_data)
-    adversarial_accuracy = adversarial_correct / len(test_data)
-    robustness = adversarial_accuracy / original_accuracy
-
-    print(f"Original Accuracy: {original_accuracy:.2%}")
-    print(f"Adversarial Accuracy: {adversarial_accuracy:.2%}")
-    print(f"Robustness: {robustness:.2%}")
-
-    assert robustness >= 0.70, "Model is too vulnerable to adversarial attacks"
-```
+**Robustness Testing:**
+- Metric: `robustness = adversarial_accuracy / original_accuracy`
+- Target: ≥70% robustness
+- If robustness <70% → model too vulnerable
 
 ---
 
@@ -438,44 +251,14 @@ def test_adversarial_robustness(model, test_data, epsilon=0.03):
 | **Behavioral** | Task completion rate | Functional testing |
 | **Safety** | Refusal rate, harmful outputs | Alignment |
 
-### 6.3 LLM Testing Example
+### 6.3 LLM Testing Concepts
 
-```python
-from langchain.evaluation import load_evaluator
-from langchain.chat_models import ChatOpenAI
-
-# LLM-as-Judge evaluation
-evaluator = load_evaluator("criteria", criteria="helpfulness")
-
-def evaluate_response(question, response):
-    """Evaluate LLM response quality"""
-    result = evaluator.evaluate_strings(
-        prediction=response,
-        input=question,
-    )
-    return result["score"], result["reasoning"]
-
-# Behavioral testing
-def test_factual_accuracy(llm, qa_pairs):
-    """Test factual correctness"""
-    correct = 0
-    for question, expected_answer in qa_pairs:
-        response = llm.invoke(question)
-        # Use fuzzy matching or semantic similarity
-        if is_semantically_similar(response, expected_answer):
-            correct += 1
-    return correct / len(qa_pairs)
-
-# Safety testing
-def test_harmful_refusal(llm, harmful_prompts):
-    """Test refusal of harmful requests"""
-    refusals = 0
-    for prompt in harmful_prompts:
-        response = llm.invoke(prompt)
-        if contains_refusal(response):
-            refusals += 1
-    return refusals / len(harmful_prompts)
-```
+**Key Test Types:**
+| Test | Method | Metric |
+|------|--------|--------|
+| LLM-as-Judge | Use GPT-4 to evaluate | Helpfulness score |
+| Factual Accuracy | Compare to expected | % semantically similar |
+| Safety | Check refusal of harmful | Refusal rate |
 
 ---
 
@@ -508,73 +291,13 @@ def test_harmful_refusal(llm, harmful_prompts):
 | **Model-graded** | LLM judges output quality | Open-ended, subjective tasks |
 | **Code-graded** | Custom logic evaluates | Structured outputs, JSON |
 
-**Installation & Setup:**
-```bash
-pip install --upgrade openai>=1.20.0
-export OPENAI_API_KEY="your-key"
-```
+**Setup:** `pip install openai>=1.20.0` + set API key
 
-**Basic Eval Example:**
-```python
-from openai import OpenAI
-client = OpenAI()
-
-# Create an eval
-eval_config = client.evals.create(
-    name="ticket-classification-eval",
-    data_source_config={
-        "type": "custom",
-        "item_schema": {
-            "type": "object",
-            "properties": {
-                "input": {"type": "string"},
-                "expected": {"type": "string"}
-            }
-        }
-    },
-    testing_criteria=[
-        {
-            "type": "string_match",
-            "name": "exact_match",
-            "input": "{{sample.output}}",
-            "reference": "{{sample.expected}}"
-        }
-    ]
-)
-
-# Run the eval
-run = client.evals.runs.create(
-    eval_id=eval_config.id,
-    model="gpt-4o",
-    data_source={
-        "type": "file",
-        "file_id": "file-abc123"  # JSONL file with test cases
-    }
-)
-```
-
-**Model-Graded Eval Example:**
-```python
-# LLM-as-Judge for helpfulness
-eval_config = client.evals.create(
-    name="helpfulness-eval",
-    testing_criteria=[
-        {
-            "type": "llm_grader",
-            "name": "helpfulness",
-            "model": "gpt-4o",
-            "prompt": """
-            Rate the helpfulness of this response on a scale of 1-5.
-
-            Question: {{sample.input}}
-            Response: {{sample.output}}
-
-            Score (1-5):
-            """
-        }
-    ]
-)
-```
+**Basic Eval Concepts:**
+- Create eval with `data_source_config` (schema) + `testing_criteria` (graders)
+- `string_match`: Compare output to expected
+- `llm_grader`: Use LLM to score (1-5) with custom prompt
+- Run eval: `client.evals.runs.create(eval_id, model, data_source)`
 
 ### 7.2 DeepEval Framework
 
@@ -583,103 +306,21 @@ eval_config = client.evals.create(
 - 800k+ daily evaluations, 14+ metrics
 - Supports RAG, agents, chatbots
 
-**Installation:**
-```bash
-pip install deepeval
-```
-
 **Key Metrics:**
 
 | Metric | Purpose | Formula |
 |--------|---------|---------|
-| **Hallucination** | Factual accuracy vs context | Claims supported / Total claims |
-| **Faithfulness** | Grounded in retrieved context | Same as hallucination |
-| **Answer Relevancy** | Response addresses question | Relevance score 0-1 |
+| **Hallucination** | Factual accuracy | Claims supported / Total |
+| **Faithfulness** | Grounded in context | Same as hallucination |
+| **Answer Relevancy** | Addresses question | Score 0-1 |
 | **Contextual Precision** | Relevant chunks ranked high | Precision@K |
-| **Contextual Recall** | All relevant info retrieved | Retrieved relevant / Total relevant |
-| **Bias** | Gender, racial, political bias | Bias detection score |
-| **Toxicity** | Harmful content detection | Toxicity score |
+| **Contextual Recall** | All relevant retrieved | Retrieved / Total relevant |
 
-**Basic Usage:**
-```python
-from deepeval import evaluate
-from deepeval.metrics import HallucinationMetric, AnswerRelevancyMetric
-from deepeval.test_case import LLMTestCase
-
-# Define test case
-test_case = LLMTestCase(
-    input="What is the capital of France?",
-    actual_output="The capital of France is Paris.",
-    context=["France is a country in Europe. Paris is its capital."]
-)
-
-# Define metrics
-hallucination = HallucinationMetric(threshold=0.7)
-relevancy = AnswerRelevancyMetric(threshold=0.7)
-
-# Run evaluation
-evaluate([test_case], [hallucination, relevancy])
-```
-
-**RAG Evaluation Example:**
-```python
-from deepeval.metrics import (
-    FaithfulnessMetric,
-    ContextualPrecisionMetric,
-    ContextualRecallMetric
-)
-from deepeval.test_case import LLMTestCase
-
-# RAG test case
-test_case = LLMTestCase(
-    input="What are the symptoms of diabetes?",
-    actual_output="Common symptoms include increased thirst, frequent urination, and fatigue.",
-    expected_output="Symptoms include thirst, urination, fatigue, blurred vision.",
-    retrieval_context=[
-        "Diabetes symptoms: increased thirst, frequent urination, unexplained weight loss, fatigue, blurred vision."
-    ]
-)
-
-# RAG metrics
-faithfulness = FaithfulnessMetric(threshold=0.8)
-precision = ContextualPrecisionMetric(threshold=0.7)
-recall = ContextualRecallMetric(threshold=0.7)
-
-# Evaluate
-results = evaluate(
-    test_cases=[test_case],
-    metrics=[faithfulness, precision, recall]
-)
-
-print(f"Faithfulness: {faithfulness.score}")
-print(f"Precision: {precision.score}")
-print(f"Recall: {recall.score}")
-```
-
-**CI/CD Integration (pytest):**
-```python
-# test_llm.py
-import pytest
-from deepeval import assert_test
-from deepeval.metrics import AnswerRelevancyMetric
-from deepeval.test_case import LLMTestCase
-
-@pytest.mark.parametrize("input,expected", [
-    ("What is 2+2?", "4"),
-    ("Capital of Japan?", "Tokyo"),
-])
-def test_qa_accuracy(input, expected):
-    # Get LLM response
-    output = my_llm.generate(input)
-
-    test_case = LLMTestCase(
-        input=input,
-        actual_output=output,
-        expected_output=expected
-    )
-
-    assert_test(test_case, [AnswerRelevancyMetric(threshold=0.8)])
-```
+**Usage Concepts:**
+- Create `LLMTestCase(input, actual_output, context)`
+- Define metrics with threshold: `HallucinationMetric(threshold=0.7)`
+- Run: `evaluate([test_cases], [metrics])`
+- CI/CD: Use `assert_test(test_case, metrics)` with pytest
 
 ### 7.3 Ragas (RAG Assessment)
 
@@ -707,50 +348,15 @@ def test_qa_accuracy(input, expected):
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Installation:**
-```bash
-pip install ragas
-```
+**Usage:** `pip install ragas`, create Dataset with question/answer/contexts/ground_truth
 
-**Basic Usage:**
-```python
-from ragas import evaluate
-from ragas.metrics import (
-    faithfulness,
-    answer_relevancy,
-    context_precision,
-    context_recall
-)
-from datasets import Dataset
-
-# Prepare evaluation data
-eval_data = {
-    "question": ["What is machine learning?"],
-    "answer": ["ML is a subset of AI that enables systems to learn from data."],
-    "contexts": [["Machine learning is a branch of artificial intelligence..."]],
-    "ground_truth": ["Machine learning is AI that learns from data."]
-}
-
-dataset = Dataset.from_dict(eval_data)
-
-# Run evaluation
-results = evaluate(
-    dataset,
-    metrics=[faithfulness, answer_relevancy, context_precision, context_recall]
-)
-
-print(results)
-# {'faithfulness': 0.95, 'answer_relevancy': 0.88, ...}
-```
-
-**Metric Interpretation:**
-
-| Metric | Score | Interpretation |
-|--------|-------|----------------|
-| Faithfulness | 1.0 | 100% grounded, no hallucination |
-| Faithfulness | 0.85 | 15% claims not supported |
-| Context Precision | 0.9 | 90% of top chunks relevant |
-| Context Recall | 0.8 | 80% of needed info retrieved |
+**Metrics:**
+| Metric | Score | Meaning |
+|--------|-------|---------|
+| Faithfulness | 1.0 | No hallucination |
+| Faithfulness | 0.85 | 15% claims unsupported |
+| Context Precision | 0.9 | 90% top chunks relevant |
+| Context Recall | 0.8 | 80% needed info retrieved |
 
 ### 7.4 Prompt Testing & Promptfoo
 
@@ -764,73 +370,25 @@ print(results)
 - Red teaming, security testing
 - Compare models (GPT, Claude, Gemini, Llama)
 
-**Installation:**
-```bash
-npm install -g promptfoo
-# or
-pip install promptfoo
-```
+**Setup:** `npm install -g promptfoo` or `pip install promptfoo`
 
-**Configuration (promptfooconfig.yaml):**
-```yaml
-prompts:
-  - "You are a helpful assistant. Answer: {{question}}"
-  - "Answer concisely: {{question}}"
-
-providers:
-  - openai:gpt-4o
-  - anthropic:claude-3-sonnet
-
-tests:
-  - vars:
-      question: "What is the capital of France?"
-    assert:
-      - type: contains
-        value: "Paris"
-      - type: llm-rubric
-        value: "Response is helpful and accurate"
-
-  - vars:
-      question: "Explain quantum computing"
-    assert:
-      - type: llm-rubric
-        value: "Explanation is clear and accurate"
-      - type: cost
-        threshold: 0.01
-```
-
-**Running Tests:**
-```bash
-promptfoo eval
-promptfoo view  # Open web UI for results
-```
+**Config (YAML):**
+- `prompts`: List of prompt templates
+- `providers`: Models to test (gpt-4o, claude-3-sonnet)
+- `tests`: Input vars + assertions
 
 **Assertion Types:**
+| Type | Description |
+|------|-------------|
+| `contains` | Output contains string |
+| `equals` | Exact match |
+| `llm-rubric` | LLM judges quality |
+| `cost` | API cost threshold |
+| `latency` | Response time |
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `contains` | Output contains string | `value: "Paris"` |
-| `equals` | Exact match | `value: "42"` |
-| `regex` | Pattern match | `value: "\\d{3}-\\d{4}"` |
-| `llm-rubric` | LLM judges quality | `value: "Response is helpful"` |
-| `cost` | API cost threshold | `threshold: 0.05` |
-| `latency` | Response time | `threshold: 2000` |
-| `javascript` | Custom JS logic | `value: "output.length < 500"` |
+**Commands:** `promptfoo eval`, `promptfoo view`
 
-**Red Teaming Example:**
-```yaml
-# Security testing
-redteam:
-  plugins:
-    - harmful:hate
-    - harmful:violent-crime
-    - pii:direct
-    - prompt-injection
-
-  strategies:
-    - jailbreak
-    - prompt-injection
-```
+**Red Teaming:** Plugins for harmful content, PII, prompt-injection
 
 ### 7.5 LLM Evaluation Comparison
 
